@@ -14,14 +14,15 @@ function StockPortal_navbar() {
                         <div className="navbar-nav">
                             {/* Use active to show the live page */}
                             <Link className="nav-link"to='/'>Home</Link>
-                            <Link className="nav-link" to="#">Dashboard</Link>
-                            <Link className="nav-link" to="#">View/Add Items</Link>
-                            <Link className="nav-link" to="#">Sales Order</Link>
-                            <Link className="nav-link" to='#'>Purchase Order</Link>
-                            <Link className="nav-link" to="#">Order Status Managment</Link>
-                            <Link className="nav-link" to="#">Available Stock Details</Link>
-                            <Link className="nav-link" to="#">Add New Item Category</Link>
-                            <Link className="nav-link" to='#'>Manage Warehouses</Link>
+                            <Link className="nav-link" to="/stockportal">Dashboard</Link>
+                            <Link className="nav-link" to="/stockportal/items">View/Add Items</Link>
+                            <Link className="nav-link" to="/stockportal/sales">Sales Order</Link>
+                            <Link className="nav-link" to='/stockportal/purchase'>Purchase Order</Link>
+                            <Link className="nav-link" to="/stockportal/statusmanagment">Order Status Managment</Link>
+                            <Link className="nav-link" to="/stockportal/stockdetails">Available Stock Details</Link>
+                            <Link className="nav-link" to="/stockportal/managequotations">Manage Quotations</Link>
+                            <Link className="nav-link" to="/stockportal/addnewcategory">Add New Item Category</Link>
+                            <Link className="nav-link" to='/stockportal/managewarehouses'>Manage Warehouses</Link>
                             <button type="button" class="btn btn-outline-dark">Logout</button>
                         </div>
                     </div>

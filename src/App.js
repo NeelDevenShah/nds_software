@@ -38,11 +38,11 @@ function App() {
   const view_dealerNavbar=useSelector((state)=>state.view.view_dealerNavbar)
   const view_loggedInNavbar=useSelector((state)=>state.view.view_loggedInNavbar)
   
-  var audio=new Audio('click_sound.mp3');
+  // var audio=new Audio('click_sound.mp3');
 
   return (
     <div className="App">
-        {document.onclick=function(){audio.play()}}
+        {/* {document.onclick=function(){audio.play()}} */}
    
           <Router>
            {view_mainNavbar && <Main_navbar/>}
