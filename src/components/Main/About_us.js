@@ -1,8 +1,15 @@
 import React from 'react'
 import {Link} from'react-router-dom';
+import {useDispatch} from 'react-redux';
+import { ViewActions } from '../../store/view-slice';
 function About_us() {
+  const dispatch=useDispatch();
+  const pageStarting=()=>{
+    dispatch(ViewActions.do_view_main())
+  }
   return (
     <div className='bg-warning'>
+        {pageStarting()}
         <h1 className='pt-3'><strong>About Us</strong></h1>
         <div className='container'>
         <p className='pt-3'><strong>NDS SOFTWARE & DESGINING is a leading Responsive Web development and designing professional company in Ahmedabad. We provide qualitative services and customer support. Our professional and expert team provides excellent services to our customers which matches with their requirements. We also provide the attractive and creative customize designing and development Site.</strong></p>

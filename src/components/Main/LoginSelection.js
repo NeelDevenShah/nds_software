@@ -1,9 +1,16 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
+import {ViewActions} from '../../store/view-slice'
 
 function LoginSelection() {
+    const dispatch=useDispatch();
+    const pageStarting=()=>{
+        dispatch(ViewActions.do_view_main_loggedIn())
+      }
     return (
         <div>
+            {pageStarting()}
             <div className='bg-warning py-3'>
                 <h1 className='pt-3'><strong>Login Selection Page</strong></h1>
                 <div className='container'>

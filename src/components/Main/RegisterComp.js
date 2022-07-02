@@ -1,8 +1,18 @@
 import React from 'react'
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
+import {ViewActions} from '../../store/view-slice'
 let selectElement;
 let output;
+
 function RegisterComp() {
+  
+  const dispatch=useDispatch();
+
+  const pageStarting=()=>{
+    dispatch(ViewActions.do_view_main())
+  }
+
   function OnSubmitGo() {
     document.preventDefault();
     selectElement = document.querySelector('#selectCountry');
@@ -20,6 +30,7 @@ function RegisterComp() {
   }
   return (
     <div>
+      {pageStarting()}
       <div className='bg-warning'>
         <div className='container' style={{ paddingLeft: '15%', paddingRight: '15%', paddingTop: '2.5%' }}>
           <div className="card">

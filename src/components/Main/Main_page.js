@@ -1,16 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
-import {ViewActions} from '../store/view-slice';
+import {ViewActions} from '../../store/view-slice';
 
 function Main_page() {
-        var audio=new Audio('click_sound.mp3');
+     
+        const dispatch=useDispatch();
+        const pageStarting=()=>{
+            dispatch(ViewActions.do_view_main())
+        }
     return (
         <div className='bg-warning pb-5'>
-              {document.onclick=function(){audio.play()}}
+                {pageStarting()}
+              {/* {document.onclick=function(){audio.play()}} */}
             {/* Sarting of navbar */}
             {/* Completion of the navbar */}
-            <img src="main_page_image.png" className='w-25 mt-2'></img>
+            <img src="images/main_images/main_page_image.png" className='w-25 mt-2'></img>
             {/* Start of the company Intro*/}
             <div className='container pb-4'>
                 <div className='pt-5 pt-4'>
@@ -57,7 +62,7 @@ function Main_page() {
               
             <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="operation_efficency_image.png" style={{width: '98.8%'}} className="card-img-top py-5" alt="..." />
+                    <img src="images/main_images/operation_efficency_image.png" style={{width: '98.8%'}} className="card-img-top py-5" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title my-2"><strong>Operation Efficiency</strong></h5>
                     </div>
@@ -66,7 +71,7 @@ function Main_page() {
 
                 <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="profit_maximization_image.png" className="card-img-top" alt="..." />
+                    <img src="images/main_images/profit_maximization_image.png" className="card-img-top" alt="..." />
                     <div className="card-body mx-4">
                         <h5 className="card-title mt-4"><strong>Profit Maximization</strong></h5>
                     </div>
@@ -75,7 +80,7 @@ function Main_page() {
 
                 <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="customer_satisfaction_image.png" className="card-img-top" alt="..." />
+                    <img src="images/main_images/customer_satisfaction_image.png" className="card-img-top" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title mt-4"><strong>Customer Satisfaction</strong></h5>
                     </div>
@@ -85,7 +90,7 @@ function Main_page() {
       
             <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="speedy_managment_image.jpg" style={{width: '98.30%'}} className="card-img-top w-80" alt="..." />
+                    <img src="images/main_images/speedy_managment_image.jpg" style={{width: '98.30%'}} className="card-img-top w-80" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title"><strong>Speedy Managment</strong></h5>
                     </div>
@@ -94,7 +99,7 @@ function Main_page() {
 
                 <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="instant_stock_status.png" className="card-img-top" alt="..." />
+                    <img src="images/main_images/instant_stock_status.png" className="card-img-top" alt="..." />
                     <div className="card-body mx-4">
                         <h5 className="card-title mt-4"><strong>Instant Stock Status Tracking</strong></h5>
                     </div>
@@ -103,7 +108,7 @@ function Main_page() {
 
                 <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="demand_predictor_image.jpg" style={{width: '99.15%'}} className="card-img-top" alt="..." />
+                    <img src="images/main_images/demand_predictor_image.jpg" style={{width: '99.15%'}} className="card-img-top" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title mt-4"><strong>Demand Predictors</strong></h5>
                     </div>

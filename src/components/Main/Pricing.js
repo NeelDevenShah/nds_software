@@ -1,9 +1,16 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
+import {ViewActions} from '../../store/view-slice'
 
 function Pricing() {
+    const dispatch=useDispatch();
+    const pageStarting=()=>{
+        dispatch(ViewActions.do_view_main())
+      }
     return (
         <div className='bg-warning'>
+            {pageStarting()}
             <h1 className='pt-3'><strong>Pricing</strong></h1>
             <div className='container'>
                 <h2 className='pt-3'><strong>Plans From Where You Business Starts Growing.</strong></h2>

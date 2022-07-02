@@ -1,9 +1,15 @@
 import React from 'react'
+import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-
+import {ViewActions} from '../../store/view-slice'
 function Login() {
+  const dispatch=useDispatch();
+  const pageStarting=()=>{
+    dispatch(ViewActions.do_view_main())
+  }
   return (
-    <div className='bg-warning'>
+   <div className='bg-warning'>
+      {pageStarting()}
       <div className='container' style={{ paddingLeft: '25%', paddingRight: '25%', paddingTop: '2.5%' }}>
         <div className="card">
           <div className="card-body">
