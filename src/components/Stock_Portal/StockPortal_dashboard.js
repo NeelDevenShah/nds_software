@@ -253,7 +253,7 @@ function StockPortal_dashboard() {
 
 
       <div className='container bg-white py-2  my-4' style={{ borderRadius: '5px' }}>
-        <h2 className='pt-3'><strong>Purchase Pending Orders</strong></h2>
+        <h2 className='pt-3'><strong>Purchase/Production Pending Orders</strong></h2>
           <div className='row'>
 
           <div className={`col-md-4 my-4`}>
