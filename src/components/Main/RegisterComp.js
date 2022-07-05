@@ -13,8 +13,9 @@ function RegisterComp() {
     dispatch(ViewActions.do_view_main())
   }
 
-  function OnSubmitGo() {
-    document.preventDefault();
+  function OnSubmitGo(event) {
+    //Dont forget to change its state
+    event.preventDefault();
     selectElement = document.querySelector('#selectCountry');
     output = selectElement.value;
     console.log(output)
@@ -36,7 +37,6 @@ function RegisterComp() {
           <div className="card">
             <div className="card-body">
               <h1 className="card-title py-4"><strong>Company Registration Page</strong></h1>
-              {/* <h1><strong>Login</strong></h1> */}
               <div>
                 <form onSubmit={OnSubmitGo}>
                   <div className="mb-3">

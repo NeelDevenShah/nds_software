@@ -1,15 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
-import PieChart from '../Common_charts/PieChart'
-import ActivityData from '../Chart_Datas/Stock_portal_Datas/Sales_activity_data'
-import { Chart } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import PieChart from '../../../../Common_charts/PieChart'
+import ActivityData from '../../../../Chart_Datas/Stock_portal_Datas/dashboard/Sales_activity_data'
 
 function Stock_Activity_Chart_Processor() {
-  Chart.register(ChartDataLabels);
-  Chart.defaults.set('plugins.datalabels', {
-    color: 'white'
-  });
   const [data, setData] = useState({
     labels: ActivityData.map((data) => data.type),
     datasets: [
@@ -31,7 +25,6 @@ function Stock_Activity_Chart_Processor() {
       <div className="d-flex justify-content-center">
         <div style={{ width: 300 }}>
           <div>
-            {/* <PieChart chartData={data} chartOptions={option}/> */}
             <PieChart chartData={data} />
           </div>
         </div>

@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {ViewActions} from '../../store/view-slice';
 
+import main_page_image from '../../images/main_images/main_page_image.png'
+import operation_efficency_image from '../../images/main_images/operation_efficency_image.png'
+import profit_maximization_image from '../../images/main_images/profit_maximization_image.png'
+import customer_satisfaction_image from '../../images/main_images/customer_satisfaction_image.png'
+import speedy_managment_image from '../../images/main_images/speedy_managment_image.jpg'
+import instant_stock_status from '../../images/main_images/instant_stock_status.png'
+import demand_predictor_image from '../../images/main_images/demand_predictor_image.jpg'
+
 function Main_page() {
      
         const dispatch=useDispatch();
@@ -12,10 +20,7 @@ function Main_page() {
     return (
         <div className='bg-warning pb-5'>
                 {pageStarting()}
-              {/* {document.onclick=function(){audio.play()}} */}
-            {/* Sarting of navbar */}
-            {/* Completion of the navbar */}
-            <img src="images/main_images/main_page_image.png" className='w-25 mt-2'></img>
+            <img src={main_page_image} className='w-25 mt-2'></img>
             {/* Start of the company Intro*/}
             <div className='container pb-4'>
                 <div className='pt-5 pt-4'>
@@ -62,7 +67,7 @@ function Main_page() {
               
             <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="images/main_images/operation_efficency_image.png" style={{width: '98.8%'}} className="card-img-top py-5" alt="..." />
+                    <img src={operation_efficency_image} style={{width: '98.8%'}} className="card-img-top py-5" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title my-2"><strong>Operation Efficiency</strong></h5>
                     </div>
@@ -71,7 +76,7 @@ function Main_page() {
 
                 <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="images/main_images/profit_maximization_image.png" className="card-img-top" alt="..." />
+                    <img src={profit_maximization_image} className="card-img-top" alt="..." />
                     <div className="card-body mx-4">
                         <h5 className="card-title mt-4"><strong>Profit Maximization</strong></h5>
                     </div>
@@ -80,7 +85,7 @@ function Main_page() {
 
                 <div className={`col-md-4 my-4`}>
                 <div className="card">
-                    <img src="images/main_images/customer_satisfaction_image.png" className="card-img-top" alt="..." />
+                    <img src={customer_satisfaction_image} className="card-img-top" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title mt-4"><strong>Customer Satisfaction</strong></h5>
                     </div>
@@ -90,7 +95,7 @@ function Main_page() {
       
             <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="images/main_images/speedy_managment_image.jpg" style={{width: '98.30%'}} className="card-img-top w-80" alt="..." />
+                    <img src={speedy_managment_image} style={{width: '98.30%'}} className="card-img-top w-80" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title"><strong>Speedy Managment</strong></h5>
                     </div>
@@ -99,7 +104,7 @@ function Main_page() {
 
                 <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="images/main_images/instant_stock_status.png" className="card-img-top" alt="..." />
+                    <img src={instant_stock_status} className="card-img-top" alt="..." />
                     <div className="card-body mx-4">
                         <h5 className="card-title mt-4"><strong>Instant Stock Status Tracking</strong></h5>
                     </div>
@@ -108,7 +113,7 @@ function Main_page() {
 
                 <div className='col-md-4 my-4'>
                 <div className="card">
-                    <img src="images/main_images/demand_predictor_image.jpg" style={{width: '99.15%'}} className="card-img-top" alt="..." />
+                    <img src={demand_predictor_image} style={{width: '99.15%'}} className="card-img-top" alt="..." />
                     <div className="card-body">
                         <h5 className="card-title mt-4"><strong>Demand Predictors</strong></h5>
                     </div>

@@ -21,7 +21,7 @@ function StockPortal_navbar() {
                             <Link className="nav-link" to="/stockportal/statusmanagment">Order Status Managment</Link>
                             <Link className="nav-link" to="/stockportal/stockdetails">Available Stock Details</Link>
                             <Link className="nav-link" to="/stockportal/managequotations">Manage Quotations</Link>
-                            <Link className="nav-link" to="/stockportal/addnewcategory">Add New Item Category</Link>
+                            <Link className="nav-link" to="/stockportal/addnewcategory">Add/View Item Category</Link>
                             <Link className="nav-link" to='/stockportal/managewarehouses'>Manage Warehouses</Link>
                             <button type="button" class="btn btn-outline-dark">Logout</button>
                         </div>

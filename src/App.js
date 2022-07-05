@@ -15,7 +15,7 @@ import Login from './components/Main/Login';
 import LoginSelection from './components/Main/LoginSelection';
 import RegisterComp from './components/Main/RegisterComp';
 import ChangePass from './components/Main/ChangePass'
-import StockPortal_dashboard from './components/Stock_Portal/StockPortal_dashboard';
+import StockPortal_dashboard from './components/Stock_Portal/dashboard/StockPortal_dashboard';
 import AccountingPortal_dashboard from './components/Account_Portal/AccountingPortal_dashboard';
 import OwnerPortal_dashboard from './components/Owner_Portal/OwnerPortal_dashboard';
 import DealerPortal_dashboard from './components/Dealer_Portal/DealerPortal_dashboard';
@@ -23,7 +23,14 @@ import { useDispatch } from 'react-redux';
 import {useSelector } from "react-redux";
 import { ViewActions } from './store/view-slice';
 
-
+import StockPortal_items from './components/Stock_Portal/Items/StockPortal_items'
+import StockPortal_sales from './components/Stock_Portal/Sales_orders/StockPortal_sales'
+import StockPortal_purchase from './components/Stock_Portal/Purchase_orders/StockPortal_purchase'
+import StockPortal_statusmanagment from './components/Stock_Portal/Status_Managment/StockPortal_stausmanagment'
+import StockPortal_stockdetails from './components/Stock_Portal/Stock_Details/StockPortal_stockdetails'
+import StockPortal_managequotations from './components/Stock_Portal/Manage_Quotations/StockPortal_managequotations'
+import StockPortal_addnewcategory from './components/Stock_Portal/Add_NewCategory/StockPortal_addnewcategory'
+import StockPortal_managewarehouses from './components/Stock_Portal/Manage_Warehouses/StockPortal_managewarehouses'
 
 import{
   BrowserRouter as Router,
@@ -65,6 +72,15 @@ function App() {
             <Route path='/accountingportal' element={<AccountingPortal_dashboard/>}/>
             <Route path='/ownerportal' element={<OwnerPortal_dashboard/>}/>
             <Route path='/dealerportal' element={<DealerPortal_dashboard/>}/>
+
+            <Route path='/stockportal/items' element={<StockPortal_items/>}/>
+            <Route path='/stockportal/sales' element={<StockPortal_sales/>}/>
+            <Route path='/stockportal/purchase' element={<StockPortal_purchase/>}/>
+            <Route path='/stockportal/statusmanagment' element={<StockPortal_statusmanagment/>}/>
+            <Route path='/stockportal/stockdetails' element={<StockPortal_stockdetails/>}/>
+            <Route path='/stockportal/managequotations' element={<StockPortal_managequotations/>}/>
+            <Route path='/stockportal/addnewcategory' element={<StockPortal_addnewcategory/>}/>
+            <Route path='/stockportal/managewarehouses' element={<StockPortal_managewarehouses/>}/>
             </Routes>
             <Main_footer/>
           </Router>
