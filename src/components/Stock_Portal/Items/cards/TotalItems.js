@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import add_item_image from '../../../../images/stockPortal_images/add_item_image.png'
+import plus from '../../../../images/stockPortal_images/plus.png'
 
-function TotalWarehousesStock() {
+
+function TotalItems() {
     let i=1;
     const TWHData=[
         {
@@ -106,7 +109,7 @@ function TotalWarehousesStock() {
     const [whsdata, setWhsdata]=useState(TWHData)
     return (
         <div className='container bg-white py-4  my-4' style={{ borderRadius: '5px' }}>
-            <h2 className='py-3'><strong>Stock In Warehouses</strong></h2>
+            <h2 className='py-3'><strong>Total Products</strong></h2>
             <div className='row'>
 
                 <div className='table-responsive'>
@@ -121,6 +124,7 @@ function TotalWarehousesStock() {
                                 <th scope="col">Demand Status</th>
                                 <th scope="col">Predicted Demand(Next Month)</th>
                                 <th scope="col">In warehouses</th>
+                                <th scope="col">Add More</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,14 +138,16 @@ function TotalWarehousesStock() {
                                  <td>{data.Product_demandstatus}</td>
                                  <td>{data.Product_predictedDemand}</td>
                                  <td>{data.Product_whs}</td>
+                                 <td><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddSameItemModal"><img src={plus} width='25'></img></button></td>
                                </tr>
                             })}
                         </tbody>
                     </table>
+                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddItemModal"><img src={add_item_image} width='140'></img></button>
                 </div>
             </div>
         </div>
     )
 }
 
-export default TotalWarehousesStock
+export default TotalItems

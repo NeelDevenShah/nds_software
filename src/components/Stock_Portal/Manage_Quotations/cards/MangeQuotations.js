@@ -7,6 +7,7 @@ import DeleteQuotationModal from './DeleteQuotationModal'
 import AddSalesModal from './AddSalesModal'
 import AddItemModal from './AddItemModal'
 import AddQuotation from './AddQuotationModal'
+import EditQuotationModal from './EditQuotationModal'
 
 function ManageQuotations() {
   let i=1;
@@ -50,6 +51,7 @@ function ManageQuotations() {
       <DeleteQuotationModal/>
       <AddItemModal/>
       <AddQuotation/>
+      <EditQuotationModal/>
 
       <h2 className='pt-3'><strong>Your Given Quotations</strong></h2>
       <div className='row d-flex justify-content-center'>
@@ -68,6 +70,7 @@ function ManageQuotations() {
                     <th scope="col">Product Name</th>
                     <th scope="col">Quantity No.'s</th>
                     <th scope="col">Per-Piece(<span>&#8377;</span>)</th>
+                    <th scope="col">Edit</th>
                     <th scope="col">Delete</th>
                   </tr>
                 </thead>
@@ -79,6 +82,7 @@ function ManageQuotations() {
                     <td>{data.PItem}</td>
                     <td>{data.PQty}</td>
                     <td>{data.Price}</td>
+                    <td> <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditQuotationModal">Edit</button></td>
                     <td> <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteModal">Delete</button></td>
                   </tr>
                 })}
@@ -86,7 +90,9 @@ function ManageQuotations() {
                 </tbody>
               </table>
               </div>
-              <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='100'></img></button>
+              <p>Total Quotation Amount: <strong>5000</strong></p>
+              <hr/>
+              <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
               <hr />
               <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#AddToSalesModal">Add To Sales Order</button>
               <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal">Delete</button>

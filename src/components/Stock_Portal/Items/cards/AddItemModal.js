@@ -37,7 +37,7 @@ function AddItemModal() {
         setNote({ ...note, [event.tatget.name]: [event.tatget.value] })
     }
     return (
-        <div class="modal fade" id="AddToQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="AddItemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -47,40 +47,26 @@ function AddItemModal() {
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                                <label class="form-label">Select The Product Category</label>
-                                
-                                <div class="dropdown">
-                                    <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
-                                        <option selected>Select</option>
-                                        {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                        {newCategory.map((cat) => {
-                                            return <option value={cat.category}>{cat.category}</option>
-                                        })}
-                                    </select>
-                                </div>
-                                </div>
+                                <label class="form-label">Enter New Product Name</label>
+                                <input type="text" class="form-control text-center" id="newItem" name="newItem" onChange={onChange} required />
+
+                                <label class="form-label">Enter New Product Material</label>
+                                <input type="text" class="form-control text-center" id="newItem" name="newItem" onChange={onChange} required />
 
                                 <div class="mb-3">
-                                    <label class="form-label">Select The Product</label>
-                                    {/* For taking the value from the database of the saved category use following method, where notes comes from the database, and instead it you can take anyt name */}
+                                    <label class="form-label">Select The Product Category</label>
 
                                     <div class="dropdown">
                                         <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
                                             <option selected>Select</option>
                                             {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                            {newItem.map((itm) => {
-                                                return <option value={itm.category}>{itm.item}</option>
+                                            {newCategory.map((cat) => {
+                                                return <option value={cat.category}>{cat.category}</option>
                                             })}
                                         </select>
                                     </div>
-                                    </div>
-
-                                    <label class="form-label">Enter Quantity Of Product</label>
-                                    <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
-                                    
-                                    <label class="form-label">Enter Per-Piece Price</label>
-                                    <input type="number" class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required />
-                            
+                                </div>
+                                </div>
                         </form>
                     </div>
                     <div class="modal-footer">

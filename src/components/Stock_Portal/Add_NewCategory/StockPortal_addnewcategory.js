@@ -13,7 +13,7 @@ function StockPortal_addnewcategory() {
   return (
     <div className='bg-warning pb-5'>
     {pageStarting()}
-    <h1 className='py-5'><strong>STOCK MANAGMENT PORTAL ADD/VIEW ITEM CATEGORY</strong></h1>
+    <h1 className='py-5'><strong>STOCK MANAGMENT PORTAL ADD/VIEW PRODUCT CATEGORY</strong></h1>
     <ItemCategory/>
     <CategoryDetails/>
 </div>

@@ -20,8 +20,7 @@ function StockPortal_stockdetails() {
             <Stock_details />
             <TotalWarehousesStock/>
             <WarehousesDetails/>
-            <SingleWhStock wnumber={1}/>
-            <SingleWhStock wnumber={2}/>
+            <SingleWhStock/>
         </div>
     )
 }

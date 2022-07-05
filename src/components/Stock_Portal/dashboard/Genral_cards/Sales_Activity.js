@@ -6,11 +6,13 @@ import package_img from '../../../../images/stockPortal_images/package_img.png'
 import cargo_ship from '../../../../images/stockPortal_images/cargo_ship.png'
 
 function Sales_Activity() {
+ // In this component the json will provide the three numbers for the following details and then on passed to the chartData
   return (
       <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
         <h2 className='pt-3'><strong>Sales Activity</strong></h2>
         <div className='container'>
           <div className='row'>
+
             <div className={`col-md-4 my-4`}>
               <div class="card">
                 <div class="card-body">

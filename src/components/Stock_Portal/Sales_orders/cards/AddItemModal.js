@@ -37,12 +37,11 @@ function AddItemModal() {
         setNote({ ...note, [event.tatget.name]: [event.tatget.value] })
     }
     return (
-        <div class="modal fade" id="AddToQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="AddProductToSales" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add New Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Product To Order</h5>
                     </div>
                     <div class="modal-body">
                         <form>

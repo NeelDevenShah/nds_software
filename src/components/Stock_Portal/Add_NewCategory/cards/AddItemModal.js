@@ -41,13 +41,13 @@ function AddItemModal() {
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add New Product</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                                <label class="form-label">Select The Product Category</label>
+                                <label class="form-label">Select The Item Category</label>
                                 
                                 <div class="dropdown">
                                     <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
@@ -61,7 +61,7 @@ function AddItemModal() {
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Select The Product</label>
+                                    <label class="form-label">Select The Item</label>
                                     {/* For taking the value from the database of the saved category use following method, where notes comes from the database, and instead it you can take anyt name */}
 
                                     <div class="dropdown">
@@ -75,7 +75,7 @@ function AddItemModal() {
                                     </div>
                                     </div>
 
-                                    <label class="form-label">Enter Quantity Of Product</label>
+                                    <label class="form-label">Enter Quantity Of Item</label>
                                     <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
                                     
                                     <label class="form-label">Enter Per-Piece Price</label>

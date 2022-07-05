@@ -2,7 +2,7 @@ import React from 'react'
 
 import {useState} from 'react'
 
-function AddQuotation() {
+function AddQModal() {
     const [note, setNote] = useState({ compName: "", giveQty: "" })
     const onChange = (event) => {
         setNote({ ...note, [event.target.name]: event.target.value });
@@ -35,4 +35,4 @@ function AddQuotation() {
     )
 }
 
-export default AddQuotation
+export default AddQModal

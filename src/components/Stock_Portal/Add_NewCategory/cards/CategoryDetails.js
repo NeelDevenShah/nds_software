@@ -70,34 +70,6 @@ function WarehousesDetails() {
         </div>
         })}
 
-          {/* <div className={`col-md-4 my-4`}>
-            <div class="card">
-              <div class="card-body">
-                <p class="card-text"><strong>Pen</strong></p>
-                <hr />
-                <div className='container'>
-                  <p>Black Pen(In Qty.): 50000</p>
-                  <p>Blue Pen(In Qty.): 2500</p>
-                  <p>Red Pen(In Qty.): 4300</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={`col-md-4 my-4`}>
-            <div class="card">
-              <div class="card-body">
-                <p class="card-text"><strong>Pen</strong></p>
-                <hr />
-                <div className='container'>
-                  <p>Black Pen(In Qty.): 50000</p>
-                  <p>Blue Pen(In Qty.): 2500</p>
-                  <p>Red Pen(In Qty.): 4300</p>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
         </div>
       </div>
     </div>

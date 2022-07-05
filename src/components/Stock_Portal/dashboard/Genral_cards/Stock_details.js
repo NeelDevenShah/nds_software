@@ -6,6 +6,7 @@ import regular_stock_image from '../../../../images/stockPortal_images/regular_s
 import dead_stock_image from '../../../../images/stockPortal_images/dead_stock_image.png'
 
 function Stock_details() {
+  // In this component the json will provide the three numbers for the following details and then on passed to the chartData
   return (
     <div className='container bg-white py-2  my-4' style={{ borderRadius: '5px' }}>
         <h2 className='pt-3'><strong>Stock Details</strong></h2>

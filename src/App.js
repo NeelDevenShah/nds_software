@@ -73,10 +73,10 @@ function App() {
             <Route path='/ownerportal' element={<OwnerPortal_dashboard/>}/>
             <Route path='/dealerportal' element={<DealerPortal_dashboard/>}/>
 
-            <Route path='/stockportal/items' element={<StockPortal_items/>}/>
+            <Route path='/stockportal/products' element={<StockPortal_items/>}/>
             <Route path='/stockportal/sales' element={<StockPortal_sales/>}/>
             <Route path='/stockportal/purchase' element={<StockPortal_purchase/>}/>
-            <Route path='/stockportal/statusmanagment' element={<StockPortal_statusmanagment/>}/>
+            <Route path='/stockportal/ordermanagment' element={<StockPortal_statusmanagment/>}/>
             <Route path='/stockportal/stockdetails' element={<StockPortal_stockdetails/>}/>
             <Route path='/stockportal/managequotations' element={<StockPortal_managequotations/>}/>
             <Route path='/stockportal/addnewcategory' element={<StockPortal_addnewcategory/>}/>
