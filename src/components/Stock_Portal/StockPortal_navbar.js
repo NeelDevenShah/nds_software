@@ -18,7 +18,7 @@ function StockPortal_navbar() {
                             <Link className="nav-link" to="/stockportal/products">View/Add Products</Link>
                             <Link className="nav-link" to="/stockportal/sales">Sales Order</Link>
                             <Link className="nav-link" to='/stockportal/purchase'>Purchase Order</Link>
-                            <Link className="nav-link" to="/stockportal/ordermanagment">Order Managment</Link>
+                            {/* <Link className="nav-link" to="/stockportal/ordermanagment">Order Managment</Link> */}
                             <Link className="nav-link" to="/stockportal/stockdetails">Available Stock Details</Link>
                             <Link className="nav-link" to="/stockportal/managequotations">Manage Quotations</Link>
                             <Link className="nav-link" to="/stockportal/addnewcategory">Add/View Product Category</Link>

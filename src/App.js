@@ -26,7 +26,6 @@ import { ViewActions } from './store/view-slice';
 import StockPortal_items from './components/Stock_Portal/Items/StockPortal_items'
 import StockPortal_sales from './components/Stock_Portal/Sales_orders/StockPortal_sales'
 import StockPortal_purchase from './components/Stock_Portal/Purchase_orders/StockPortal_purchase'
-import StockPortal_statusmanagment from './components/Stock_Portal/Status_Managment/StockPortal_stausmanagment'
 import StockPortal_stockdetails from './components/Stock_Portal/Stock_Details/StockPortal_stockdetails'
 import StockPortal_managequotations from './components/Stock_Portal/Manage_Quotations/StockPortal_managequotations'
 import StockPortal_addnewcategory from './components/Stock_Portal/Add_NewCategory/StockPortal_addnewcategory'
@@ -76,7 +75,6 @@ function App() {
             <Route path='/stockportal/products' element={<StockPortal_items/>}/>
             <Route path='/stockportal/sales' element={<StockPortal_sales/>}/>
             <Route path='/stockportal/purchase' element={<StockPortal_purchase/>}/>
-            <Route path='/stockportal/ordermanagment' element={<StockPortal_statusmanagment/>}/>
             <Route path='/stockportal/stockdetails' element={<StockPortal_stockdetails/>}/>
             <Route path='/stockportal/managequotations' element={<StockPortal_managequotations/>}/>
             <Route path='/stockportal/addnewcategory' element={<StockPortal_addnewcategory/>}/>

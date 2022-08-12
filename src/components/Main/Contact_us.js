@@ -1,6 +1,7 @@
 import React from 'react'
 import {useDispatch} from 'react-redux';
 import {ViewActions} from '../../store/view-slice';
+import map_image from '../../images/main_images/map_image.png'
 
 function Contact_us() {
   const dispatch=useDispatch();
@@ -10,7 +11,7 @@ function Contact_us() {
   return (
     <div className='bg-warning'>
         {pageStarting()}
-        <img src='images/main_images/map_image.png' style={{width:'100%'}}></img>
+        <img src={map_image} style={{width:'100%'}}></img>
         <div className='container'>
         <h1 className='pt-4 text-right'><strong>Contact US</strong></h1>
         <h1 className='text-danger'><strong>NDS SOFTWARE & DESGINING</strong></h1>

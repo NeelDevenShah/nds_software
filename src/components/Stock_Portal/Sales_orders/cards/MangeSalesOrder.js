@@ -8,6 +8,7 @@ import EditSalesModal from './EditSalesModal'
 import AddSalesModal from './AddSalesModal'
 import AddItemModal from './AddItemModal'
 import DispatchedAllModal from './DispatchedAllModal'
+import ManageStatusModal from './ManageStatusModal'
 
 //In this page, when the order is been added the status and dispatching form should be in the to be planned, And that can be changed from the order status managment portal
 function MangeSalesOrder() {
@@ -35,7 +36,9 @@ function MangeSalesOrder() {
       'delivery_date': '07/26/2022',
       'comments': 'urgent',
       'deal_broker': 'Neel',
-      'payment_term': "6 Days"
+      'payment_term': "6 Days",
+      'partial_d_done': 'w1'
+      //Hence the delivery from the w1 will show zero
     }
   ]
   const [Qname, QsetName] = useState(quotationComp)
@@ -87,7 +90,6 @@ function MangeSalesOrder() {
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     // console.log(diffDays + " days");
-
     return diffDays
   }
   return (
@@ -98,12 +100,13 @@ function MangeSalesOrder() {
       <AddSalesModal />
       <AddItemModal />
       <DispatchedAllModal/>
+      <ManageStatusModal/>
 
       <h2 className='pt-3'><strong>Your Sales Orders</strong></h2>
       <div className='row d-flex justify-content-center'>
 
         {Qname.map((QCompnay) => {
-          return <div className={`col-md-7 my-4`}>
+          return <div className={`col-md-10 my-4`}>
             <div class="card">
               <div class="card-body">
                 <h4 class="card-title"><strong>Order Number #{QCompnay.orderId}</strong></h4>
@@ -116,9 +119,10 @@ function MangeSalesOrder() {
                         <th scope="col">Product Name</th>
                         <th scope="col">Quantity No.'s</th>
                         <th scope="col">Per-Piece(<span>&#8377;</span>)</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Dispatching From</th>
+                        {/* <th scope="col" className='py-3'>Status</th> */}
+                        <th scope="col">Dispatching Status</th>
                         <th scope="col">Edit</th>
+                        <th scope="col">Manage Status</th>
                         <th scope="col">Delete</th>
                       </tr>
                     </thead>
@@ -130,9 +134,10 @@ function MangeSalesOrder() {
                           <td>{data.PItem}</td>
                           <td>{data.PQty}</td>
                           <td>{data.Price}</td>
-                          <td>{data.status}</td>
+                          {/* <td>{data.status}</td> */}
                           <td>{data.d_location}</td>
                           <td> <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditSalesModal">Edit</button></td>
+                          <td> <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#ManageStatusModal">Manage</button></td>
                           <td> <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteSalesModal">Delete</button></td>
                         </tr>
                       })}
@@ -145,6 +150,7 @@ function MangeSalesOrder() {
                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddProductToSales"><img src={add_item_image} width='120'></img></button>
                 <hr />
                 <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#DispatchSalesModal">All Order Dispatched</button>
+                <button type="button" class="btn btn-info mx-2" data-bs-toggle="modal" data-bs-target="#EditSalesOrder">Edit</button>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteSalesModal">Delete</button>
                 {/* <!-- Button trigger modal --> */}
               </div>
