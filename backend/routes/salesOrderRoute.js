@@ -13,7 +13,7 @@ router.get("/addneworder", async (req, res)=>{
     let cmpcheck=await newCompany.findOne({companyId: req.body.companyId})
     if(!cmpcheck)
     {
-        return res.status(400).findOne({error: "The company id does not exists"})
+        return res.status(400).send({error: "The company id does not exists"})
     }
     let spcheck=await salesOrder.findOne({companyId: req.body.companyId, SalesOrderNum: req.body.SalesOrderNum});
     if(spcheck)
@@ -33,7 +33,7 @@ router.get("/addsalesorderproduct", async (req, res)=>{
     let cmpcheck=await newCompany.findOne({companyId: req.body.companyId})
     if(!cmpcheck)
     {
-        return res.status(400).findOne({error: "The company id does not exists"})
+        return res.status(400).send({error: "The company id does not exists"})
     }
     let spcheck=await salesOrder.findOne({companyId: req.body.companyId, SalesOrderNum: req.body.SalesOrderNum})
     if(!spcheck)
@@ -126,8 +126,8 @@ router.get("/editsalesproduct/:id", async (req, res)=>{
     const updatedProduct={};
     if(companyId){updatedProduct.companyId=companyId};
     if(SalesOrderNum){updatedProduct.SalesOrderNum=SalesOrderNum};
-    if(salesDealer){updatedProduct.salesDealer=categoryId};
-    if(brokerName){updatedProduct.categoryName=categoryName};
+    if(categoryId){updatedProduct.categoryId=categoryId};
+    if(categoryName){updatedProduct.categoryName=categoryName};
     if(productId){updatedProduct.productId=productId};
     if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
@@ -154,8 +154,8 @@ router.get("/managestatus/:id", async (req, res)=>{
     const updatedProduct={};
     if(companyId){updatedProduct.companyId=companyId};
     if(SalesOrderNum){updatedProduct.SalesOrderNum=SalesOrderNum};
-    if(salesDealer){updatedProduct.salesDealer=categoryId};
-    if(brokerName){updatedProduct.categoryName=categoryName};
+    if(categoryId){updatedProduct.salesDealer=categoryId};
+    if(categoryName){updatedProduct.categoryName=categoryName};
     if(productId){updatedProduct.productId=productId};
     if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
@@ -175,7 +175,6 @@ router.get("/managestatus/:id", async (req, res)=>{
     sproduct=await salesOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
     res.json({sproduct})
 })
-module.exports=router
 
 //CASE 8: Dispatch Sales Order Endpoint, You have to also provide the document id, company id, sales order num
 router.delete("/dispatchallorder/:id", async (req, res)=>{
@@ -202,3 +201,5 @@ router.delete("/dispatchallorder/:id", async (req, res)=>{
         res.status(500).send("Internal Server Error");
     }
 })
+
+module.exports=router

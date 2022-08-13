@@ -104,10 +104,10 @@ function MangePurchaseOrder() {
       <div className='row d-flex justify-content-center'>
 
         {Qname.map((QCompnay) => {
-          return <div className={`col-md-7 my-4`}>
+          return <div className={`col-md-8 my-4`}>
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title"><strong>Order {i++}</strong></h4>
+                <h4 class="card-title"><strong>Order Number #{i++}</strong></h4>
                 <p class="card-text"><strong>{QCompnay.name}</strong>, Days Left For Arrival: <strong>{DateDifference(QCompnay.delivery_date)}</strong><br/>Broker Name: <strong>{QCompnay.deal_broker}</strong>, Payment Terms: <strong>{QCompnay.payment_term}</strong><br/>Comment: <strong>{QCompnay.comments}</strong></p>
                 <div className='table-responsive'>
                   <table class="table table-responsive">
@@ -120,6 +120,7 @@ function MangePurchaseOrder() {
                         <th scope="col">Status</th>
                         <th scope="col">Arriving At</th>
                         <th scope="col">Edit</th>
+                        <th scope="col">Manage Status</th>
                         <th scope="col">Delete</th>
                       </tr>
                     </thead>
@@ -134,6 +135,7 @@ function MangePurchaseOrder() {
                           <td>{data.status}</td>
                           <td>{data.d_location}</td>
                           <td> <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditPurchaseModal">Edit</button></td>
+                          <td> <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#DeletePurchaseModal">Manage</button></td>
                           <td> <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeletePurchaseModal">Delete</button></td>
                         </tr>
                       })}
@@ -146,6 +148,7 @@ function MangePurchaseOrder() {
                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddProductToPurchase"><img src={add_item_image} width='120'></img></button>
                 <hr />
                 <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#ArrivedOrderModal">All Order Arrived</button>
+                <button type="button" class="btn btn-info mx-2" data-bs-toggle="modal" data-bs-target="#EditPurchaseModal">Edit</button>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeletePurchaseModal">Delete</button>
                 {/* <!-- Button trigger modal --> */}
               </div>

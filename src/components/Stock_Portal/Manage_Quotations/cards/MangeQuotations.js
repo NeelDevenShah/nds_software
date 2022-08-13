@@ -60,7 +60,7 @@ function ManageQuotations() {
           return  <div className={`col-md-5 my-4`}>
           <div class="card">
             <div class="card-body">
-              <h4 class="card-title"><strong>Quotation {i++}</strong></h4>
+              <h4 class="card-title"><strong>Quotation #{i++}</strong></h4>
               <p class="card-text">{QCompnayName.name}</p>
               <div className='table-responsive'>
               <table class="table table-responsive">
