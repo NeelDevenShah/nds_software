@@ -5,6 +5,10 @@ const newCompany=require("../models/Company_registry");
 const companyUser=require("../models/CompanyUser")
 const newWarehouse=require("../models/Warehouse_register");
 const CompanyUser = require("../models/CompanyUser");
+const NewProductCategory = require("../models/NewProductCategory");
+const AddProduct = require("../models/AddProduct");
+const purchaseOrderMini=require("../models/PurchaseOrderMini")
+const salesOrderMini=require("../models/SalesOrderMini")
 
 //CASE 1:Company Registry EndPoint
 router.get("/registerCompany",  [
@@ -40,10 +44,32 @@ router.get("/registerCompany",  [
     }
     const cmp=new newCompany(req.body);
     cmp.save();
+
+    //Making default warehouse of the company which cannot be deleted
+    defaultWareHouse={};
+    {defaultWareHouse.companyId=req.body.companyId};
+    {defaultWareHouse.wname='default'};
+    {defaultWareHouse.shopNum='default'};
+    {defaultWareHouse.add2='default'};
+    {defaultWareHouse.city='default'};
+    {defaultWareHouse.state='default'};
+    {defaultWareHouse.country='default'};
+    {defaultWareHouse.pincode=0};
+    {defaultWareHouse.warehouseId=0};
+    const nwh=new newWarehouse(defaultWareHouse);
+    nwh.save();
+
+    //Making default product category of the company which can not be deleted
+    defaultCategory={};
+    {defaultCategory.companyId=req.body.companyId};
+    {defaultCategory.categoryId=0};
+    {defaultCategory.pcname='default'};
+    const dfcat=new NewProductCategory(defaultCategory);
+    dfcat.save();
     res.send(req.body)
 })
 
-//CASE 2: Company new User endpoint
+//CASE 2: Company new User endpoint(Owner's Portal)
 router.get("/registeruser", [
     body('name', 'Enter an valid name').isLength({min: 3}),
     body('password', 'Enter an valid password').isLength({min: 3}),
@@ -102,10 +128,59 @@ router.get("/registerwarehouse", [
     }
     if(wareh)
     {
-        return res.status(400).json({error: "The warehouse of this name already exists"})
+        return res.status(400).json({error: "The warehouse of this id or name already exists"})
     }
     const nwh=new newWarehouse(req.body);
     nwh.save();
     res.send(req.body);
+})
+
+//CASE 4:Delete The Company's User(Owner's Portal)
+router.delete("/deleteuser/:id", async(req, res)=>{
+    let deleteUser=await companyUser.findById(req.params.id);
+    if(!deleteUser)
+    {
+        return res.status(404).send({error: "User Not Found"});
+    }
+    // if(deleteUser.companyId != current company id of the user)
+    // {
+    //     return res.status(404).send({error: "Not Allowed"});
+    // }
+    deleteUser=await companyUser.findByIdAndDelete(req.params.id);
+    res.send({success: "The User Deleted Successfully"})
+})
+
+//CASE 5: Delete Company's Warehouse
+//Intially while making an company an warehoue by the name default will be maked automatically which cannot be deleted, If any warehouse is deleted than its products/data will be transfered to the default warehouse of company
+router.delete("/deletewarehouse/:id", async (req,res)=>{
+    let whdetails=await newWarehouse.findById(req.params.id);
+    if(!whdetails)
+    {
+        return res.status(404).send({error: "The Selected Warehouse Does Not Exists"});
+    }
+    if(whdetails.warehouseId==0)
+    {
+        return res.status(404).send({error: "Cannot delete default warehouse"});
+    }
+    whdetails=await newWarehouse.findByIdAndDelete(req.params.id);
+    let changeWh
+    //Transfer the product in the deleted warehouse to default warehouse
+    do
+    {
+        changeWh=await AddProduct.findOneAndUpdate({prodWarehouseId:whdetails.warehouseId}, {$set:{prodWarehouseId:0}});
+    }
+    while(changeWh);
+    //Transfer the purchase product in the deleted warehouse to default warehouse
+    do
+    {
+        changeWh=await purchaseOrderMini.findOneAndUpdate({arrivingat:whdetails.warehouseId}, {$set:{arrivingat:0}});
+    }
+    while(changeWh);
+    //Transfer the sales product in the deleted warehouse to default warehouse
+    do{
+        changeWh=await salesOrderMini.findOneAndUpdate({dispatchingFrom:whdetails.warehouseId}, {$set:{dispatchingFrom:0}})
+    }
+    while(changeWh);
+    res.json("Warehouse delete successfull")
 })
 module.exports=router

@@ -35,8 +35,8 @@ const addProductSchema=new Schema({
         type: Number,
         required: true
     },
-    prodWarehouse:{
-        type: String,
+    prodWarehouseId:{
+        type: Number,
         required: true
     }
 });

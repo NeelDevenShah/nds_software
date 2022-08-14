@@ -85,7 +85,7 @@ router.delete("/deleteorder/:id", async (req, res)=>{
 
 //CASE 4: Delete an prouct of the sales order Endpoint
 router.delete("/deleteproduct/:id", async (req, res)=>{
-    let deleteprod=orderProductCheck=await salesOrderMini.findById(req.params.id);
+    let deleteprod=await salesOrderMini.findById(req.params.id);
     if(!deleteprod)
     {
         return res.status(400).send({error: "The product does not exists in the sales order"});

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import add_item_image from '../../../../images/stockPortal_images/add_item_image.png'
 import plus from '../../../../images/stockPortal_images/plus.png'
+import cancel from '../../../../images/stockPortal_images/cancel.png'
+import minus from '../../../../images/stockPortal_images/minus.png'
 
 
 function TotalItems() {
@@ -125,6 +127,8 @@ function TotalItems() {
                                 <th scope="col">Predicted Demand(Next Month)</th>
                                 <th scope="col">In warehouses</th>
                                 <th scope="col">Add More</th>
+                                <th scope="col">Delete Some</th>
+                                <th scope="col">Delete Product</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,6 +143,8 @@ function TotalItems() {
                                  <td>{data.Product_predictedDemand}</td>
                                  <td>{data.Product_whs}</td>
                                  <td><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddSameItemModal"><img src={plus} width='25'></img></button></td>
+                                 <td><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#MinusSameItemModal"><img src={minus} width='25'></img></button></td>
+                                 <td><button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#DeleteItemModal"><img src={cancel} width='25'></img></button></td>
                                </tr>
                             })}
                         </tbody>
