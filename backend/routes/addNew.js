@@ -47,6 +47,7 @@ router.get("/addnewproduct", async(req, res)=>{
 
 //CASE 3: Add more product to existing product at specific address if exists than update its quantity, _id required as the parameter Endpoint
 router.get("/addproduct/:id", async(req, res)=>{
+    //Here the id is of the addProduct which is** now to be changed to the if of newProducts
     //Check wheather the company and the product exists or not 
     //Check 1:
     let cmpcheck=await newCompany.findOne({companyId: req.body.companyId});
@@ -69,7 +70,7 @@ router.get("/addproduct/:id", async(req, res)=>{
         await newPr.save();
         res.send(req.body);    
     }
-    //CASE 2': If exists at the specific position than update it
+    //CASE 2': If exists at the specific position than update its quantity by adding the new quantity to existsing one
     else
     {
         //Updating the quantity of the existing product at the some location
@@ -137,4 +138,24 @@ router.delete("/deletecategory/:id", async (req,res)=>{
     res.json("Warehouse delete successfull")
 })
 
+//CASE 5:Delete/Subtract Some product from a warehouse of company
+router.get("/deletesomeproduct/:id", async (req, res)=>{
+    //Here the id is of the newProduct(Which is without warehouse id)
+    let details=await newProduct.findById(req.params.id);
+    const {companyId, categoryId, productId }=details;
+    let cmpcheck=await addProduct.findOne({companyId: details.companyId});
+    if(!cmpcheck)
+    {
+        return res.status(400).json({error: "The product with this company id does not exists"});
+    }
+    //If the product exists than find the product at particular location exists or not
+    let productdet=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId})
+    if(!productdet)
+    {
+        return res.status(400).json({error: "The Product does not exists"})
+    }
+   //Find the product to be updated and find it
+    prod=await addProduct.findOneAndUpdate({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId}, {$set:{quantity:productdet.quantity-req.body.minusQut}})
+    res.json({prod})
+})
 module.exports=router
