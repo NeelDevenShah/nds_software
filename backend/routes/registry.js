@@ -4,11 +4,16 @@ const {body, validationResult}=require('express-validator');
 const newCompany=require("../models/Company_registry");
 const companyUser=require("../models/CompanyUser")
 const newWarehouse=require("../models/Warehouse_register");
-const CompanyUser = require("../models/CompanyUser");
+const newProduct = require("../models/newproduct_registry");
 const NewProductCategory = require("../models/NewProductCategory");
 const AddProduct = require("../models/AddProduct");
 const purchaseOrderMini=require("../models/PurchaseOrderMini")
 const salesOrderMini=require("../models/SalesOrderMini")
+const CmpLogADetailBook=require("../models/CmpLogADetailBook");
+const Quotation = require("../models/Quotation");
+const QuotationMini = require("../models/QuotationMini");
+const SalesOrder = require("../models/SalesOrder");
+const purchaseorder=require("../models/PurchaseOrder");
 
 //CASE 1:Company Registry EndPoint
 router.get("/registerCompany",  [
@@ -182,5 +187,35 @@ router.delete("/deletewarehouse/:id", async (req,res)=>{
     }
     while(changeWh);
     res.json("Warehouse delete successfull")
+})
+
+//CASE 6:Delet An Company
+router.delete("/deletecompany", async (req, res)=>{
+    const {companyId, password, repassword}=req.body;
+    if(password !=repassword)
+    {
+        return res.status(404).send({error: "The Password Of the Company Does Not Matches"})
+    }
+    cmpDetail=await newCompany.findOneAndDelete({companyId: companyId, password: password});
+    if(cmpDetail)
+    {
+        await AddProduct.deleteMany({companyId: companyId});
+        await CmpLogADetailBook.deleteMany({companyId: companyId});
+        await companyUser.deleteMany({companyId: companyId});
+        await newProduct.deleteMany({companyId: companyId});
+        await NewProductCategory.deleteMany({companyId: companyId});
+        await purchaseorder.deleteMany({companyId: companyId});
+        await purchaseOrderMini.deleteMany({companyId: companyId});
+        await Quotation.deleteMany({companyId: companyId});
+        await QuotationMini.deleteMany({companyId: companyId});
+        await SalesOrder.deleteMany({companyId: companyId});
+        await salesOrderMini.deleteMany({companyId: companyId});
+        await newWarehouse.deleteMany({companyId: companyId})
+        res.send({success: "Company Delete Successfull"})
+    }
+    else
+    {
+        return res.status(404).send({error: "The Company deletion Failed, Due to some reason"})
+    }
 })
 module.exports=router

@@ -45,7 +45,7 @@ router.get("/addnewproduct", async(req, res)=>{
     res.send(req.body);
 })
 
-//CASE 3: Add more product to existing product at specific address if exists than update its quantity, _id required as the parameter Endpoint
+//CASE 3: Add more product to existing product at specific address, If exists than update its quantity, _id required as the parameter Endpoint
 router.get("/addproduct/:id", async(req, res)=>{
     //Here the id is of the addProduct which is** now to be changed to the if of newProducts
     let details=await newProduct.findById(req.params.id);
