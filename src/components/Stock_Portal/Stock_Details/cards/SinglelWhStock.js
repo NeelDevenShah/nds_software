@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-
-import WarehousesChartProcessor from '../../../ChartProcessors/Stock_portal/stockDetails/WhStockProcessor'
 import MoveStockModal from './MoveStockModal'
 import DeleteStockModal from './DeleteStockModal'
 
@@ -107,11 +105,6 @@ function TotalWarehousesStock(props) {
                         </tbody>
                 </table>
             </div>
-        </div>
-        <div className='container'>
-        <div className='row d-flex justify-content-center'>
-        <WarehousesChartProcessor/>
-        </div>
         </div>
     </div>
       })}
