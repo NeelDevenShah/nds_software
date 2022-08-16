@@ -6,18 +6,7 @@ const logBookSchema=new Schema({
         type: Number,
         required: true
     },
-    userId:{
-        type: Number,
-        required: true
-    },
-    comment:{
-        type: String,
-        required: true
-    },
-    date:{
-        type: Date,
-        default: Date.now
-    }
+    comment:[String],
 });
 
 module.exports=mongooes.model("logBook", logBookSchema)

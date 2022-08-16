@@ -71,6 +71,17 @@ router.get("/registerCompany",  [
     {defaultCategory.pcname='default'};
     const dfcat=new NewProductCategory(defaultCategory);
     dfcat.save();
+
+    //Making default Logbook entry and making an loogbook of the company
+    newEntry={};
+    {newEntry.companyId=req.body.companyId};
+    const regIt=new CmpLogADetailBook(newEntry);
+    await regIt.save();
+
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:-1 created new company And default warehouse and product Catregory at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
     res.send(req.body)
 })
 
@@ -80,7 +91,6 @@ router.get("/registeruser", [
     body('password', 'Enter an valid password').isLength({min: 3}),
     body('companyId', 'Enter an valid company Id').isNumeric(),
     body('employeeId', 'Enter an valid employee Id').isNumeric(),
-    body('accessLevel', 'Enter an valid access level').isNumeric(),
 ], async (req, res)=>{
     const errors=validationResult(req);
         if(!errors.isEmpty())
@@ -104,8 +114,13 @@ router.get("/registeruser", [
         {
             res.status(500).send("Internal Server Error");
         }
-        const cmp=new CompanyUser(req.body);
+        const cmp=new companyUser(req.body);
         cmp.save();
+
+        //Making entry in logbook
+        var currentdate=new Date();
+        let statment="UserId:-1 created new user having UserId:"+req.body.employeeId+", having name: "+req.body.name+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
         res.send(req.body);
 })
 
@@ -137,6 +152,12 @@ router.get("/registerwarehouse", [
     }
     const nwh=new newWarehouse(req.body);
     nwh.save();
+
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" created new warehouse having whid:"+req.body.warehouseId+", whname: "+req.body.wname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+
     res.send(req.body);
 })
 
@@ -152,6 +173,12 @@ router.delete("/deleteuser/:id", async(req, res)=>{
     //     return res.status(404).send({error: "Not Allowed"});
     // }
     deleteUser=await companyUser.findByIdAndDelete(req.params.id);
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:-1 deleted user having UserId:"+deleteUser.employeeId+", Username:"+deleteUser.name+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: deleteUser.companyId},{$push:{comment: [statment]}})
+    
     res.send({success: "The User Deleted Successfully"})
 })
 
@@ -168,24 +195,19 @@ router.delete("/deletewarehouse/:id", async (req,res)=>{
         return res.status(404).send({error: "Cannot delete default warehouse"});
     }
     whdetails=await newWarehouse.findByIdAndDelete(req.params.id);
-    let changeWh
+   
     //Transfer the product in the deleted warehouse to default warehouse
-    do
-    {
-        changeWh=await AddProduct.findOneAndUpdate({prodWarehouseId:whdetails.warehouseId}, {$set:{prodWarehouseId:0}});
-    }
-    while(changeWh);
+    await AddProduct.updateMany({prodWarehouseId:whdetails.warehouseId}, {$set:{prodWarehouseId:0}});
     //Transfer the purchase product in the deleted warehouse to default warehouse
-    do
-    {
-        changeWh=await purchaseOrderMini.findOneAndUpdate({arrivingat:whdetails.warehouseId}, {$set:{arrivingat:0}});
-    }
-    while(changeWh);
+    await purchaseOrderMini.updateMany({arrivingat:whdetails.warehouseId}, {$set:{arrivingat:0}});
     //Transfer the sales product in the deleted warehouse to default warehouse
-    do{
-        changeWh=await salesOrderMini.findOneAndUpdate({dispatchingFrom:whdetails.warehouseId}, {$set:{dispatchingFrom:0}})
-    }
-    while(changeWh);
+    await salesOrderMini.updateMany({dispatchingFrom:whdetails.warehouseId}, {$set:{dispatchingFrom:0}})
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+"deleted company's warehouse having whid:"+whdetails.warehouseId+", wname:"+whdetails.wname+" and things attached to this wh is transfered to default wh at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: whdetails.companyId},{$push:{comment: [statment]}})
+
     res.json("Warehouse delete successfull")
 })
 

@@ -18,18 +18,6 @@ const companyUserSchema=new Schema({
         type: Number,
         required: true,
     },
-    accessLevel:{
-        type: Number,
-        required: true,
-    },
-    addedBy:{
-        type: String,
-        required: true,
-    },
-    branch:{
-        type: String,
-        required: true,
-    },
     date:{
         type: Date,
         default:Date.now,

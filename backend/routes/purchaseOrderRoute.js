@@ -4,9 +4,8 @@ const {body, validationResult}=require("express-validator");
 const newCompany=require("../models/Company_registry");
 const companyUser=require("../models/CompanyUser");
 const purchaseOrder=require("../models/PurchaseOrder");
-// const salesOrder=require("../models/SalesOrder");
-// const salesOrderMini=require("../models/SalesOrderMini");
 const purchaseOrderMini=require("../models/PurchaseOrderMini");
+const CmpLogADetailBook=require("../models/CmpLogADetailBook")
 
 //CASE 1: Add new purchase order Endpoint
 router.get("/addneworder", async (req, res)=>{
@@ -25,6 +24,12 @@ router.get("/addneworder", async (req, res)=>{
     else
     {
         const addpurchaseo=new purchaseOrder(req.body);
+        
+        //Making entry in logbook
+        var currentdate=new Date();
+        let statment="UserId:"+req.body.employeeId+" created new purchase order having purchaseOrderNum:"+req.body.purchaseOrderNum+" for "+req.body.purchaseDealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+        await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+
         addpurchaseo.save();
         res.send(req.body);
     }
@@ -54,7 +59,17 @@ router.get("/addpurchaseproduct", async (req, res)=>{
         {
             //Now the main code for adding the new sales order's product
             const purchaseProduct=new purchaseOrderMini(req.body);
-            purchaseProduct.save();
+            await purchaseProduct.save();
+            
+            //Code for changing the totalAmount in the purchaseOrder
+            let temp=spcheck.totalAmount+(req.body.quantity*req.body.perPicePrice);
+            changeAmount=await purchaseOrder.findOneAndUpdate({companyId: req.body.companyId, purchaseOrderNum: req.body.purchaseOrderNum}, {$set:{totalAmount:temp}})
+            
+            //Making entry in logbook
+            var currentdate=new Date();
+            let statment="UserId:"+req.body.employeeId+" added new product for purchase order having purchaseOrderNum:"+req.body.purchaseOrderNum+", ProductId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+            await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+            
             res.send(purchaseProduct);
         }
     }
@@ -68,21 +83,15 @@ router.delete("/deleteorder/:id", async (req, res)=>{
         return res.status(400).send({error: "The purchase order does not exists"})
     }
     //Find the purchase Order and delete order and its products
-    try
-    {
-        //Allow the order to delete if user and company owns this order
-        sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
-        let socheck
-        do{
-        socheck=await purchaseOrderMini.findOneAndDelete({companyId: req.body.companyId, purchaseOrderNum: req.body.purchaseOrderNum})
-        }
-        while(socheck);
-        return res.json({success: "purchase order has been deleted"})
-    }
-    catch(error)
-    {
-        res.status(500).send("Internal Server Error");
-    }
+    sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
+    await purchaseOrderMini.deleteMany({companyId: sorder.companyId, purchaseOrderNum: sorder.purchaseOrderNum})
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" deleted purchase order having purchaseOrderNum:"+sorder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: sorder.companyId},{$push:{comment: [statment]}})
+
+    return res.json({success: "purchase order has been deleted"})
 })
 
 //CASE 4: Delete an prouct of the purchase order Endpoint
@@ -93,21 +102,31 @@ router.delete("/deleteproduct/:id", async (req, res)=>{
         return res.status(400).send({error: "The product does not exists in the sales order"});
     }
     deleteprod=await purchaseOrderMini.findByIdAndDelete(req.params.id);
+
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" deleted product having productId:"+deleteprod.productId+" from purchase order having purchaseOrderNum:"+deleteprod.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: deleteprod.companyId},{$push:{comment: [statment]}})
+
+    //Code for changing the totalAmount in the purchaseOrder
+    purchaseOrderDet=await purchaseOrder.findOne({companyId:deleteprod.companyId, purchaseOrderNum:deleteprod.purchaseOrderNum});
+    let temp=purchaseOrderDet.totalAmount-(deleteprod.quantity*deleteprod.perPicePrice)
+    await purchaseOrder.findOneAndUpdate({companyId:deleteprod.companyId, purchaseOrderNum:deleteprod.purchaseOrderNum}, {$set:{totalAmount: temp}})
+    
     res.send({success: "The product of the purchase order deleted"});
 })
 
 //CASE 5: Edit the sales order's Information Endpoint
 router.get("/editpurchaseorder/:id", async (req, res)=>{
-    const {companyId, purchaseOrderNum, purchaseDealer, brokerName, paymentTerm, comment, totalAmount, mainArrivingDate}=req.body;
+    const {companyId, purchaseDealer, brokerName, paymentTerm, comment, mainArrivingDate}=req.body;
     const updatedPurchase={};
     if(companyId){updatedPurchase.companyId=companyId};
-    if(purchaseOrderNum){updatedPurchase.SalesOrderNum=purchaseOrderNum};
-    if(purchaseDealer){updatedPurchase.salesDealer=purchaseDealer};
+    if(purchaseDealer){updatedPurchase.purchaseDealer=purchaseDealer};
     if(brokerName){updatedPurchase.brokerName=brokerName};
     if(paymentTerm){updatedPurchase.paymentTerm=paymentTerm};
     if(comment){updatedPurchase.comment=comment};
-    if(totalAmount){updatedPurchase.totalAmount=totalAmount};
-    if(purchaseDealer){updatedPurchase.mainDispatchDate=purchaseDealer};
+    if(purchaseDealer){updatedPurchase.purchaseDealer=purchaseDealer};
+    if(mainArrivingDate){updatedPurchase.mainArrivingDate=mainArrivingDate}
     //Find the purchase order to be deleted
     let porder=await purchaseOrder.findById(req.params.id);
     if(!porder)
@@ -119,22 +138,26 @@ router.get("/editpurchaseorder/:id", async (req, res)=>{
         return res.status(404).send("Not Permited");
     }
     porder=await purchaseOrder.findByIdAndUpdate(req.params.id, {$set: updatedPurchase}, {new: true})
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" edited purchase order having purchaseOrderNum:"+porder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
+    
     res.json({porder})
 })
 
 //CASE 6: Edit the purchase order's Product Information Endpoint
 router.get("/editpurchaseproduct/:id", async (req, res)=>{
-    const {companyId, purchaseOrderNum, categoryId, categoryName, productId, productName, quantity, perPicePrice, status,arrivingat, arrivingDate}=req.body;
+    const {companyId, categoryId, categoryName, productId, productName, quantity, perPicePrice, arrivingat, arrivingDate}=req.body;
     const updatedProduct={};
     if(companyId){updatedProduct.companyId=companyId};
-    if(purchaseOrderNum){updatedProduct.purchaseOrderNum=purchaseOrderNum};
     if(categoryId){updatedProduct.categoryId=categoryId};
     if(categoryName){updatedProduct.categoryName=categoryName};
     if(productId){updatedProduct.productId=productId};
     if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
     if(perPicePrice){updatedProduct.perPicePrice=perPicePrice};
-    if(status){updatedProduct.status=status};
     if(arrivingat){updatedProduct.arrivingat=arrivingat};
     if(arrivingDate){updatedProduct.arrivingDate=arrivingDate};
     //Find the sales order to be deleted
@@ -147,26 +170,27 @@ router.get("/editpurchaseproduct/:id", async (req, res)=>{
     {
         return res.status(404).send("Not Permited");
     }
-    sproduct=await purchaseOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
+    snewproduct=await purchaseOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
+    
+    //Code for changing the totalAmount in the purchaseOrder
+    purchaseDetail= await purchaseOrder.findOne({companyId: companyId, purchaseOrderNum: sproduct.purchaseOrderNum});
+    let temp=purchaseDetail.totalAmount+(quantity*perPicePrice)-(sproduct.quantity*sproduct.perPicePrice);
+    await purchaseOrder.findOneAndUpdate({companyId: companyId, purchaseOrderNum: sproduct.purchaseOrderNum}, {$set:{totalAmount:temp}})
+
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" edited purchase order's product info having productNum:"+sproduct.productId+"And purchaseOrderNum:"+sproduct.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: sproduct.companyId},{$push:{comment: [statment]}})
+
     res.json({sproduct})
 })
 
 //CASE 7: Mangage Status Of Purchase Order Product i.e. warehouse name or num, tobe planned, tobe ordered/produced, tobe packed, tobe shiped
 router.get("/managestatus/:id", async (req, res)=>{
-    const {companyId, purchaseOrderNum, categoryId, categoryName, productId, productName, quantity, perPicePrice, status, arrivingat, arrivingDate}=req.body;
+    const {status}=req.body;
     const updatedProduct={};
-    if(companyId){updatedProduct.companyId=companyId};
-    if(purchaseOrderNum){updatedProduct.purchaseOrderNum=purchaseOrderNum};
-    if(categoryId){updatedProduct.categoryId=categoryId};
-    if(categoryName){updatedProduct.categoryName=categoryName};
-    if(productId){updatedProduct.productId=productId};
-    if(productName){updatedProduct.productName=productName};
-    if(quantity){updatedProduct.quantity=quantity};
-    if(perPicePrice){updatedProduct.perPicePrice=perPicePrice};
     if(status){updatedProduct.status=status};
-    if(arrivingat){updatedProduct.arrivingat=arrivingat};
-    if(arrivingDate){updatedProduct.arrivingDate=arrivingDate};
-    //Find the sales order to be deleted
+    //Find the purchase order to be deleted
     let sproduct=await purchaseOrderMini.findById(req.params.id);
     if(!sproduct)
     {
@@ -177,6 +201,12 @@ router.get("/managestatus/:id", async (req, res)=>{
         return res.status(404).send("Not Permited");
     }
     sproduct=await purchaseOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" changed status of purchase order having purchaseOrderNum:"+sproduct.purchaseOrderNum+" to:"+status+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: sproduct.companyId},{$push:{comment: [statment]}})
+    
     res.json({sproduct})
 })
 
@@ -189,21 +219,17 @@ router.delete("/dispatchallorder/:id", async (req, res)=>{
         return res.status(400).send({error: "The purchase order does not exists OR have been already been dispatched"})
     }
     //Find the purchase Order and delete order and its products
-    try
-    {
-        //Allow the order to delete if user and company owns this order
-        sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
-        let socheck
-        do{
-        socheck=await purchaseOrderMini.findOneAndDelete({companyId: req.body.companyId, purchaseOrderNum: req.body.purchaseOrderNum})
-        }
-        while(socheck);
-        return res.json({success: "purchase order has been deleted"})
-    }
-    catch(error)
-    {
-        res.status(500).send("Internal Server Error");
-    }
+    //Allow the order to delete if user and company owns this order
+    sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
+    await purchaseOrderMini.deleteMany({companyId: sorder.companyId, purchaseOrderNum: sorder.purchaseOrderNum})
+    
+    //Making entry in logbook
+    var currentdate=new Date();
+    let statment="UserId:"+req.body.employeeId+" approved arrival of purchase order having purchaseOrderNum:"+sorder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: sorder.companyId},{$push:{comment: [statment]}})
+    
+    //Add this 
+    return res.json({success: "purchase order has been arrived"})
 })
 
 module.exports=router
