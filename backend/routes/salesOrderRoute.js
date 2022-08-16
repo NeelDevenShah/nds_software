@@ -10,7 +10,7 @@ const fetchcompany=require("../middleware/fetchcompany");
 const fetchuser=require("../middleware/fetchuser")
 
 //CASE 1: Add new sales order Endpoint
-router.get("/addneworder", fetchuser, async (req, res)=>{
+router.post("/addneworder", fetchuser, async (req, res)=>{
     //Check wheather the sales order id exists if it does not exists than add one
     //Company check
     const {companyId, employeeId}=req.details;
@@ -39,7 +39,7 @@ router.get("/addneworder", fetchuser, async (req, res)=>{
     }
 })
 //CASE 2: Add new sales product in sales order Endpoint
-router.get("/addsalesorderproduct/:id", fetchuser, async (req, res)=>{
+router.post("/addsalesorderproduct/:id", fetchuser, async (req, res)=>{
     //Check first the sales order num exists at the compId or not
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId})
@@ -136,7 +136,7 @@ router.delete("/deleteproduct/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 5: Edit the sales order's Information Endpoint
-router.get("/editsalesorder/:id", fetchuser, async (req, res)=>{
+router.put("/editsalesorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {salesDealer, brokerName, paymentTerm, comment, totalAmount, mainDispatchDate}=req.body;
     const updatedSales={};
@@ -167,7 +167,7 @@ router.get("/editsalesorder/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 6: Edit the sales order's Product Information Endpoint
-router.get("/editsalesproduct/:id", fetchuser, async (req, res)=>{
+router.put("/editsalesproduct/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {productId, productName, quantity, perPicePrice, dispatchingFrom, dispatchDate, categoryId, categoryName}=req.body;
     const updatedProduct={};
@@ -205,7 +205,7 @@ router.get("/editsalesproduct/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 7: Mangage Status Of Sales Order's product i.e. warehouse name or num, tobe planned, tobe ordered/produced, tobe packed, tobe shiped
-router.get("/managestatus/:id", fetchuser, async (req, res)=>{
+router.put("/managestatus/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     temp=await salesOrderMini.findById(req.params.id)
     const {SalesOrderNum, salesDealer, brokerName, productId, productName, quantity, perPicePrice, dispatchingFrom, dispatchDate, categoryId, categoryName}=temp;

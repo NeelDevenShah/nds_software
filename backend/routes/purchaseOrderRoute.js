@@ -10,7 +10,7 @@ const fetchuser=require("../middleware/fetchuser");
 const fetchcompany=require("../middleware/fetchcompany");
 
 //CASE 1: Add new purchase order Endpoint
-router.get("/addneworder", fetchuser, async (req, res)=>{
+router.post("/addneworder", fetchuser, async (req, res)=>{
     //Check wheather the sales order id exists if it does not exists than add one
     const {companyId, employeeId}=req.details;
     //Company check
@@ -39,7 +39,7 @@ router.get("/addneworder", fetchuser, async (req, res)=>{
     }
 })
 //CASE 2: Add new purchase product in purchase order Endpoint
-router.get("/addpurchaseproduct/:id", fetchuser, fetchuser, async (req, res)=>{
+router.post("/addpurchaseproduct/:id", fetchuser, fetchuser, async (req, res)=>{
     //Check first the purchase order num exists at the compId or not
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId})
@@ -126,7 +126,7 @@ router.delete("/deleteproduct/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 5: Edit the sales order's Information Endpoint
-router.get("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
+router.put("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {purchaseDealer, brokerName, paymentTerm, comment, mainArrivingDate}=req.body;
     const updatedPurchase={};
@@ -158,7 +158,7 @@ router.get("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 6: Edit the purchase order's Product Information Endpoint
-router.get("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
+router.put("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {categoryId, categoryName, productId, productName, quantity, perPicePrice, arrivingat, arrivingDate}=req.body;
     const updatedProduct={};
@@ -197,7 +197,7 @@ router.get("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 7: Mangage Status Of Purchase Order Product i.e. warehouse name or num, tobe planned, tobe ordered/produced, tobe packed, tobe shiped
-router.get("/managestatus/:id", fetchuser, async (req, res)=>{
+router.put("/managestatus/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {status, arrivingat}=req.body;
     const updatedProduct={};

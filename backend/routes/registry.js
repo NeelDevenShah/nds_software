@@ -18,7 +18,7 @@ const fetchcompany=require("../middleware/fetchcompany");
 const fetchuser=require("../middleware/fetchuser")
 
 //CASE 1:Company Registry EndPoint
-router.get("/registerCompany",  [
+router.post("/registerCompany",  [
     body('name', 'Enter valid name').isString(),
     body('emailId', 'Enter valid mail id').isEmail(),
     body('country', 'Enter valid country name').isString(),
@@ -88,7 +88,7 @@ router.get("/registerCompany",  [
 })
 
 //CASE 2: Company new User endpoint(Owner's Portal)
-router.get("/registeruser", fetchcompany,[
+router.post("/registeruser", fetchcompany,[
     body('name', 'Enter an valid name').isLength({min: 3}),
     body('password', 'Enter an valid password').isLength({min: 3}),
     body('employeeId', 'Enter an valid employee Id').isNumeric(),
@@ -128,7 +128,7 @@ router.get("/registeruser", fetchcompany,[
 })
 
 //CASE 3: New Warehouse Registry endPoint
-router.get("/registerwarehouse", fetchuser,[
+router.post("/registerwarehouse", fetchuser,[
     body('wname', 'Enter a valid name').isString(),
     body('shopNum', 'Enter a valid shop number').isLength({min: 2}),
     body('add2', 'Enter a valid address').isString(),

@@ -11,7 +11,7 @@ const fetchuser=require("../middleware/fetchuser")
 const fetchcompany=require("../middleware/fetchcompany");
 
 //CASE 1: Add new quotation Endpoint
-router.get("/addquotation", fetchuser, async (req, res)=>{
+router.post("/addquotation", fetchuser, async (req, res)=>{
     //Check wheather the quotation id exists if it does not exists than add one
     //Company Check
     const {companyId, employeeId}=req.details;
@@ -40,7 +40,7 @@ router.get("/addquotation", fetchuser, async (req, res)=>{
 })
 
 //CASE 2: Add New Quotation Product To Quotation Endpoint
-router.get("/addproduct/:id", fetchuser, async (req, res)=>{
+router.post("/addproduct/:id", fetchuser, async (req, res)=>{
    //Check first the quotation id exists at the company Id or not
    const {companyId, employeeId}=req.details;
    let cmpCheck=await newCompany.findOne({companyId: companyId});
@@ -79,7 +79,7 @@ router.get("/addproduct/:id", fetchuser, async (req, res)=>{
 })
 
 //CASE 3:Edit Product Of Quotation Endpoint
-router.get("/editproduct/:id", fetchuser, async (req, res)=>{
+router.put("/editproduct/:id", fetchuser, async (req, res)=>{
    //Check first the quotation id exists at the company Id or not
    //Here take the id of the quotationMini
    const {companyId, employeeId}=req.details;

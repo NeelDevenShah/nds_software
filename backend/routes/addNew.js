@@ -13,7 +13,7 @@ const fetchcompany=require("../middleware/fetchcompany");
 const fetchuser=require("../middleware/fetchuser")
 
 //CASE 1:Add new Product Category Endpoint
-router.get("/addcategory", fetchuser, async (req, res)=>{
+router.post("/addcategory", fetchuser, async (req, res)=>{
     //Check wheather the category with this name already exists
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId});
@@ -39,7 +39,7 @@ router.get("/addcategory", fetchuser, async (req, res)=>{
 })
 
 //CASE 2:Add new Product Endpoint
-router.get("/addnewproduct", fetchuser, async(req, res)=>{
+router.post("/addnewproduct", fetchuser, async(req, res)=>{
     //Check wheather the product with this companyId, productName already exists
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId});
@@ -65,7 +65,7 @@ router.get("/addnewproduct", fetchuser, async(req, res)=>{
 })
 
 //CASE 3: Add more product to existing product at specific address, If exists than update its quantity, _id required as the parameter Endpoint
-router.get("/addproduct/:id", fetchuser, async(req, res)=>{
+router.post("/addproduct/:id", fetchuser, async(req, res)=>{
     //Here the id is of the addProduct which is** now to be changed to the if of newProducts
     const {companyId, employeeId}=req.details;
     let details1=await newProduct.findById(req.params.id);
@@ -147,7 +147,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
 })
 
 //CASE 5:Subtract Some product from a warehouse of company
-router.get("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
+router.put("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
     //Here the id is of the newProduct(Which is without warehouse id)
     const {companyId, employeeId}=req.details;
     let details1=await newProduct.findById(req.params.id);

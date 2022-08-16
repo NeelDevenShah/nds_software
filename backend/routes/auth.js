@@ -8,7 +8,7 @@ const companyUser=require("../models/CompanyUser");
 const newCompany=require("../models/Company_registry")
 
 //For login of the company's user
-router.get("/login",[
+router.post("/login",[
     body("companyId", "Enter An Number").isNumeric(),
     body("employeeId", "Enter An Number").isNumeric(),
 ], async (req,res)=>{
@@ -40,7 +40,7 @@ router.get("/login",[
 })
 
 //For login of the company's Owner
-router.get("/cmplogin", [
+router.post("/cmplogin", [
     body("companyId", "Enter A Number").isNumeric()
 ], async (req, res)=>{
     const errors=validationResult(req);
