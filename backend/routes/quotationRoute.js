@@ -7,17 +7,20 @@ const quotationMini = require("../models/QuotationMini");
 const SalesOrder = require("../models/SalesOrder");
 const SalesOrderMini = require("../models/SalesOrderMini");
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
+const fetchuser=require("../middleware/fetchuser")
+const fetchcompany=require("../middleware/fetchcompany");
 
 //CASE 1: Add new quotation Endpoint
-router.get("/addquotation", async (req, res)=>{
+router.get("/addquotation", fetchuser, async (req, res)=>{
     //Check wheather the quotation id exists if it does not exists than add one
     //Company Check
-    let cmpcheck=await newCompany.findOne({companyId: req.body.companyId})
+    const {companyId, employeeId}=req.details;
+    let cmpcheck=await newCompany.findOne({companyId: companyId})
     if(!cmpcheck)
     {
         return res.status(400).findOne({error: "The company id does not exists"})
     }
-    let qcheck=await quotation.findOne({companyId: req.body.companyId, quotationNum: req.body.quotationNum});
+    let qcheck=await quotation.findOne({companyId: companyId, quotationNum: req.body.quotationNum});
     if(qcheck)
     {
         return res.status(400).send({error: "The quotation Number Of Same Already Exists"});
@@ -28,22 +31,23 @@ router.get("/addquotation", async (req, res)=>{
 
          //Making entry in logbook
          var currentdate=new Date();
-         let statment="UserId:"+req.body.employeeId+" created new quotation having quotationNum:"+req.body.quotationNum+" for "+req.body.dealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-         await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+         let statment="UserId:"+employeeId+" created new quotation having quotationNum:"+req.body.quotationNum+" for "+req.body.dealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
         res.send(req.body);
     }
 })
 
 //CASE 2: Add New Quotation Product To Quotation Endpoint
-router.get("/addproduct/:id", async (req, res)=>{
+router.get("/addproduct/:id", fetchuser, async (req, res)=>{
    //Check first the quotation id exists at the company Id or not
-   let cmpCheck=await newCompany.findOne({companyId: req.body.companyId});
+   const {companyId, employeeId}=req.details;
+   let cmpCheck=await newCompany.findOne({companyId: companyId});
    if(!cmpCheck)
    {
       return res.status(400).send({error: "The Company Id Does Not Exists"});
    }
-   let spcheck=await quotationMini.findOne({companyId: req.body.companyId, quotationNum: req.body.quotationNum, productId: req.body.productId});
+   let spcheck=await quotationMini.findOne({companyId: companyId, quotationNum: req.body.quotationNum, productId: req.body.productId});
    if(spcheck)
    {
       return res.status(400).send({error: "The Product Already Exists in the Quotation"})
@@ -63,18 +67,19 @@ router.get("/addproduct/:id", async (req, res)=>{
       
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+req.body.employeeId+" added new quotation product having productId:"+req.body.productId+" in the quotationNum:"+req.body.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-      await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+      let statment="UserId:"+employeeId+" added new quotation product having productId:"+req.body.productId+" in the quotationNum:"+req.body.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
       
       res.send(quotationadd);
    }
 })
 
 //CASE 3:Edit Product Of Quotation Endpoint
-router.get("/editproduct/:id", async (req, res)=>{
+router.get("/editproduct/:id", fetchuser, async (req, res)=>{
    //Check first the quotation id exists at the company Id or not
    //Here take the id of the quotationMini
-   let cmpCheck=await newCompany.findOne({companyId: req.body.companyId});
+   const {companyId, employeeId}=req.details;
+   let cmpCheck=await newCompany.findOne({companyId: companyId});
    if(!cmpCheck)
    {
       return res.status(400).send({error: "The Company Id Does Not Exists"});
@@ -82,7 +87,7 @@ router.get("/editproduct/:id", async (req, res)=>{
    let spcheck=await quotationMini.findById(req.params.id)
    if(spcheck)
    {
-      const {companyId, quotationNum, categoryId, categoryName, productId, productName, quantity, perPicePrice, employeeId}=req.body;
+      const {quotationNum, categoryId, categoryName, productId, productName, quantity, perPicePrice}=req.body;
       const updateProduct={};
       if(companyId){updateProduct.companyId=companyId};
       if(quotationNum){updateProduct.quotationNum=quotationNum};
@@ -113,10 +118,11 @@ router.get("/editproduct/:id", async (req, res)=>{
 })
 
 //CASE 4:Delete The Product Of Quotation Endpoint
-router.delete("/deleteproduct/:id", async (req, res)=>{
+router.delete("/deleteproduct/:id", fetchuser, async (req, res)=>{
    //Here the id is of the quotationMini
+   const {companyId, employeeId}=req.details;
    let deleteProd=await quotationMini.findById(req.params.id);
-   const {companyId, quotationNum}=deleteProd;
+   const {quotationNum}=deleteProd;
    if(!deleteProd)
    {
       return res.status(400).send({error: "The Product In the Quotation Does Not Exists"})
@@ -131,7 +137,7 @@ router.delete("/deleteproduct/:id", async (req, res)=>{
 
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+req.body.employeeId+" deleted quotation product having productId:"+deleteProd.productId+" in quotationNum:"+deleteProd.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      let statment="UserId:"+employeeId+" deleted quotation product having productId:"+deleteProd.productId+" in quotationNum:"+deleteProd.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
       res.send({success: "The Product Of Quotation Deleted"})
@@ -139,7 +145,8 @@ router.delete("/deleteproduct/:id", async (req, res)=>{
 })
 
 //CASE 5:Delete Quotation Endpoint
-router.delete("/deletequotation/:id", async (req, res)=>{
+router.delete("/deletequotation/:id", fetchuser, async (req, res)=>{
+   const {companyId, employeeId}=req.details;
    let deletequotat=await quotation.findById(req.params.id);
    if(!deletequotat)
    {
@@ -148,21 +155,22 @@ router.delete("/deletequotation/:id", async (req, res)=>{
    else
    {
       deletequotat=await quotation.findByIdAndDelete(req.params.id);
-      await quotationMini.deleteMany({companyId: deletequotat.companyId, quotationNum:deletequotat.quotationNum})
+      await quotationMini.deleteMany({companyId: companyId, quotationNum:deletequotat.quotationNum})
 
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+req.body.employeeId+" deleted quotation having quotationNum:"+deletequotat.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-      await CmpLogADetailBook.findOneAndUpdate({companyId: deletequotat.companyId},{$push:{comment: [statment]}})
+      let statment="UserId:"+employeeId+" deleted quotation having quotationNum:"+deletequotat.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
       
       res.send({success: "The Quotation Deleted"})
    }
 })
 
 //CASE 6:Add Quotation To Sales Order
-router.get("/addtosales/:id", async (req, res)=>{
-//Details to be added in the modal like dispatching status, dispatching date, broker name, payment term, comment
+router.get("/addtosales/:id", fetchuser, async (req, res)=>{
+   //Details to be added in the modal like dispatching status, dispatching date, broker name, payment term, comment
    //Data is tobe taken from quotation and quotationMini and be inserted in sales, salesMini
+   const {companyId, employeeId}=req.details;
    let finalQuotation=await quotation.findById(req.params.id);
    if(!finalQuotation)
    {
@@ -170,7 +178,7 @@ router.get("/addtosales/:id", async (req, res)=>{
    }
    let Num=finalQuotation.quotationNum;
    const newSalesOrder={};
-   const {companyId, quotationNum, dealer, totalAmount}=finalQuotation;
+   const {quotationNum, dealer, totalAmount}=finalQuotation;
    const {SalesOrderNum, brokerName, paymentTerm, comment, mainDispatchDate}=req.body;
    if(companyId){newSalesOrder.companyId=companyId};
    if(SalesOrderNum){newSalesOrder.SalesOrderNum=SalesOrderNum};
@@ -182,7 +190,7 @@ router.get("/addtosales/:id", async (req, res)=>{
    if(mainDispatchDate){newSalesOrder.mainDispatchDate=mainDispatchDate};
    //Find if the sales order exists, If exists than give the error
    //Adding And Deleting order of the sales and quotation
-   let sorder=await SalesOrder.findOne({companyId: finalQuotation.companyId, SalesOrderNum: req.body.SalesOrderNum})
+   let sorder=await SalesOrder.findOne({companyId: companyId, SalesOrderNum: req.body.SalesOrderNum})
    if(sorder)
    {
       return res.status(404).send({error: "Such Order Number Exists, Enter an Unique Order Number"});
@@ -195,10 +203,10 @@ router.get("/addtosales/:id", async (req, res)=>{
       let orderProducts;
       do{
          const newProduct={};
-         orderProducts=await quotationMini.findOneAndDelete({companyId: finalQuotation.companyId, quotationNum: finalQuotation.quotationNum});
+         orderProducts=await quotationMini.findOneAndDelete({companyId: companyId, quotationNum: finalQuotation.quotationNum});
          if(orderProducts)
          {
-            const {companyId, categoryId, categoryName, productId, productName, quantity, perPicePrice}=orderProducts;
+            const {categoryId, categoryName, productId, productName, quantity, perPicePrice}=orderProducts;
             {newProduct.companyId=companyId};
             {newProduct.SalesOrderNum=SalesOrderNum};
             {newProduct.categoryId=categoryId};
@@ -219,8 +227,8 @@ router.get("/addtosales/:id", async (req, res)=>{
 
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+req.body.employeeId+" transfered the quotationNum:"+quotation1.quotationNum+" to sales order having salesOrderNum:"+req.body.SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-      await CmpLogADetailBook.findOneAndUpdate({companyId: quotation1.companyId},{$push:{comment: [statment]}})
+      let statment="UserId:"+employeeId+" transfered the quotationNum:"+quotation1.quotationNum+" to sales order having salesOrderNum:"+req.body.SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
       res.send({success: "New Product Added successfull to the sales Order"});
    }

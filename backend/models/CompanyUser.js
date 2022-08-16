@@ -10,12 +10,12 @@ const companyUserSchema=new Schema({
         type: String,
         required: true,
     },
-    password:{
-        type: String,
-        required: true,
-    },
     employeeId:{
         type: Number,
+        required: true,
+    },
+    password:{
+        type: String,
         required: true,
     },
     date:{

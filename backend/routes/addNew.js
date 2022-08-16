@@ -9,16 +9,19 @@ const SalesOrderMini = require("../models/SalesOrderMini");
 const PurchaseOrderMini = require("../models/PurchaseOrderMini");
 const QuotationMini = require("../models/QuotationMini");
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
+const fetchcompany=require("../middleware/fetchcompany");
+const fetchuser=require("../middleware/fetchuser")
 
 //CASE 1:Add new Product Category Endpoint
-router.get("/addcategory", async (req, res)=>{
+router.get("/addcategory", fetchuser, async (req, res)=>{
     //Check wheather the category with this name already exists
-    let cmpcheck=await newCompany.findOne({companyId: req.body.companyId});
-    let category1=await newProductCategory.findOne({companyId: req.body.companyId, categoryId: req.body.categoryId});
+    const {companyId, employeeId}=req.details;
+    let cmpcheck=await newCompany.findOne({companyId: companyId});
     if(!cmpcheck)
     {
         return res.status(400).json({error: "The Company id does not exists"});
     }
+    let category1=await newProductCategory.findOne({companyId: companyId, categoryId: req.body.categoryId});
     if(category1)
     {
         return res.status(400).json({error: "The product category already exists"})
@@ -28,21 +31,22 @@ router.get("/addcategory", async (req, res)=>{
 
     //Making entry in logbook
     var currentdate=new Date();
-    let statment= "UserId:"+req.body.employeeId+" added new product category having categoryId:"+req.body.categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-    await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+    let statment= "UserId:"+employeeId+" added new product category having categoryId:"+req.body.categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.send(req.body)
 })
 
 //CASE 2:Add new Product Endpoint
-router.get("/addnewproduct", async(req, res)=>{
+router.get("/addnewproduct", fetchuser, async(req, res)=>{
     //Check wheather the product with this companyId, productName already exists
-    let cmpcheck=await newCompany.findOne({companyId: req.body.companyId});
-    let product=await newProduct.findOne({companyId: req.body.companyId, productId: req.body.productId})
+    const {companyId, employeeId}=req.details;
+    let cmpcheck=await newCompany.findOne({companyId: companyId});
     if(!cmpcheck)
     {
         return res.status(400).json({error: "The company with such id does not exists"})
     }
+    let product=await newProduct.findOne({companyId: companyId, productId: req.body.productId})
     if(product)
     {
         return res.status(400).json({error: "The Product already exists"})
@@ -52,17 +56,18 @@ router.get("/addnewproduct", async(req, res)=>{
 
     //Making Entry In The Logbook
     var currentdate=new Date();
-    let statment="UserId:"+req.body.employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+req.body.productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-    await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
+    let statment="UserId:"+employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+req.body.productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.send(req.body);
 })
 
 //CASE 3: Add more product to existing product at specific address, If exists than update its quantity, _id required as the parameter Endpoint
-router.get("/addproduct/:id", async(req, res)=>{
+router.get("/addproduct/:id", fetchuser, async(req, res)=>{
     //Here the id is of the addProduct which is** now to be changed to the if of newProducts
-    let details=await newProduct.findById(req.params.id);
-    const {companyId, categoryId, productId, productcategory, productName}=details;
+    const {companyId, employeeId}=req.details;
+    let details1=await newProduct.findById(req.params.id);
+    const {categoryId, productId, productcategory, productName, inWarehouses, quantity}=details1;
     const {prodWarehouseId, qty}=req.body;
 
     let productdet=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
@@ -84,12 +89,12 @@ router.get("/addproduct/:id", async(req, res)=>{
         await newPr.save();
 
         //Also make the inwarehouses number in the newProduct collection increase by one, And increase the amt. of qty added
-        await newProduct.findByIdAndUpdate(req.params.id, {$set: {inWarehouses: details.inWarehouses+1, quantity:details.quantity+req.body.qty}})
+        await newProduct.findByIdAndUpdate(req.params.id, {$set: {inWarehouses: inWarehouses+1, quantity:quantity+req.body.qty}})
 
         //Making Entry In The Logbook
         var currentdate=new Date();
-        let statment="UserId:"+req.body.employeeId+" added "+details.productId+":"+details.productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-        await CmpLogADetailBook.findOneAndUpdate({companyId: details.companyId},{$push:{comment: [statment]}})
+        let statment="UserId:"+employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
         res.send(req.body);   
     }
@@ -98,12 +103,12 @@ router.get("/addproduct/:id", async(req, res)=>{
     {
         //Find the product to be updated and find it
         prod=await addProduct.findOneAndUpdate({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId}, {$set:{quantity:productdet.quantity+qty}})
-        await newProduct.findByIdAndUpdate(req.params.id, {$set: {quantity:details.quantity+req.body.qty}})
+        await newProduct.findByIdAndUpdate(req.params.id, {$set: {quantity:quantity+req.body.qty}})
 
         //Making Entry In The Logbook
         var currentdate=new Date();
-        let statment="UserId:"+req.body.employeeId+" added "+details.productId+":"+details.productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-        await CmpLogADetailBook.findOneAndUpdate({companyId: details.companyId},{$push:{comment: [statment]}})
+        let statment="UserId:"+req.body.employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         
         res.send(req.body);
     }
@@ -111,7 +116,8 @@ router.get("/addproduct/:id", async(req, res)=>{
 
 //CASE 4: Delete Company's Product Categories
 //Intially while making an company an product Category by the name default will be maked automatically which cannot be deleted, If any warehouse is deleted than its products/data will be transfered to the default warehouse of company
-router.delete("/deletecategory/:id", async (req,res)=>{
+router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
+    const {companyId, employeeId}=req.details;
     let categoryDetails=await newProductCategory.findById(req.params.id);
     if(!categoryDetails)
     {
@@ -131,17 +137,18 @@ router.delete("/deletecategory/:id", async (req,res)=>{
     
     //Making entry in loogbook
     var currentdate=new Date();
-    let statment="UserId:"+req.body.employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+"and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-    await CmpLogADetailBook.findOneAndUpdate({companyId: categoryDetails.companyId},{$push:{comment: [statment]}})
+    let statment="UserId:"+employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+"and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.json("Warehouse delete successfull")
+    res.json("Product Category successfull")
 })
 
 //CASE 5:Subtract Some product from a warehouse of company
-router.get("/deletesomeproduct/:id", async (req, res)=>{
+router.get("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
     //Here the id is of the newProduct(Which is without warehouse id)
-    let details=await newProduct.findById(req.params.id);
-    const {companyId, categoryId, productId }=details;
+    const {companyId, employeeId}=req.details;
+    let details1=await newProduct.findById(req.params.id);
+    const {categoryId, productId }=details1;
     //If the product exists than find the product at particular location exists or not in company's account
     let productdet=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId})
     if(!productdet)
@@ -158,24 +165,24 @@ router.get("/deletesomeproduct/:id", async (req, res)=>{
         {
             //Delete Whole Product And Also make the inwarehouses in newProduct -1
             prod=await addProduct.findOneAndDelete({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId});
-            await newProduct.findByIdAndUpdate(req.params.id, {$set: {inWarehouses: details.inWarehouses-1, quantity:details.quantity-req.body.qty}});
+            await newProduct.findByIdAndUpdate(req.params.id, {$set: {inWarehouses: details1.inWarehouses-1, quantity:details1.quantity-req.body.qty}});
         
             //Making entry in loogbook
             var currentdate=new Date();
-            let statment="UserId:"+req.body.employeeId+" deleted product having Productid: "+prod.productId+", Productname: "+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-            await CmpLogADetailBook.findOneAndUpdate({companyId: details.companyId},{$push:{comment: [statment]}})
+            let statment="UserId:"+employeeId+" deleted product having Productid: "+prod.productId+", Productname: "+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
             res.send({success: "Product deleted successfull"});
         }
         else{
             //If the qty<quantity than update the addProduct
             prod=await addProduct.findOneAndUpdate({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId}, {$set:{quantity:productdet.quantity-req.body.qty}})
-            await newProduct.findByIdAndUpdate(req.params.id, {$set: {quantity:details.quantity-req.body.qty}});            
+            await newProduct.findByIdAndUpdate(req.params.id, {$set: {quantity:details1.quantity-req.body.qty}});            
 
             //Making entry in loogbook
             var currentdate=new Date();
-            let statment="UserId:"+req.body.employeeId+"deleted product having Productid:"+prod.productId+", Productname:"+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-            await CmpLogADetailBook.findOneAndUpdate({companyId: details.companyId},{$push:{comment: [statment]}})
+            let statment="UserId:"+employeeId+"deleted product having Productid:"+prod.productId+", Productname:"+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
             res.send({success: "Product deleted successfull"});
         }
@@ -183,15 +190,16 @@ router.get("/deletesomeproduct/:id", async (req, res)=>{
 })
 
 //CASE 6:Delete Product which is been added in the addproduct
-router.delete("/deleteproduct/:id", async (req,res)=>{
+router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
     //In this case all the products are been deleted and no trace of then are found further
     //There are two cases 1. Delete The Product At Given Warehouse,2. Delete Product At All Warehouse And Remove from the list
+    const {companyId, employeeId}=req.details;
     let mainProductInfo=await newProduct.findById(req.params.id);
     if(!mainProductInfo)
     {
         return res.status(404).send({error: "The Product Does Not Exists"})
     }
-    const {companyId, categoryId, productId}=mainProductInfo;
+    const {categoryId, productId}=mainProductInfo;
     const {prodWarehouseId}=req.body;
     //If prodWarehouseId is -1, Then delete from all warehouse and list
     //CASE A: Delete The Product At Given Warehouse
@@ -204,8 +212,8 @@ router.delete("/deleteproduct/:id", async (req,res)=>{
             
             //Making entry in loogbook
             var currentdate=new Date();
-            let statment="UserId:"+req.body.employeeId+"removed all product having Productid: "+deleteAtWH.productId+", Productname: "+deleteAtWH.productName+" at whid:"+deleteAtWH.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-            await CmpLogADetailBook.findOneAndUpdate({companyId: deleteAtWH.companyId},{$push:{comment: [statment]}})
+            let statment="UserId:"+employeeId+"removed all product having Productid: "+deleteAtWH.productId+", Productname: "+deleteAtWH.productName+" at whid:"+deleteAtWH.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
             return res.send({success: "Product deleted from the given warehouse Successfully"})
         }
@@ -222,8 +230,8 @@ router.delete("/deleteproduct/:id", async (req,res)=>{
         
         //Making entry in loogbook
         var currentdate=new Date();
-        let statment="UserId:"+req.body.employeeId+"deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-        await CmpLogADetailBook.findOneAndUpdate({companyId: mainProductInfo.companyId},{$push:{comment: [statment]}})
+        let statment="UserId:"+employeeId+"deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         res.send({success: "Product Deleted Successfully"})
     }
 })

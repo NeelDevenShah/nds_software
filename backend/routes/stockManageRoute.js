@@ -4,18 +4,21 @@ const {body, validationResult}=require('express-validator');
 const newProduct=require("../models/newproduct_registry");
 const addProduct=require("../models/AddProduct")
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
+const fetchcompany=require("../middleware/fetchcompany");
+const fetchuser=require("../middleware/fetchuser")
 
 //CASE 1: Move The Stock
-router.get("/movestock/:id", async (req,res)=>{
+router.get("/movestock/:id", fetchuser, async (req,res)=>{
     //While moving the stock we will get the id of the stock from where we want to move the stock
     //While moving the stock there are two condiotions the first is the product is not present there and the other is the product is present there
+    const {companyId, employeeId}=req.details;
     let deleteItem=await addProduct.findById(req.params.id);
     if(!deleteItem)
     {
         return res.status(404).send({error: "The Product Does Not Exists"})
     }
-    const {companyId, categoryId, productcategory, productId, productName, quantity, prodWarehouseId}=deleteItem;
-    const {employeeId ,newProdWarehouseId, qty}=req.body;
+    const {categoryId, productcategory, productId, productName, quantity, prodWarehouseId}=deleteItem;
+    const {newProdWarehouseId, qty}=req.body;
     if(prodWarehouseId==newProdWarehouseId)
     {
         return res.status(404).send({error: "Cannot Move the Product To the Same Warehouse"});
@@ -125,16 +128,17 @@ router.get("/movestock/:id", async (req,res)=>{
 })
 
 //CASE 2: Delete The Product From The Warehouse
-router.delete("/deletefromwh/:id", async (req, res)=>{
+router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
     //In this there are two cases, The one is to delete some of the existing item and the other is to delete all the item present in that warehouse
     //If to remove all the items than send -1 in the qty
+    const {companyId, employeeId}=req.details;
     let whProduct=await addProduct.findById(req.params.id);
     if(!whProduct)
     {
         return res.status(404).send({error: "The Product at particular location does not exists"})
     }
-    const {companyId, categoryId, productId, quantity, prodWarehouseId}=whProduct;
-    const {employeeId ,qty}=req.body;
+    const {categoryId, productId, quantity, prodWarehouseId}=whProduct;
+    const {qty}=req.body;
     if(qty>quantity)
     {
         res.status(404).send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})
