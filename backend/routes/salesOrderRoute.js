@@ -26,19 +26,20 @@ router.get("/addneworder", fetchuser, async (req, res)=>{
     }
     else
     {
+        req.body.companyId=companyId;
         const addsaleso=new salesOrder(req.body);
-        addsaleso.save();
+        await addsaleso.save();
 
          //Making entry in loogbook
          var currentdate=new Date();
-         let statment="userId:"+employeeId+"created new sales order having salesOrderNum:"+req.body.SalesOrderNum+" for "+req.body.salesDealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+         let statment="userId:"+employeeId+" created new sales order having salesOrderNum:"+req.body.SalesOrderNum+" for "+req.body.salesDealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
          await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
         res.send(req.body);
     }
 })
 //CASE 2: Add new sales product in sales order Endpoint
-router.get("/addsalesorderproduct", fetchuser, async (req, res)=>{
+router.get("/addsalesorderproduct/:id", fetchuser, async (req, res)=>{
     //Check first the sales order num exists at the compId or not
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId})
@@ -46,7 +47,7 @@ router.get("/addsalesorderproduct", fetchuser, async (req, res)=>{
     {
         return res.status(400).send({error: "The company id does not exists"})
     }
-    let spcheck=await salesOrder.findOne({companyId: companyId, SalesOrderNum: req.body.SalesOrderNum})
+    let spcheck=await salesOrder.findById(req.params.id)
     if(!spcheck)
     {
         return res.status(400).send({error: "The entered sales order num does not exists"})
@@ -54,7 +55,7 @@ router.get("/addsalesorderproduct", fetchuser, async (req, res)=>{
     else
     {
         //Check wheather the product already does not exists in the saled order
-        let sopcheck=await salesOrderMini.findOne({companyId: companyId, SalesOrderNum: req.body.SalesOrderNum, productId: req.body.productId});
+        let sopcheck=await salesOrderMini.findOne({companyId: companyId, SalesOrderNum: spcheck.SalesOrderNum, productId: req.body.productId});
         if(sopcheck)
         {
             return res.status(400).send({error: "The product that you are trying to add in the sales order already exists"})
@@ -62,16 +63,18 @@ router.get("/addsalesorderproduct", fetchuser, async (req, res)=>{
         else
         {
             //Now the main code for adding the new sales order's product
+            req.body.companyId=companyId;
+            req.body.SalesOrderNum=spcheck.SalesOrderNum;
             const salesProduct=new salesOrderMini(req.body);
-            salesProduct.save();
+            await salesProduct.save();
             
             //Code for changing the totalAmount in the SalesOrder
             let temp=spcheck.totalAmount+(req.body.quantity*req.body.perPicePrice);
-            changeAmount=await salesOrder.findOneAndUpdate({companyId: companyId, SalesOrderNum: req.body.SalesOrderNum}, {$set:{totalAmount:temp}})
+            changeAmount=await salesOrder.findByIdAndUpdate(req.params.id, {$set:{totalAmount:temp}})
 
             //Making entry in loogbook
             var currentdate=new Date();
-            let statment="UserId:"+employeeId+"added new product to salesOrder having salesorderNum:"+req.body.SalesOrderNum+" having productId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            let statment="UserId:"+employeeId+" added new product to salesOrder having salesorderNum:"+spcheck.SalesOrderNum+" having productId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
             res.send(salesProduct);
@@ -135,10 +138,8 @@ router.delete("/deleteproduct/:id", fetchuser, async (req, res)=>{
 //CASE 5: Edit the sales order's Information Endpoint
 router.get("/editsalesorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const {SalesOrderNum, salesDealer, brokerName, paymentTerm, comment, totalAmount, mainDispatchDate}=req.body;
+    const {salesDealer, brokerName, paymentTerm, comment, totalAmount, mainDispatchDate}=req.body;
     const updatedSales={};
-    if(companyId){updatedSales.companyId=companyId};
-    if(SalesOrderNum){updatedSales.SalesOrderNum=SalesOrderNum};
     if(salesDealer){updatedSales.salesDealer=salesDealer};
     if(brokerName){updatedSales.brokerName=brokerName};
     if(paymentTerm){updatedSales.paymentTerm=paymentTerm};
@@ -159,7 +160,7 @@ router.get("/editsalesorder/:id", fetchuser, async (req, res)=>{
     
     //Making entry in loogbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+"edited sales order information having SalesOrderId:"+req.body.SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" edited sales order information having SalesOrderId:"+req.body.SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
     res.json({sorder})
@@ -217,7 +218,7 @@ router.get("/managestatus/:id", fetchuser, async (req, res)=>{
     if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
     if(perPicePrice){updatedProduct.perPicePrice=perPicePrice};
-    if(dispatchingFrom){updatedProduct.dispatchingFrom=dispatchingFrom};
+    if(dispatchingFrom){updatedProduct.dispatchingFrom=req.body.dispatchingFrom};
     if(dispatchDate){updatedProduct.dispatchDate=dispatchDate};
     //Find the sales order to be deleted
     let sproduct=await salesOrderMini.findById(req.params.id);
@@ -233,7 +234,7 @@ router.get("/managestatus/:id", fetchuser, async (req, res)=>{
     
     //Making entry in logbook
     var currentdate=new Date();
-    let statment=+"UserId:"+employeeId+" changed status of sales order's product having productId:"+productId+" of salesOrderNum:"+SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" changed status of sales order's product having productId:"+productId+" of salesOrderNum:"+SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
     res.json({sproduct})
@@ -251,7 +252,8 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     //Find the sales Order and delete order and its products
     sorder=await salesOrder.findByIdAndDelete(req.params.id)
     socheck=await salesOrderMini.deleteMany({companyId: companyId, SalesOrderNum: sorder.SalesOrderNum})
-    
+    //After dispatching, Make entry in the sales histroy
+
     //Making entry in logbook
     var currentdate=new Date();
     let statment="UserId:"+employeeId+" dispatched sales order having salesorderId:"+sorder.SalesOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;

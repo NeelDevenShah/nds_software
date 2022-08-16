@@ -50,7 +50,7 @@ router.get("/registerCompany",  [
         res.status(500).send("Internal Server Error");
     }
     const cmp=new newCompany(req.body);
-    cmp.save();
+    await cmp.save();
 
     //Making default warehouse of the company which cannot be deleted
     defaultWareHouse={};
@@ -64,7 +64,7 @@ router.get("/registerCompany",  [
     {defaultWareHouse.pincode=0};
     {defaultWareHouse.warehouseId=0};
     const nwh=new newWarehouse(defaultWareHouse);
-    nwh.save();
+    await nwh.save();
 
     //Making default product category of the company which can not be deleted
     defaultCategory={};
@@ -72,7 +72,7 @@ router.get("/registerCompany",  [
     {defaultCategory.categoryId=0};
     {defaultCategory.pcname='default'};
     const dfcat=new NewProductCategory(defaultCategory);
-    dfcat.save();
+    await dfcat.save();
 
     //Making default Logbook entry and making an loogbook of the company
     newEntry={};
@@ -116,8 +116,9 @@ router.get("/registeruser", fetchcompany,[
         {
             res.status(500).send("Internal Server Error");
         }
+        req.body.companyId=companyId;
         const cmp=new companyUser(req.body);
-        cmp.save();
+        await cmp.save();
 
         //Making entry in logbook
         var currentdate=new Date();
@@ -153,8 +154,9 @@ router.get("/registerwarehouse", fetchuser,[
     {
         return res.status(400).json({error: "The warehouse of this id or name already exists"})
     }
+    req.body.companyId=companyId;
     const nwh=new newWarehouse(req.body);
-    nwh.save();
+    await nwh.save();
 
     //Making entry in logbook
     var currentdate=new Date();
@@ -210,7 +212,7 @@ router.delete("/deletewarehouse/:id", fetchuser, async (req,res)=>{
     
     //Making entry in logbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+"deleted company's warehouse having whid:"+whdetails.warehouseId+", wname:"+whdetails.wname+" and things attached to this wh is transfered to default wh at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" deleted company's warehouse having whid:"+whdetails.warehouseId+", wname:"+whdetails.wname+" and things attached to this wh is transfered to default wh at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.json("Warehouse delete successfull")

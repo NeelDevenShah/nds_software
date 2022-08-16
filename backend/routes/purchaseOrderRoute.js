@@ -26,19 +26,20 @@ router.get("/addneworder", fetchuser, async (req, res)=>{
     }
     else
     {
+        req.body.companyId=companyId;
         const addpurchaseo=new purchaseOrder(req.body);
-        
+        await addpurchaseo.save();
+
         //Making entry in logbook
         var currentdate=new Date();
         let statment="UserId:"+employeeId+" created new purchase order having purchaseOrderNum:"+req.body.purchaseOrderNum+" for "+req.body.purchaseDealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        addpurchaseo.save();
         res.send(req.body);
     }
 })
 //CASE 2: Add new purchase product in purchase order Endpoint
-router.get("/addpurchaseproduct", fetchuser, fetchuser, async (req, res)=>{
+router.get("/addpurchaseproduct/:id", fetchuser, fetchuser, async (req, res)=>{
     //Check first the purchase order num exists at the compId or not
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId})
@@ -46,7 +47,7 @@ router.get("/addpurchaseproduct", fetchuser, fetchuser, async (req, res)=>{
     {
         return res.status(400).send({error: "The company id does not exists"})
     }
-    let spcheck=await purchaseOrder.findOne({companyId: companyId, purchaseOrderNum: req.body.purchaseOrderNum})
+    let spcheck=await purchaseOrder.findById(req.params.id)
     if(!spcheck)
     {
         return res.status(400).send({error: "The entered purchase order num does not exists"})
@@ -54,7 +55,7 @@ router.get("/addpurchaseproduct", fetchuser, fetchuser, async (req, res)=>{
     else
     {
         //Check wheather the product already does not exists in the purchase order
-        let sopcheck=await purchaseOrderMini.findOne({companyId: companyId, purchaseOrderNum: req.body.purchaseOrderNum, productId: req.body.productId});
+        let sopcheck=await purchaseOrderMini.findOne({companyId: companyId, purchaseOrderNum: spcheck.purchaseOrderNum, productId: req.body.productId});
         if(sopcheck)
         {
             return res.status(400).send({error: "The product that you are trying to add in the purchase order already exists"})
@@ -62,16 +63,18 @@ router.get("/addpurchaseproduct", fetchuser, fetchuser, async (req, res)=>{
         else
         {
             //Now the main code for adding the new sales order's product
+            req.body.companyId=companyId;
+            req.body.purchaseOrderNum=spcheck.purchaseOrderNum;
             const purchaseProduct=new purchaseOrderMini(req.body);
             await purchaseProduct.save();
             
             //Code for changing the totalAmount in the purchaseOrder
             let temp=spcheck.totalAmount+(req.body.quantity*req.body.perPicePrice);
-            changeAmount=await purchaseOrder.findOneAndUpdate({companyId: companyId, purchaseOrderNum: req.body.purchaseOrderNum}, {$set:{totalAmount:temp}})
+            changeAmount=await purchaseOrder.findByIdAndUpdate(req.params.id, {$set:{totalAmount:temp}})
             
             //Making entry in logbook
             var currentdate=new Date();
-            let statment="UserId:"+employeeId+" added new product for purchase order having purchaseOrderNum:"+req.body.purchaseOrderNum+", ProductId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+            let statment="UserId:"+employeeId+" added new product for purchase order having purchaseOrderNum:"+spcheck.purchaseOrderNum+", ProductId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
             res.send(purchaseProduct);
@@ -196,9 +199,10 @@ router.get("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
 //CASE 7: Mangage Status Of Purchase Order Product i.e. warehouse name or num, tobe planned, tobe ordered/produced, tobe packed, tobe shiped
 router.get("/managestatus/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const {status}=req.body;
+    const {status, arrivingat}=req.body;
     const updatedProduct={};
     if(status){updatedProduct.status=status};
+    {updatedProduct.arrivingat=arrivingat}
     //Find the purchase order to be deleted
     let sproduct=await purchaseOrderMini.findById(req.params.id);
     if(!sproduct)
@@ -219,7 +223,7 @@ router.get("/managestatus/:id", fetchuser, async (req, res)=>{
     res.json({sproduct})
 })
 
-//CASE 8: Dispatch Sales Order Endpoint, You have to also provide the document id, company id, sales order num
+//CASE 8: Arrival of all purchase Order Endpoint, You have to also provide the document id, company id, sales order num
 router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     //Check first purchase order num and the companyId exists
     const {companyId, employeeId}=req.details;
@@ -238,7 +242,7 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     let statment="UserId:"+employeeId+" approved arrival of purchase order having purchaseOrderNum:"+sorder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
-    //Add this 
+    //Add this in the history of the arrived Orders instead of deleting them
     return res.json({success: "purchase order has been arrived"})
 })
 

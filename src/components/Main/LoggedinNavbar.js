@@ -1,7 +1,15 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 function LoggedinNavbar() {
+  
+  let navigate=useNavigate();
+  const handleLogout=()=>{
+    localStorage.removeItem('token');
+    navigate("/login");
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-light">
@@ -17,7 +25,7 @@ function LoggedinNavbar() {
                             <Link className="nav-link" to="/pricing">Pricing</Link>
                             <Link className="nav-link" to="/aboutus">About Us</Link>
                             <Link className="nav-link" to="/contactus">Contact Us</Link>
-                            <buton className="nav-link btn" to="/contactus">Logout</buton>
+                            <buton onClick={handleLogout} className="nav-link btn">Logout</buton>
                         </div>
                     </div>
                 </div>

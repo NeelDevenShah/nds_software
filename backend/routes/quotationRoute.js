@@ -26,8 +26,9 @@ router.get("/addquotation", fetchuser, async (req, res)=>{
         return res.status(400).send({error: "The quotation Number Of Same Already Exists"});
     }
     else{
-        const qout=new quotation(req.body);
-        qout.save();
+         req.body.companyId=companyId;
+         const qout=new quotation(req.body);
+         await qout.save();
 
          //Making entry in logbook
          var currentdate=new Date();
@@ -47,27 +48,30 @@ router.get("/addproduct/:id", fetchuser, async (req, res)=>{
    {
       return res.status(400).send({error: "The Company Id Does Not Exists"});
    }
-   let spcheck=await quotationMini.findOne({companyId: companyId, quotationNum: req.body.quotationNum, productId: req.body.productId});
-   if(spcheck)
-   {
-      return res.status(400).send({error: "The Product Already Exists in the Quotation"})
-   }
    else{
       //Main code for adding the product to the quotation
-      const quotationadd=new quotationMini(req.body);
       QuotationDetail= await quotation.findById(req.params.id);
       if(!QuotationDetail)
       {
          return res.status(404).send({error: "The Quotation Num does not exists, PLease enter right id"})
       }
+      let spcheck=await quotationMini.findOne({companyId: companyId, quotationNum: QuotationDetail.quotationNum, productId: req.body.productId});
+      if(spcheck)
+      {
+         return res.status(400).send({error: "The Product Already Exists in the Quotation"})
+      }
+      req.body.companyId=companyId;
+      req.body.quotationNum=QuotationDetail.quotationNum;
+      const quotationadd=new quotationMini(req.body);
+      await quotationadd.save();
+
+      //Update the totalAmount in the quotationDetail
       let temp=QuotationDetail.totalAmount+(req.body.quantity*req.body.perPicePrice);
       await quotation.findByIdAndUpdate(req.params.id, {$set:{totalAmount:temp}})
-
-      quotationadd.save();
       
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+employeeId+" added new quotation product having productId:"+req.body.productId+" in the quotationNum:"+req.body.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      let statment="UserId:"+employeeId+" added new quotation product having productId:"+req.body.productId+" in the quotationNum:"+QuotationDetail.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
       
       res.send(quotationadd);
@@ -87,7 +91,8 @@ router.get("/editproduct/:id", fetchuser, async (req, res)=>{
    let spcheck=await quotationMini.findById(req.params.id)
    if(spcheck)
    {
-      const {quotationNum, categoryId, categoryName, productId, productName, quantity, perPicePrice}=req.body;
+      const {quotationNum}=spcheck;
+      const {categoryId, categoryName, productId, productName, quantity, perPicePrice}=req.body;
       const updateProduct={};
       if(companyId){updateProduct.companyId=companyId};
       if(quotationNum){updateProduct.quotationNum=quotationNum};
@@ -197,7 +202,7 @@ router.get("/addtosales/:id", fetchuser, async (req, res)=>{
    }
    else{
       const newOrder=new SalesOrder(newSalesOrder);
-      newOrder.save();
+      await newOrder.save();
       let quotation1=await quotation.findByIdAndDelete(req.params.id)
       //Adding And Deleting products of the sales and quotation
       let orderProducts;
@@ -220,7 +225,7 @@ router.get("/addtosales/:id", fetchuser, async (req, res)=>{
             {newProduct.dispatchDate="2022-08-11T21:49:55.616+00:00"};
          
          const newprodu=new SalesOrderMini(newProduct);
-         newprodu.save();
+         await newprodu.save();
          }
       }
       while(orderProducts);

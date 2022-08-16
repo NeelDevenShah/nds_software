@@ -26,8 +26,9 @@ router.get("/addcategory", fetchuser, async (req, res)=>{
     {
         return res.status(400).json({error: "The product category already exists"})
     }
+    req.body.companyId=companyId;
     const cat=new newProductCategory(req.body);
-    cat.save();
+    await cat.save();
 
     //Making entry in logbook
     var currentdate=new Date();
@@ -51,8 +52,9 @@ router.get("/addnewproduct", fetchuser, async(req, res)=>{
     {
         return res.status(400).json({error: "The Product already exists"})
     }
+    req.body.companyId=companyId;
     const newprod=new newProduct(req.body);
-    newprod.save();
+    await newprod.save();
 
     //Making Entry In The Logbook
     var currentdate=new Date();
@@ -85,6 +87,7 @@ router.get("/addproduct/:id", fetchuser, async(req, res)=>{
         {newProdcutAtWare.predictedDemand=0};
         {newProdcutAtWare.prodWarehouseId=prodWarehouseId};
         
+        req.body.companyId=companyId;
         const newPr=new addProduct(newProdcutAtWare);
         await newPr.save();
 
@@ -137,7 +140,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     
     //Making entry in loogbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+"and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+" and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.json("Product Category successfull")
@@ -181,7 +184,7 @@ router.get("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
 
             //Making entry in loogbook
             var currentdate=new Date();
-            let statment="UserId:"+employeeId+"deleted product having Productid:"+prod.productId+", Productname:"+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            let statment="UserId:"+employeeId+" deleted product having Productid:"+prod.productId+", Productname:"+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
             res.send({success: "Product deleted successfull"});
@@ -230,7 +233,7 @@ router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
         
         //Making entry in loogbook
         var currentdate=new Date();
-        let statment="UserId:"+employeeId+"deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        let statment="UserId:"+employeeId+" deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         res.send({success: "Product Deleted Successfully"})
     }

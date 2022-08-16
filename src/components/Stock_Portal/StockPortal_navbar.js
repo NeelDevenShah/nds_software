@@ -1,7 +1,15 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 function StockPortal_navbar() {
+  
+  let navigate=useNavigate();
+  const handleLogout=()=>{
+    localStorage.removeItem('token');
+    navigate("/login")
+  }
+  
   return (
     <div>
       <nav className="navbar navbar-expand-lg bg-light">
@@ -23,7 +31,7 @@ function StockPortal_navbar() {
                             <Link className="nav-link" to="/stockportal/managequotations">Manage Quotations</Link>
                             <Link className="nav-link" to="/stockportal/addnewcategory">Add/View Product Category</Link>
                             <Link className="nav-link" to='/stockportal/managewarehouses'>Manage Warehouses</Link>
-                            <button type="button" class="btn btn-outline-dark">Logout</button>
+                            <button type="button" onClick={handleLogout} class="btn btn-outline-dark">Logout</button>
                         </div>
                     </div>
                 </div>
