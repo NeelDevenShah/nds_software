@@ -3,8 +3,6 @@ import React, { useState } from 'react'
 import plus from '../../../../images/stockPortal_images/plus.png'
 import add_item_image from '../../../../images/stockPortal_images/add_item_image.png'
 
-import DeleteQuotationModal from './DeleteQuotationModal'
-import AddSalesModal from './AddSalesModal'
 import AddItemModal from './AddItemModal'
 import AddQuotation from './AddQuotationModal'
 import EditQuotationModal from './EditQuotationModal'
@@ -47,8 +45,44 @@ function ManageQuotations() {
   return (
     // Staring
     <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
-      <AddSalesModal/>
-      <DeleteQuotationModal/>
+      {/* AddSalesModal */}
+      <div class="modal fade" id="AddToSalesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Adding Notification</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Once It Been Added To The Sales Order, The Action Cannot Be Reverted From Here
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary">Conform</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      {/*  */}
+      {/* DeleteQuotationModal */}
+      <div class="modal fade" id="DeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete Notification</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Once It Is Been Deleted, It Cannot Be Recovered
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-secondary">Conform</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      {/*  */}
       <AddItemModal/>
       <AddQuotation/>
       <EditQuotationModal/>

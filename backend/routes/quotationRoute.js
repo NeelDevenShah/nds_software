@@ -35,7 +35,7 @@ router.post("/addquotation", fetchuser, async (req, res)=>{
          let statment="UserId:"+employeeId+" created new quotation having quotationNum:"+req.body.quotationNum+" for "+req.body.dealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
          await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send(req.body);
+        res.send({success: "New Quotation Added Successfull"});
     }
 })
 
@@ -74,7 +74,7 @@ router.post("/addproduct/:id", fetchuser, async (req, res)=>{
       let statment="UserId:"+employeeId+" added new quotation product having productId:"+req.body.productId+" in the quotationNum:"+QuotationDetail.quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
       
-      res.send(quotationadd);
+      res.send({success: "New Product Added To Quotation Successfull"});
    }
 })
 
@@ -114,7 +114,7 @@ router.put("/editproduct/:id", fetchuser, async (req, res)=>{
       let statment="UserId:"+employeeId+" edited quotation product having productId:"+productId+" in quotationNum:"+quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-      res.json({qupdate});
+      res.send({success: "Quotation Edited successfully"});
    }
    else
    {

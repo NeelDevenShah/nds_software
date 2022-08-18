@@ -42,10 +42,10 @@ const newCompanySchema=new Schema({
         type: String,
         required: true,
     },
-    paymentNum:{
-        type: Number,
-        required: true,
-    },
+    // paymentNum:{
+    //     type: Number,
+    //     required: true,
+    // },
     date:{
         type: Date,
         default: Date.now,

@@ -8,17 +8,8 @@ const companyUser=require("../models/CompanyUser");
 const newCompany=require("../models/Company_registry")
 
 //For login of the company's user
-router.post("/login",[
-    body("companyId", "Enter An Number").isNumeric(),
-    body("employeeId", "Enter An Number").isNumeric(),
-], async (req,res)=>{
-    const errors=validationResult(req);
-    if(!errors.isEmpty())
-    {
-        return res.status(404).send({errors: errors.array()});
-    }
+router.post("/login", async (req,res)=>{
     const {companyId, employeeId, password}=req.body;
-
     //For the password being encreapted, Make first change the given passwoed and than check it by the help of the bcrypt.compare refer to pg 13 of documentation
 
     let user=await companyUser.findOne({companyId: companyId, employeeId: employeeId, password: password});
@@ -35,10 +26,11 @@ router.post("/login",[
            }
         }
         const authtoken=jwt.sign(data, JWT_SECRET);
-        res.json({authtoken});
+        res.send({success:"success", authtoken:authtoken});
     }
 })
 
+//Baki
 //For login of the company's Owner
 router.post("/cmplogin", [
     body("companyId", "Enter A Number").isNumeric()
@@ -46,7 +38,7 @@ router.post("/cmplogin", [
     const errors=validationResult(req);
     if(!errors.isEmpty())
     {
-        return res.status(404).send({errors: errors.array()});
+        return res.status(404).send({error: errors.array()});
     }
     const {companyId, password}=req.body;
 
@@ -65,7 +57,7 @@ router.post("/cmplogin", [
            }
         }
         const authtoken=jwt.sign(data, JWT_SECRET);
-        res.json({authtoken});
+        res.send({success:"success", authtoken:authtoken});
     }
 })
 module.exports=router

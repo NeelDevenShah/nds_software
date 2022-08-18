@@ -9,14 +9,26 @@ import Months_top_selling from '../dashboard/Genral_cards/Months_top_selling'
 import AddSameItemModal from './cards/AddSameItemModal'
 import MinusSameItemModal from './cards/MinusSameItemModal'
 import DeleteItemModal from './cards/DeleteItemModal'
+import {useNavigate} from 'react-router-dom'
 
 function StockPortal_items() {
   const dispatch=useDispatch();
+  const navigate=useNavigate();
+  
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_stock())
   }
+
+  const check=()=>{
+    if(localStorage.getItem('token')===null)
+    {
+      navigate("/login");
+    }
+  }
+
   return (
     <div className='bg-warning pb-5'>
+    {check()}
     <AddItemModal/>
     <AddSameItemModal/>
     <MinusSameItemModal/>

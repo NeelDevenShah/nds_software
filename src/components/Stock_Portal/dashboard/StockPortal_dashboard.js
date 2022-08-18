@@ -10,16 +10,27 @@ import Dead_stock from '../dashboard/Genral_cards/Dead_stock'
 
 import Sales_pending_orders from './cards/Sales_pending_orders'
 import Purchase_pending_orders from './cards/Purchase_pending_orders'
-
-// import Image from '../../Stock_Portal/Stock_Details/cards/Image'
+import {useNavigate} from 'react-router-dom'
 
 function StockPortal_dashboard() {
+  
   const dispatch = useDispatch();
+  const navigate=useNavigate();
+
   const pageStarting = () => {
     dispatch(ViewActions.do_view_stock())
   }
+
+  const check=()=>{
+    if(localStorage.getItem('token')===null)
+    {
+      navigate("/login");
+    }
+  }
+
   return (
     <div className='bg-warning pb-5'>
+      {check()}
       {pageStarting()}
       {/* <Image/> */}
       <h1 className='py-5'><strong>STOCK MANAGMENT PORTAL DASHBOARD</strong></h1>

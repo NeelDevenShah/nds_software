@@ -35,7 +35,7 @@ router.post("/addneworder", fetchuser, async (req, res)=>{
         let statment="UserId:"+employeeId+" created new purchase order having purchaseOrderNum:"+req.body.purchaseOrderNum+" for "+req.body.purchaseDealer+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send(req.body);
+        res.send({success: "New Product Order Created Successfully"});
     }
 })
 //CASE 2: Add new purchase product in purchase order Endpoint
@@ -77,7 +77,7 @@ router.post("/addpurchaseproduct/:id", fetchuser, fetchuser, async (req, res)=>{
             let statment="UserId:"+employeeId+" added new product for purchase order having purchaseOrderNum:"+spcheck.purchaseOrderNum+", ProductId:"+req.body.productId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send(purchaseProduct);
+            res.send({success: "New Prodcut added to purchase order successfully"});
         }
     }
 })
@@ -99,7 +99,7 @@ router.delete("/deleteorder/:id", fetchuser, fetchuser, async (req, res)=>{
     let statment="UserId:"+employeeId+" deleted purchase order having purchaseOrderNum:"+sorder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    return res.json({success: "purchase order has been deleted"})
+    return res.send({success: "purchase order has been deleted"})
 })
 
 //CASE 4: Delete an prouct of the purchase order Endpoint
@@ -141,11 +141,11 @@ router.put("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
     let porder=await purchaseOrder.findById(req.params.id);
     if(!porder)
     {
-        return res.status(404).send("The purchase order does not found");
+        return res.status(404).send({error: "The purchase order does not found"});
     }
     if(porder.companyId !=companyId)
     {
-        return res.status(404).send("Not Permited");
+        return res.status(404).send({error: "Not Permited"});
     }
     porder=await purchaseOrder.findByIdAndUpdate(req.params.id, {$set: updatedPurchase}, {new: true})
     
@@ -154,7 +154,7 @@ router.put("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
     let statment="UserId:"+employeeId+" edited purchase order having purchaseOrderNum:"+porder.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
-    res.json({porder})
+    res.send({success: "Purchase Order Information Edited Successfully"})
 })
 
 //CASE 6: Edit the purchase order's Product Information Endpoint
@@ -175,11 +175,11 @@ router.put("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
     let sproduct=await purchaseOrderMini.findById(req.params.id);
     if(!sproduct)
     {
-        return res.status(404).send("The purchase product does not found");
+        return res.status(404).send({error: "The purchase product does not found"});
     }
     if(sproduct.companyId !=companyId)
     {
-        return res.status(404).send("Not Permited");
+        return res.status(404).send({error: "Not Permited"});
     }
     snewproduct=await purchaseOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
     
@@ -193,7 +193,7 @@ router.put("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
     let statment="UserId:"+employeeId+" edited purchase order's product info having productNum:"+sproduct.productId+"And purchaseOrderNum:"+sproduct.purchaseOrderNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.json({sproduct})
+    res.send({success: "Purchase Order Edited Successfully"})
 })
 
 //CASE 7: Mangage Status Of Purchase Order Product i.e. warehouse name or num, tobe planned, tobe ordered/produced, tobe packed, tobe shiped
@@ -207,11 +207,11 @@ router.put("/managestatus/:id", fetchuser, async (req, res)=>{
     let sproduct=await purchaseOrderMini.findById(req.params.id);
     if(!sproduct)
     {
-        return res.status(404).send("The purchase product does not found");
+        return res.status(404).send({error: "The purchase product does not found"});
     }
     if(sproduct.companyId !=companyId)
     {
-        return res.status(404).send("Not Permited");
+        return res.status(404).send({error: "Not Permited"});
     }
     sproduct=await purchaseOrderMini.findByIdAndUpdate(req.params.id, {$set: updatedProduct}, {new: true})
     
@@ -220,7 +220,7 @@ router.put("/managestatus/:id", fetchuser, async (req, res)=>{
     let statment="UserId:"+employeeId+" changed status of purchase order having purchaseOrderNum:"+sproduct.purchaseOrderNum+" to:"+status+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
-    res.json({sproduct})
+    res.send({success: "Manage Updated Successfully"})
 })
 
 //CASE 8: Arrival of all purchase Order Endpoint, You have to also provide the document id, company id, sales order num

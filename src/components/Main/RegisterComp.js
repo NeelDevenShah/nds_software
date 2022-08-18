@@ -1,4 +1,6 @@
 import React from 'react'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
 import {ViewActions} from '../../store/view-slice'
@@ -7,28 +9,45 @@ let output;
 
 function RegisterComp() {
   
-  const dispatch=useDispatch();
-
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
   }
+  const dispatch=useDispatch();
+  const [data, setData]=useState({name:"", emailId:"", country:"", shopNum:"", add2:"", city:"", state:"", pincode:"", companyId:"", password:"", repassword:""})
+  const navigate=useNavigate();
 
-  function OnSubmitGo(event) {
-    //Dont forget to change its state
+  const submitCmpInfo= async (event)=>{
     event.preventDefault();
-    selectElement = document.querySelector('#selectCountry');
-    output = selectElement.value;
-    console.log(output)
-
-    //Now add the followig data in the
-
-    //Method of getting the data repetatively, without the clicking
-    // setInterval(function() {
-    //   selectElement = document.querySelector('#selectCountry');
-    // output=selectElement.value;
-    // console.log(output)
-    // }, 2000);
+    if(data.password==data.repassword)
+    {
+      const response=await fetch('http://localhost:5000/api/registry/registercompany', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({name:data.name, emailId:data.emailId, country:data.country, shopNum:data.shopNum, add2:data.add2, city:data.city, state:data.state, pincode:data.pincode, companyId:data.companyId, password:data.password})
+      })
+      const json=await response.json();
+      console.log(json)
+      if(json.success)
+      {
+        //Navigate to new company creation successful page or to the company's portal
+        navigate("/login")
+      }
+      else{
+        //The error from api is comming than show it using model
+      }
+    }
+    else{
+      //Make remove the password and repassword's value
+      console.log("Enter Right password, Both password does not matches")
+    }
   }
+
+  const onChange=(event)=>{
+    setData({...data, [event.target.name]: event.target.value})
+  }
+
   return (
     <div>
       {pageStarting()}
@@ -38,19 +57,19 @@ function RegisterComp() {
             <div className="card-body">
               <h1 className="card-title py-4"><strong>Company Registration Page</strong></h1>
               <div>
-                <form onSubmit={OnSubmitGo}>
+                <form onSubmit={submitCmpInfo}>
                   <div className="mb-3">
                     <label className="form-label"><strong>Enter Company Name :</strong></label>
-                    <input type="text" className="form-control" style={{textAlign: 'center'}} id="CompanyName" required />
+                    <input name='name' value={data.name} onChange={onChange} type="text" className="form-control" style={{textAlign: 'center'}} id="CompanyName" required />
                   </div>
                   <div className="mb-3">
                     <label className="form-label"><strong>Enter company email Id :</strong></label>
-                    <input type="email" className="form-control" style={{textAlign: 'center'}} id="CompanyEmail" required />
+                    <input name='emailId' value={data.emailId} onChange={onChange} type="email" className="form-control" style={{textAlign: 'center'}} id="CompanyEmail" required />
                   </div>
                   <div className="mb-3">
                     <label className="form-label"><strong>Enter company Address Details:</strong></label>
                     <div className="dropdown">
-                      <select id='selectCountry' className="btn btn-white dropdown-toggle my-3">
+                      <select name='country' value={data.country} onChange={onChange} id='selectCountry' className="btn btn-white dropdown-toggle my-3">
                         <option value='none'>Select Country</option>
                         <option value='India'>India</option>
                         <option value='Bangladesh'>Bangladesh</option>
@@ -60,24 +79,24 @@ function RegisterComp() {
                       </select>
                     </div>
 
-                    <input type="text" placeholder='Shop / Plot Number' style={{ textAlign: 'center' }} className="form-control" id="ShopNumber" required minLength={1} maxLength={5} />
-                    <input type="text" placeholder='Appartment, Unit, Building, Floor, etc..' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressDescription" required minLength={6} />
-                    <input type="text" placeholder='City' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressCity" required />
-                    <input type="text" placeholder='State/Province/Region' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressState" required />
-                    <input type="number" placeholder='Pin-Code' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressPincode" required minLength={6} maxLength={6} />
+                    <input name='shopNum' value={data.shopNum} onChange={onChange} type="text" placeholder='Shop / Plot Number' style={{ textAlign: 'center' }} className="form-control" id="ShopNumber" required minLength={1} maxLength={5} />
+                    <input name='add2' value={data.add2} onChange={onChange} type="text" placeholder='Appartment, Unit, Building, Floor, etc..' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressDescription" required minLength={6} />
+                    <input name='city' value={data.city} onChange={onChange} type="text" placeholder='City' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressCity" required />
+                    <input name='state' value={data.state} onChange={onChange} type="text" placeholder='State/Province/Region' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressState" required />
+                    <input name='pincode' value={data.pincode} onChange={onChange} type="number" placeholder='Pin-Code' style={{ textAlign: 'center' }} className="form-control my-2" id="AddressPincode" required minLength={6} maxLength={6} />
 
                     <div className="mb-3">
                   <label className="form-label"><strong>Enter Company Id Number You Want To Select</strong></label>
-                  <input type="number" style={{textAlign: 'center'}} className="form-control" id="password" />
+                  <input name='companyId' value={data.companyId} onChange={onChange} type="number" style={{textAlign: 'center'}} className="form-control" id="password" />
                 </div>
                   </div>
                   <div className="mb-3">
                     <label className="form-label"><strong>Enter Password For Your Account</strong></label>
-                    <input type="password" style={{textAlign: 'center'}} className="form-control" id="password1" placeholder='Make The Password Strong And It Must Contain One Capital Letter, One Special Keyword'/>
+                    <input name='password' value={data.password} onChange={onChange} type="password" style={{textAlign: 'center'}} className="form-control" id="password1" placeholder='Make The Password Strong And It Must Contain One Capital Letter, One Special Keyword'/>
                   </div>
                   <div className="mb-3">
                   <label className="form-label"><strong>Re-Enter Password For Your Account</strong></label>
-                  <input type="password" style={{textAlign: 'center'}} className="form-control" id="password2" placeholder='Make Sure Password Is Same As That Of First One'/>
+                  <input name='repassword' value={data.repassword} onChange={onChange} type="password" style={{textAlign: 'center'}} className="form-control" id="password2" placeholder='Make Sure Password Is Same As That Of First One'/>
                 </div>
                   {/* <Link type="submit" to='/loginselection' className="btn btn-secondary px-5">Submit</Link> */}
                   <button type="submit" className="btn btn-secondary px-5">Submit</button>

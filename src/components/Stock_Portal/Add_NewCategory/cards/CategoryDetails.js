@@ -1,69 +1,57 @@
 import React from 'react'
 import {useState} from 'react'
+import {useEffect} from 'react'
 
+import CategoryItems from './CategoryItems'
 function WarehousesDetails() {
-  const ItemCategory = [
-    {
-      'cname': 'pen',
-      'qty': '1200'
-    },
-    {
-      'cname': 'pencil',
-      'qty': '3000'
-    },
-    {
-      'cname': 'Ruller',
-      'qty': '2500'
-    },
-    {
-      'cname': 'Rubber',
-      'qty': '1200'
-    },
-    {
-      'cname': 'Notebook',
-      'qty': '550'
-    },
-    {
-      'cname': 'Paper',
-      'qty': '600'
-    },
-  ]
-  const [newCategory, setCategory] = useState(ItemCategory)
-  const ItemByCategory=[
-    {
-      'item': 'Black Pen',
-      'qty': '5000'
-    },
-    {
-      'item': 'Red Pen',
-      'qty': '4000'
-    },
-    {
-      'item': 'Blue Pen',
-      'qty': '3500'
-    },
-    {
-      'item': 'Pink Pen',
-      'qty': '2000'
-    },
-  ]
-  const [newItemList, setItemList] =useState(ItemByCategory)
+
+  useEffect(()=>{
+    getCategoryData();
+  }, [])
+
+  const dataCat=[]
+  const [catData, setCatData]=useState(dataCat)
+
+  const getCategoryData=async()=>{
+    const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
+      method: 'GET',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    setCatData(json)
+  }
+
+  const item=[];
+  const [catitem, setCatitem]=useState(item);
+
+    const getItemData=async(id)=>{
+        console.log("h")
+        const response=await fetch(`http://localhost:5000/api/getdata/getcategorywisestock/62fc0d425ba9fdcd6fd90f75`, {
+          method: 'GET',
+          headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+        })
+        const json=await response.json();
+        setCatitem(json);
+  }
   return (
     <div className='container bg-white py-3 my-4' style={{ borderRadius: '5px' }}>
       <h2 className='pt-3'><strong>Category Wise Stock</strong></h2>
       <div className='container'>
         <div className='row'>
-
-        {newCategory.map((cat)=>{
-          return  <div className={`col-md-4 my-4`}>
+        {catData.map((cat)=>{
+          return  <div key={cat._id} className={`col-md-4 my-4`}>
           <div class="card">
             <div class="card-body">
-              <p class="card-text"><strong>{cat.cname}</strong></p>
+              <p class="card-text"><strong>{cat.pcname}</strong></p>
               <hr />
               <div className='container'>
-                {newItemList.map((list)=>{
-                    return  <p>{list.item}: {list.qty} units</p>
-                })}  
+              <CategoryItems id={cat._id} key={cat._id}/>
               </div>
             </div>
           </div>

@@ -29,20 +29,19 @@ router.post("/registerCompany",  [
     body('pincode', 'Enter valid Pincode').isNumeric().isLength({min: 6}).isLength({max: 6}),
     body('companyId', 'Enter an valid company Id').isNumeric(),
     body('password', 'Enter an strong Password').isLength({min: 3}),
-    body('paymentNum', 'Enter valid payment number').isNumeric(),
 ],async(req, res)=>{
     //If there are errors than return bad request and errors
     const errors=validationResult(req);
     if(!errors.isEmpty())
     {
-        return res.status(400).json({errors: errors.array()});
+        return res.status(404).send({error: errors.array()});
     }
     //Check if the wanted company id already exists
     let cmpNum=await newCompany.findOne({companyId: req.body.companyId});
     try{
         if(cmpNum)
         {
-            return res.status(400).json({error: "Sorry the company with this id already exists, Please enter any other id"})
+            return res.status(404).send({error: "Sorry the company with this id already exists, Please enter any other id"})
         }
     }
     catch(error)
@@ -55,12 +54,12 @@ router.post("/registerCompany",  [
     //Making default warehouse of the company which cannot be deleted
     defaultWareHouse={};
     {defaultWareHouse.companyId=req.body.companyId};
-    {defaultWareHouse.wname='default'};
-    {defaultWareHouse.shopNum='default'};
-    {defaultWareHouse.add2='default'};
-    {defaultWareHouse.city='default'};
-    {defaultWareHouse.state='default'};
-    {defaultWareHouse.country='default'};
+    {defaultWareHouse.wname='Default'};
+    {defaultWareHouse.shopNum='Default'};
+    {defaultWareHouse.add2='Default'};
+    {defaultWareHouse.city='Default'};
+    {defaultWareHouse.state='Default'};
+    {defaultWareHouse.country='Default'};
     {defaultWareHouse.pincode=0};
     {defaultWareHouse.warehouseId=0};
     const nwh=new newWarehouse(defaultWareHouse);
@@ -70,7 +69,7 @@ router.post("/registerCompany",  [
     defaultCategory={};
     {defaultCategory.companyId=req.body.companyId};
     {defaultCategory.categoryId=0};
-    {defaultCategory.pcname='default'};
+    {defaultCategory.pcname='Default'};
     const dfcat=new NewProductCategory(defaultCategory);
     await dfcat.save();
 
@@ -84,21 +83,12 @@ router.post("/registerCompany",  [
     var currentdate=new Date();
     let statment="UserId:-1 created new company And default warehouse and product Catregory at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: req.body.companyId},{$push:{comment: [statment]}})
-    res.send(req.body)
+    res.send({success: "Company Registration Successfull"})
 })
 
 //CASE 2: Company new User endpoint(Owner's Portal)
-router.post("/registeruser", fetchcompany,[
-    body('name', 'Enter an valid name').isLength({min: 3}),
-    body('password', 'Enter an valid password').isLength({min: 3}),
-    body('employeeId', 'Enter an valid employee Id').isNumeric(),
-], async (req, res)=>{
+router.post("/registeruser", async (req, res)=>{
     const {companyId}=req.details;
-    const errors=validationResult(req);
-        if(!errors.isEmpty())
-        {
-            return res.status(400).json({errors: errors.array()});
-        }
         //Check wheather the user with this id already exists already
         let cmpcheck=await newCompany.findOne({companyId: companyId});
         let user=await companyUser.findOne({companyId: companyId, employeeId: req.body.employeeId});
@@ -114,7 +104,7 @@ router.post("/registeruser", fetchcompany,[
         }
         catch(error)
         {
-            res.status(500).send("Internal Server Error");
+            res.status(500).send({error: "Internal Server Error"});
         }
         req.body.companyId=companyId;
         const cmp=new companyUser(req.body);
@@ -124,35 +114,27 @@ router.post("/registeruser", fetchcompany,[
         var currentdate=new Date();
         let statment="UserId:-1 created new user having UserId:"+req.body.employeeId+", having name: "+req.body.name+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-        res.send(req.body);
+        res.send({success: "Company User Created Successfully"});
 })
 
 //CASE 3: New Warehouse Registry endPoint
-router.post("/registerwarehouse", fetchuser,[
-    body('wname', 'Enter a valid name').isString(),
-    body('shopNum', 'Enter a valid shop number').isLength({min: 2}),
-    body('add2', 'Enter a valid address').isString(),
-    body('city', 'Enter a valid city').isString(),
-    body('state', 'Enter a valid state').isString(),
-    body('country', 'Enter a valid country').isString(),
-    body('pincode', 'Enter a valid pincode').isNumeric().isLength({min: 6}).isLength({max: 6}),
-],async (req, res)=>{
+router.post("/registerwarehouse", fetchuser ,async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const errors=validationResult(req);
-    if(!errors.isEmpty())
-    {
-        return res.status(400).json({errors: errors.array()})
-    }
     //Checking if the warehouse by this name already exists
     let cmpcheck=await newCompany.findOne({companyId: companyId});
-    let wareh=await newWarehouse.findOne({companyId: companyId, wname: req.body.wname});
     if(!cmpcheck)
     {
         return res.status(400).json({error: "The company with such id does not exists"})
     }
+    let wareh=await newWarehouse.findOne({companyId: companyId, warehouseId: req.body.warehouseId});
     if(wareh)
     {
-        return res.status(400).json({error: "The warehouse of this id or name already exists"})
+        return res.status(400).json({error: "The warehouse of this id already exists"})
+    }
+    let wareh1=await newWarehouse.findOne({companyId: companyId, wname: req.body.wname});
+    if(wareh1)
+    {
+        return res.status(400).json({error: "The warehouse of this name already exists"})
     }
     req.body.companyId=companyId;
     const nwh=new newWarehouse(req.body);
@@ -163,7 +145,7 @@ router.post("/registerwarehouse", fetchuser,[
     let statment="UserId:"+employeeId+" created new warehouse having whid:"+req.body.warehouseId+", whname: "+req.body.wname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send(req.body);
+    res.send({success: "New Warehouse Registered Successfully"});
 })
 
 //CASE 4:Delete The Company's User(Owner's Portal)
@@ -215,7 +197,7 @@ router.delete("/deletewarehouse/:id", fetchuser, async (req,res)=>{
     let statment="UserId:"+employeeId+" deleted company's warehouse having whid:"+whdetails.warehouseId+", wname:"+whdetails.wname+" and things attached to this wh is transfered to default wh at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.json("Warehouse delete successfull")
+    res.send({success: "Warehouse delete successfull"})
 })
 
 //CASE 6:Delet An Company

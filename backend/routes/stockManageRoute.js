@@ -43,7 +43,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="User having userId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.json({Success: "Product Moved Successfully"})
+            res.send({Success: "Product Moved Successfully"});
         }
         else
         {
@@ -69,7 +69,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send(req.body);
+            res.send({Success: "Product Moved Successfully"});
         }
     }
     if(quantity<qty)
@@ -94,7 +94,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.json({Success: "Product Moved Successfully"})
+            res.send({success: "Product Moved Successfully"})
         }
         else
         {
@@ -122,7 +122,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
              let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
              await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-            res.send(req.body);
+             res.send({success: "Product Moved Successfully"})
         }
     }
 })
@@ -163,7 +163,7 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         let statment="UserId:"+employeeId+" has deleted all qtys of product having productId:"+productId+" from warehouse having whid:"+prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send({Success: "The Product Delete Successfull"});
+        res.send({success: "The Product Delete Successfull"});
     }
     else
     {
@@ -180,7 +180,7 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         let statment="UserId:"+employeeId+" has deleted "+qty+" qtys of product having productId:"+productId+" from warehouse having whid:"+prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send({Success: "Product Delete Successfully"})
+        res.send({success: "Product Delete Successfully"})
     }
 })
 module.exports=router

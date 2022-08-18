@@ -24,6 +24,11 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     let category1=await newProductCategory.findOne({companyId: companyId, categoryId: req.body.categoryId});
     if(category1)
     {
+        return res.status(400).json({error: "The product id already exists"})
+    }
+    let category2=await newProductCategory.findOne({companyId: companyId, pcname: req.body.pcname});
+    if(category2)
+    {
         return res.status(400).json({error: "The product category already exists"})
     }
     req.body.companyId=companyId;
@@ -35,7 +40,7 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     let statment= "UserId:"+employeeId+" added new product category having categoryId:"+req.body.categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send(req.body)
+    res.send({success: "New Product Category Added Successfully"})
 })
 
 //CASE 2:Add new Product Endpoint
@@ -47,7 +52,7 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     {
         return res.status(400).json({error: "The company with such id does not exists"})
     }
-    let product=await newProduct.findOne({companyId: companyId, productId: req.body.productId})
+    let product=await newProduct.findOne({companyId: companyId, categoryId: req.body.categoryId ,productId: req.body.productId})
     if(product)
     {
         return res.status(400).json({error: "The Product already exists"})
@@ -61,7 +66,7 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     let statment="UserId:"+employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+req.body.productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send(req.body);
+    res.send({success: "New Product added successfully"});
 })
 
 //CASE 3: Add more product to existing product at specific address, If exists than update its quantity, _id required as the parameter Endpoint
@@ -99,7 +104,7 @@ router.post("/addproduct/:id", fetchuser, async(req, res)=>{
         let statment="UserId:"+employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send(req.body);   
+        res.send({success: "More Product Added Successfull"});   
     }
     //CASE B: If exists at the specific position than update its quantity by adding the new quantity to existsing one
     else
@@ -113,7 +118,7 @@ router.post("/addproduct/:id", fetchuser, async(req, res)=>{
         let statment="UserId:"+req.body.employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         
-        res.send(req.body);
+        res.send({success: "More Product Added Successfull"}); 
     }
 })
 
@@ -143,7 +148,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     let statment="UserId:"+employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+" and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.json("Product Category successfull")
+    res.send({success: "Product deleted successfully"})
 })
 
 //CASE 5:Subtract Some product from a warehouse of company

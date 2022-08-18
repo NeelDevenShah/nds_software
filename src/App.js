@@ -31,6 +31,8 @@ import StockPortal_managequotations from './components/Stock_Portal/Manage_Quota
 import StockPortal_addnewcategory from './components/Stock_Portal/Add_NewCategory/StockPortal_addnewcategory'
 import StockPortal_managewarehouses from './components/Stock_Portal/Manage_Warehouses/StockPortal_managewarehouses'
 
+import Context from './Context';
+
 import{
   BrowserRouter as Router,
   Route,
@@ -49,7 +51,7 @@ function App() {
   return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-   
+          {/* <Context.Provider value={{getData}}> */}
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}
@@ -82,8 +84,9 @@ function App() {
             </Routes>
             <Main_footer/>
           </Router>
+          {/* </Context.Provider> */}
     </div>
   );
 }
 
-export default App;
+export default App
