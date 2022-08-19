@@ -43,7 +43,7 @@ router.get("/getquotations", fetchuser, async (req,res)=>{
 })
 
 router.get("/getquotationproducts", fetchuser, async (req,res)=>{
-    const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationNum: req.body.quotationNum});
+    const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationNum: req.header("quotationNum")});
     res.json(productsofquotation);
 })
 
@@ -76,5 +76,9 @@ router.get("/productsofsalesorder", fetchuser, async (req,res)=>{
     const prodofsalesorder=await SalesOrderMini.find({companyId: req.details.companyId, SalesOrderNum: req.body.SalesOrderNum});
     res.json(prodofsalesorder);
 })
+
+// router.get("/getproductofcategory", fetchuser, async (req, res)=>{
+//     const products=await newproduct_registry.find({companyId: req.details.companyId, categoryId: })
+// })
 
 module.exports=router

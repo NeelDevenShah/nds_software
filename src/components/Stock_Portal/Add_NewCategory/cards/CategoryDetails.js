@@ -4,7 +4,7 @@ import {useEffect} from 'react'
 
 import CategoryItems from './CategoryItems'
 function WarehousesDetails() {
-
+  //At the loading of the page this would run first
   useEffect(()=>{
     getCategoryData();
   }, [])
@@ -12,6 +12,7 @@ function WarehousesDetails() {
   const dataCat=[]
   const [catData, setCatData]=useState(dataCat)
 
+  //For getting the data of the quotation
   const getCategoryData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
       method: 'GET',
@@ -22,22 +23,6 @@ function WarehousesDetails() {
     })
     const json=await response.json();
     setCatData(json)
-  }
-
-  const item=[];
-  const [catitem, setCatitem]=useState(item);
-
-    const getItemData=async(id)=>{
-        console.log("h")
-        const response=await fetch(`http://localhost:5000/api/getdata/getcategorywisestock/62fc0d425ba9fdcd6fd90f75`, {
-          method: 'GET',
-          headers:{
-            'Content-Type': 'application/json',
-            'auth-token': localStorage.getItem('token')
-          },
-        })
-        const json=await response.json();
-        setCatitem(json);
   }
   return (
     <div className='container bg-white py-3 my-4' style={{ borderRadius: '5px' }}>
@@ -51,6 +36,7 @@ function WarehousesDetails() {
               <p class="card-text"><strong>{cat.pcname}</strong></p>
               <hr />
               <div className='container'>
+              {/* It is calling another method for getting the products at the given warehouse by the help of the id */}
               <CategoryItems id={cat._id} key={cat._id}/>
               </div>
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react'
 import plus from '../../../../images/stockPortal_images/plus.png'
 
 function MangeWarehouses() {
-
+  //At the loading of the page this would run first
   useEffect(()=>{
     getwareData()
   }, [])
@@ -11,6 +11,7 @@ function MangeWarehouses() {
   const [whdata, setWhdata]=useState(wareh)
   const [nwhdata, setnwhdata]=useState({wname:"", shopNum:"", add2:"", city:"", state:"", country:"", pincode:"", warehouseId:""})
 
+  //Method for getting the data of the warehouse
   const getwareData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getwarehouses', {
       method: 'GET',
@@ -23,6 +24,7 @@ function MangeWarehouses() {
     setWhdata(json);
   }
 
+  //Method for deleting the warehouse
   const deleteWarehouse=async(delId)=>{
     const response=await fetch(`http://localhost:5000/api/registry/deletewarehouse/${delId}`, {
       method: 'DELETE',
@@ -35,6 +37,7 @@ function MangeWarehouses() {
     getwareData();
   }
 
+  //Method for adding the warehouse
   const addNewWarehouse=async()=>{
     let newehid=0;
     whdata.map((whd)=>{

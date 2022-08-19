@@ -92,17 +92,13 @@ router.put("/editproduct/:id", fetchuser, async (req, res)=>{
    if(spcheck)
    {
       const {quotationNum}=spcheck;
-      const {categoryId, categoryName, productId, productName, quantity, perPicePrice}=req.body;
-      const updateProduct={};
-      if(companyId){updateProduct.companyId=companyId};
-      if(quotationNum){updateProduct.quotationNum=quotationNum};
-      if(categoryId){updateProduct.categoryId=categoryId};
-      if(categoryName){updateProduct.categoryName=categoryName};
-      if(productId){updateProduct.productId=productId};
-      if(productName){updateProduct.productName=productName};
-      if(quantity){updateProduct.quantity=quantity};
-      if(perPicePrice){updateProduct.perPicePrice=perPicePrice};
-      qupdate=await quotationMini.findByIdAndUpdate(req.params.id, {$set: updateProduct}, {new: true})
+      const {productId, quantity, perPicePrice}=req.body;
+      
+      // const updateProduct={};
+      // if(quantity){updateProduct.quantity=quantity};
+      // if(perPicePrice){updateProduct.perPicePrice=perPicePrice};
+      
+      qupdate=await quotationMini.findByIdAndUpdate(req.params.id, {$set: {quantity: quantity, perPicePrice: perPicePrice}})
       
       //Making change in the qutation's total Amount
       QuotationDetail= await quotation.findOne({companyId: companyId, quotationNum: quotationNum});
@@ -238,4 +234,11 @@ router.get("/addtosales/:id", fetchuser, async (req, res)=>{
       res.send({success: "New Product Added successfull to the sales Order"});
    }
 })
+
+//CASE 7:Get the details of the product at the given id
+router.get("/getproductdetailsbyid/:id", fetchuser, async (req, res)=>{
+   const {companyId}=req.details;
+   let quotationDetail=await quotationMini.findById(req.params.id);
+   res.send(quotationDetail);
+}) 
 module.exports=router;
