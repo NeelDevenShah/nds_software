@@ -93,10 +93,6 @@ router.put("/editproduct/:id", fetchuser, async (req, res)=>{
    {
       const {quotationNum}=spcheck;
       const {quantity, perPicePrice}=req.body;
-      
-      // const updateProduct={};
-      // if(quantity){updateProduct.quantity=quantity};
-      // if(perPicePrice){updateProduct.perPicePrice=perPicePrice};
       if(quantity=="" || perPicePrice=="")
       {
          return res.status(404).send({error: "enter right values"})

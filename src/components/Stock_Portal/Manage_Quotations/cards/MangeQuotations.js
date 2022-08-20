@@ -31,27 +31,6 @@ function ManageQuotations() {
       setcmpQdata(json);
   }  
 
-  const [nqprodData, setNqprodData]=useState({categoryId:"", categoryName:"", productId:"", productName:"", quantity:"", perPicePrice:""})
-  //For adding the new product to the quotation
-  // const addnewproducttoquot=async()=>{
-  //   const response=await fetch(`http://localhost:5000/api/getdata/getquotationproducts`, {
-  //       method: 'POST',
-  //       headers:{
-  //         'Content-Type': 'application/json',
-  //         'auth-token': localStorage.getItem('token')
-  //       },
-  //       body: JSON.stringify({categoryId:nqprodData.categoryId, categoryName:nqprodData.categoryName, productId:nqprodData.productId, productName:nqprodData.productName, quantity:nqprodData.quantity, perPicePrice:nqprodData.perPicePrice})
-  //     })
-  //     const json=await response.json();
-  //     if(json.success)
-  //     {
-  //       console.log("Product added successfully")
-  //     }
-  //     else{
-  //       console.log("Product does not being added an error commed")
-  //     }
-  // }
-
   const [newqdata, setNewqdata]=useState({quotationNum:"", dealer:""})
   //For adding the new quotation
   const addquotation=async()=>{
@@ -98,8 +77,8 @@ function ManageQuotations() {
   }
 
   let ItemCat=[];
-  const [newCategory, setCategory] = useState(ItemCat)
-  //To get the data of category
+  const [categoryModal, setCategoryModal] = useState(ItemCat)
+  //To get the data of category for the Add new product Modal
   const getCategoryData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
       method: 'GET',
@@ -109,30 +88,79 @@ function ManageQuotations() {
       },
     })
     const json=await response.json();
-    setCategory(json)
+    setCategoryModal(json)
+  }
+  
+const Item = []
+const [productsOfCatModal, setProductsOfCatModalModal] = useState(Item)
+const [apicategoryId, setapicategoryId]=useState(-1);
+//apiProductId will be set directly by the onChange function of the select 
+const [apiproductId, setapiproductId]=useState(-1);
+//For the new product's modal's product according to the category and setting the final categoryId
+const productbycategoryIdforModal=async(categoryId)=>{
+  if(categoryId!=-1)
+  {
+    setapicategoryId(categoryId);  
+    const response=await fetch(`http://localhost:5000/api/getdata//getproductofcategory`, {
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token'),
+        'categoryId': categoryId
+        },
+      })
+      const json=await response.json();
+      setProductsOfCatModalModal(json);
+    }
   }
 
-const Item = [
-    {
-        id: 1,
-        'item': 'Blue Pen',
-    },
-    {
-        id: 2,
-        'item': 'Black Pen',
-    },
-    {
-        id: 3,
-        'item': 'Red PEn',
-    }
-]
-const [newItem, setItem] = useState(Item)
-const [nqprodyct, Setnqprodyct] = useState()
-const onChange = (event) => {
-    Setnqprodyct({ ...nqprodyct, [event.tatget.name]: [event.tatget.value] })
-}
-  //
-  let QdelqId=0, i=1;
+  const [nqprodData, setNqprodData]=useState({nqpquantity:0, nqpPPP:0})
+  //For adding the new product to the quotation
+  const addnewproducttoquot=async(id)=>{
+        console.log(id)
+        let categoryName="", productName="";
+        categoryModal.map((data)=>{
+          if(data.categoryId==apicategoryId)
+          {
+            categoryName=data.pcname;
+          }
+        })
+        productsOfCatModal.map((data)=>{
+          if(data.productId==apiproductId)
+          {
+            productName=data.productName;
+          }
+        })
+    const response=await fetch(`http://localhost:5000/api/quotation/addproduct/${id}`, {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:nqprodData.nqpquantity, perPicePrice:nqprodData.nqpPPP})
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        console.log("Product added successfully")
+      }
+      else{
+        console.log(json)
+        console.log("Product does not being added an error commed")
+      }
+  }
+
+   //For the new product's quantity and ppp
+   const onChange3=(event)=>{
+    setNqprodData({...nqprodData, [event.target.name]: event.target.value})
+   }
+
+  // const expt=()=>{
+  //   console.log(nqprodData.nqpquantity);
+  //   console.log(nqprodData.nqpPPP);
+  // }
+
+  let QdelqId=0, i=1, newprodQid=0;
   return (
 
     <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
@@ -190,43 +218,42 @@ const onChange = (event) => {
                             <div class="mb-3">
                                 <label class="form-label">Select The Product Category</label>
                                 <div class="dropdown">
-                                    <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
-                                        <option selected>Select</option>
+                                    <select id='selectCategory' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{productbycategoryIdforModal(event.target.value)}}>
+                                        <option selected value={-1}>Select</option>
                                         {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                        {newCategory.map((cat) => {
+                                        {categoryModal.map((cat) => {
                                             return <option value={cat.categoryId}>{cat.pcname}</option>
                                         })}
                                     </select>
-                                    {/* {console.log(selected.value)} */}
                                 </div>
                                 </div>
-
                                 <div class="mb-3">
                                     <label class="form-label">Select The Product</label>
                                     {/* For taking the value from the database of the saved category use following method, where notes comes from the database, and instead it you can take anyt name */}
 
                                     <div class="dropdown">
-                                        <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
-                                            <option selected>Select</option>
+                                        <select id='products' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{setapiproductId(event.target.value)}}>
+                                            <option selected value={-1}>Select</option>
                                             {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                            {newItem.map((itm) => {
-                                                return <option value={itm.category}>{itm.item}</option>
+                                            {productsOfCatModal.map((itm) => {
+                                                return <option value={itm.productId}>{itm.productName}</option>
                                             })}
                                         </select>
                                     </div>
                                     </div>
 
                                     <label class="form-label">Enter Quantity Of Product</label>
-                                    <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
-                                    
+                                    <input type="number" name= "nqpquantity" value={nqprodData.nqpquantity} onChange={onChange3} class="form-control text-center" id="Itemquty" required />
+                                    {/* <input type="text" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="compName" value={newqdata.compName} onChange={onChangeForNewQ} required /> */}
+
                                     <label class="form-label">Enter Per-Piece Price</label>
-                                    <input type="number" class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required />
+                                    <input type="number" name="nqpPPP" value={nqprodData.nqpPPP} onChange={onChange3} class="form-control text-center" id="Itemprice" required />
                             
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-secondary">Add</button>
+                        <button type="button" onClick={()=>(addnewproducttoquot(newprodQid))} class="btn btn-secondary" data-bs-dismiss="modal">Add</button>
                     </div>
                 </div>
             </div>
@@ -286,7 +313,7 @@ const onChange = (event) => {
               </div>
               <p>Total Quotation Amount: <strong>{QcmpDetail.totalAmount}</strong></p>
               <hr/>
-              <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
+              <button type="button" onClick={newprodQid=QcmpDetail._id} class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
               <hr />
               <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#AddToSalesModal">Add To Sales Order</button>
               <button type="button" onClick={QdelqId=QcmpDetail._id} class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal">Delete</button>

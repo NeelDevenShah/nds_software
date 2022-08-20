@@ -77,8 +77,9 @@ router.get("/productsofsalesorder", fetchuser, async (req,res)=>{
     res.json(prodofsalesorder);
 })
 
-// router.get("/getproductofcategory", fetchuser, async (req, res)=>{
-//     const products=await newproduct_registry.find({companyId: req.details.companyId, categoryId: })
-// })
+router.get("/getproductofcategory", fetchuser, async (req, res)=>{
+    const products=await newproduct_registry.find({companyId: req.details.companyId, categoryId: req.header("categoryId")});
+    res.json(products);
+})
 
 module.exports=router
