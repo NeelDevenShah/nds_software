@@ -9,7 +9,7 @@ import {useContext} from 'react'
 function ManageQuotations() {
 
   const context=useContext(Context);
-  const {delprodId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}=context;
+  const {delprodId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}=context;
 
   //At the loading of the page this would run first
   useEffect(()=>{
@@ -31,7 +31,7 @@ function ManageQuotations() {
       setcmpQdata(json);
   }  
 
-  const [newqdata, setNewqdata]=useState({quotationNum:"", dealer:""})
+  const [newqdata, setNewqdata]=useState({dealer:""})
   //For Adding New Quotation
   const addquotation=async()=>{
     const response=await fetch(`http://localhost:5000/api/quotation/addquotation`, {
@@ -40,7 +40,7 @@ function ManageQuotations() {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
         },
-        body: JSON.stringify({quotationNum: newqdata.quotationNum, dealer: newqdata.compName, totalAmount:0})
+        body: JSON.stringify({dealer: newqdata.compName, totalAmount:0})
       })
       const json=await response.json();
       if(json.success)
@@ -161,18 +161,33 @@ const productbycategoryIdforModal=async(categoryId)=>{
   }
 
   //For Adding The Whole Order To The Sales Order
-  const [datatosales, setdatatosales]=useState({brokername:"", paymentNum:"", paymentcat:"", dipatchDay:"", dipatchMonth:"", dipatchYear:"", comment:""})
+  const [datatosales, setdatatosales]=useState({brokername:"", paymentNum:"", dipatchDay:"", dipatchMonth:"", dipatchYear:"", comment:""})
   const onChange4=(event)=>{
     setdatatosales({...datatosales, [event.target.name]: event.target.value})
   }
+  const [tosalesId, setTosalesId]=useState(0);
   const sendItToSales=async()=>{
-    console.log(datatosales.brokername)
-    console.log(datatosales.paymentNum)
-    console.log(datatosales.paymentcat)
-    console.log(datatosales.dipatchDay)
-    console.log(datatosales.dipatchMonth)
-    console.log(datatosales.dipatchYear)
-    console.log(datatosales.comment)
+    console.log(tosalesId)
+    // console.log(datatosales.dipatchDay)
+    // console.log(datatosales.dipatchMonth)
+    // console.log(datatosales.dipatchYear)
+    const response=await fetch(`http://localhost:5000/api/quotation/addtosales/${tosalesId}`, {
+      method: 'POST',
+      headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+      },
+      body: JSON.stringify({brokerName:datatosales.brokername, paymentTerm:datatosales.paymentNum, comment:datatosales.comment, mainDispatchDate:datatosales.dipatchDay+"/"+datatosales.dipatchMonth+"/"+datatosales.dipatchYear})
+    })
+    const json=await response.json();
+    if(json.success)
+    {
+      console.log("Send to sales successfull");
+    }
+    else{
+      console.log("failed due to an error");
+      console.log(json)
+    }
   }
 
   const [newprodQid, setnewProdQid]=useState(0);
@@ -193,22 +208,10 @@ const productbycategoryIdforModal=async(categoryId)=>{
             <hr/>
             <form>
                 <div class="mb-3">
-                <label class="form-label">Enter An Unique Sales Order Id, That does not exists in system</label>
-                    <input type="text" name="salesNum" value={datatosales.salesNum} onChange={onChange4} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
                     <label class="form-label">Enter Broker Name Who Booked Order</label>
                     <input type="text" name="brokername" value={datatosales.brokername} onChange={onChange4} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
-                    <label class="form-label">Enter Payment Conditions</label>
-                    <div className='row mx-auto'>
-                    <input type="number" name="paymentNum" value={datatosales.paymentNum} onChange={onChange4} style={{width: '100px', height: '32px', marginLeft: '130px'}} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
-                    <select name='paymentcat' onChange={onChange4} id='paymentcat' style={{width: '100px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                      <option selected value={0}>Minutes</option>
-                      <option selected value={1}>Hours</option>
-                      <option selected value={2}>Days</option>
-                      <option selected value={3}>Weeks</option>
-                      <option selected value={4}>Months</option>
-                      <option selected value={5}>Years</option>
-                    </select>
-                    </div>
+                    <label class="form-label">Enter Payment Terms(In Days)</label>
+                    <input type="number" name="paymentNum" value={datatosales.paymentNum} onChange={onChange4} style={{width: '75px', height: '32px'}} class="form-control text-center mx-auto" id="comp" aria-describedby="emailHelp" required />
                     <label class="form-label">Enter Average Dispatch Date Of Sales Order</label>
                     <div className='row mx-auto'>
                     <select id='dipatchDate' name='dipatchDay' onChange={onChange4} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
@@ -308,8 +311,6 @@ const productbycategoryIdforModal=async(categoryId)=>{
                     <div class="modal-body">
                         <form>
                             <div class="mb-3">
-                            <label class="form-label">Enter An Unique Quotation Id</label>
-                                <input type="number" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="quotationNum" value={newqdata.quotationNum} onChange={onChangeForNewQ} required />
                                 <label class="form-label">Enter The Name Of Company To Whom Quotation Is To Be Given</label>
                                 <input type="text" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="compName" value={newqdata.compName} onChange={onChangeForNewQ} required />
                             </div>
@@ -332,7 +333,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
           <div class="card">
             <div class="card-body">
               <h4 class="card-title"><strong>Quotation #{i++}</strong></h4>
-              <p class="card-text"><strong>Dealer: {QcmpDetail.dealer}, QuotationId: {QcmpDetail.quotationNum}</strong></p>
+              <p class="card-text"><strong>Dealer: {QcmpDetail.dealer}, QuotationId: {QcmpDetail.quotationId}</strong></p>
               <div className='table-responsive'>
               <table class="table table-responsive">
                 <thead>
@@ -345,7 +346,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
                     <th scope="col">Delete</th>
                   </tr>
                 </thead>
-                <GetQuotationProducts key={QcmpDetail._id+1} quotationNum={QcmpDetail.quotationNum} getQData={getQData}/>
+                <GetQuotationProducts key={QcmpDetail._id+1} quotationId={QcmpDetail.quotationId} getQData={getQData}/>
               </table>
               </div>
               <p>Total Quotation Amount: <strong>{QcmpDetail.totalAmount}</strong></p>
@@ -401,7 +402,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
       {/*  */}
               <button type="button" onClick={()=>{handleAddnewModal(QcmpDetail._id)}} class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
               <hr />
-              <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#AddToSalesModal">Add To Sales Order</button>
+              <button type="button" onClick={()=>{setTosalesId(QcmpDetail._id)}} class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#AddToSalesModal">Add To Sales Order</button>
               <button type="button" onClick={QdelqId=QcmpDetail._id} class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal">Delete</button>
               {/* <!-- Button trigger modal --> */}
             </div>

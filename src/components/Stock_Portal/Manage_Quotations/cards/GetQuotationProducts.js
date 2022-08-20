@@ -5,8 +5,8 @@ import {useContext} from 'react'
 
 function GetQuotationProducts(props) {
     const context=useContext(Context);
-    const {giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}=context;
-    //Dummy Method For Getting Products Of Given quotationNum
+    const {giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}=context;
+    //Dummy Method For Getting Products Of Given quotationId
     let item=[];
     const [QpData, setQpData] = useState(item)
 
@@ -17,7 +17,7 @@ function GetQuotationProducts(props) {
             headers:{
               'Content-Type': 'application/json',
               'auth-token': localStorage.getItem('token'),
-              'quotationNum': props.quotationNum
+              'quotationId': props.quotationId
             },
           })
           const json=await response.json();
@@ -87,7 +87,7 @@ function GetQuotationProducts(props) {
           },
         })
         const json=await response.json();
-        seteditQuotNum(json.quotationNum)
+        seteditQuotId(json.quotationId)
         setEditquantity(json.quantity);
         seteditppp(json.perPicePrice);
         document.forms.editmodalform.quantity.value=json.quantity;

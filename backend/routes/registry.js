@@ -126,17 +126,16 @@ router.post("/registerwarehouse", fetchuser ,async (req, res)=>{
     {
         return res.status(400).json({error: "The company with such id does not exists"})
     }
-    let wareh=await newWarehouse.findOne({companyId: companyId, warehouseId: req.body.warehouseId});
-    if(wareh)
-    {
-        return res.status(400).json({error: "The warehouse of this id already exists"})
-    }
     let wareh1=await newWarehouse.findOne({companyId: companyId, wname: req.body.wname});
     if(wareh1)
     {
         return res.status(400).json({error: "The warehouse of this name already exists"})
     }
+    let warehouseId=cmpcheck.nextwareId;
+    await newCompany.findOneAndUpdate({companyId: companyId}, {$set: {nextwareId: cmpcheck.nextwareId+1}})
+
     req.body.companyId=companyId;
+    req.body.warehouseId=warehouseId;
     const nwh=new newWarehouse(req.body);
     await nwh.save();
 

@@ -46,6 +46,30 @@ const newCompanySchema=new Schema({
     //     type: Number,
     //     required: true,
     // },
+    nextwareId:{
+        type: Number,
+        default: 1
+    },
+    nextcatId:{
+        type: Number,
+        default: 1
+    },
+    nextquotationId:{
+        type: Number,
+        default: 1
+    },
+    nextpurchaseId:{
+        type: Number,
+        default: 1
+    },
+    nextsalesId:{
+        type: Number,
+        default: 1
+    },
+    nextproductId:{
+        type: Number,
+        default: 1
+    },
     date:{
         type: Date,
         default: Date.now,

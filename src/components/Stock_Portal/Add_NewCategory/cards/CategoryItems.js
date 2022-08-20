@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 function CategoryItems(props) {
-  //Dummy method for getting the product according to the category by help of the id
+  //Dummy Method For Getting Product According To Category By Help Of Id
   const item=[]
     const [catitem, setCatitem]=useState(item);
     const {id}=props;

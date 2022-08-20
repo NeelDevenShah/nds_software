@@ -5,7 +5,7 @@ const quotationSchema=new Schema({
         type: Number,
         required: true,
     },
-    quotationNum:{
+    quotationId:{
         type: Number,
         required: true,
     },

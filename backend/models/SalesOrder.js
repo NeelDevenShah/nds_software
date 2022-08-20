@@ -5,7 +5,7 @@ const salesOrderSchema=new Schema({
         type: Number,
         required: true,
     },
-    SalesOrderNum:{
+    SalesOrderId:{
         type: Number,
         required: true,
     },
@@ -30,7 +30,7 @@ const salesOrderSchema=new Schema({
         required: true,
     },
     mainDispatchDate:{
-        type: Date,
+        type: String,
         required: true,
     },
 })

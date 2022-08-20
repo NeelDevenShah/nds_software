@@ -51,14 +51,15 @@ function App() {
   // var audio=new Audio('click_sound.mp3');
   
   //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of quotations
-      //Comon utility for setting the Editid
+      
+//Comon utility for setting the Editid
       let [editId, setEditId]=useState(0);
       const giveId=(id)=>{
         setEditId(id);
       }
 
       //For saving the change in the data of quotation
-      const [quotNum, seteditQuotNum]=useState(0);
+      const [quotId, seteditQuotId]=useState(0);
       const [editquantity, setEditquantity]=useState(0);
       const [editppp, seteditppp]=useState(0)
   //Ending of quotation utiliy
@@ -66,7 +67,7 @@ function App() {
   return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}}>
+          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}}>
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}

@@ -12,6 +12,7 @@ function Sales_Activity() {
   const [catData, setCatData]=useState(dataCat)
   const [newcatdata, setNewcatdata]=useState({pcname:""})
 
+  //For Fetching Data Of Category
   const getCategoryData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
       method: 'GET',
@@ -24,30 +25,28 @@ function Sales_Activity() {
     setCatData(json)
   }
 
+  //For Adding New Category
   const addnewcategory=async()=>{
-    let newcategotyid=0;
-    catData.map((cat)=>{
-      newcategotyid=cat.categoryId
-    })
     const response=await fetch('http://localhost:5000/api/addnew/addcategory', {
       method: 'POST',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token')
       },
-      body: JSON.stringify({categoryId: newcategotyid+1, pcname: newcatdata.pcname})
+      body: JSON.stringify({pcname: newcatdata.pcname})
     })
     const json=await response.json();
     if(json.success)
     {
       console.log("new category added successfull");
-      getCategoryData();
+      window.location.reload();
     }
     else{
       console.log("error"+json)
     }
   }
 
+  //For Deletion Of Category
   const deletecategory=async(delId)=>{
     const response=await fetch(`http://localhost:5000/api/addnew/deletecategory/${delId}`, {
       method: 'DELETE',
@@ -57,7 +56,7 @@ function Sales_Activity() {
       },
     })
     delId=0;
-    getCategoryData();
+    window.location.reload();
   }
 
   const onChange=(event)=>{

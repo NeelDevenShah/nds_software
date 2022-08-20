@@ -15,7 +15,7 @@ function MangeWarehouses() {
 
   const wareh=[];
   const [whdata, setWhdata]=useState(wareh)
-  const [nwhdata, setnwhdata]=useState({wname:"", shopNum:"", add2:"", city:"", state:"", country:"", pincode:"", warehouseId:""})
+  const [nwhdata, setnwhdata]=useState({wname:"", shopNum:"", add2:"", city:"", state:"", country:"", pincode:""})
 
   //Method for getting the data of the warehouse
   const getwareData=async()=>{
@@ -45,17 +45,13 @@ function MangeWarehouses() {
 
   //Method for adding the warehouse
   const addNewWarehouse=async()=>{
-    let newehid=0;
-    whdata.map((whd)=>{
-      newehid=whd.warehouseId
-    })
     const response=await fetch(`http://localhost:5000/api/registry/registerwarehouse`, {
       method: 'POST',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token')
       },
-      body: JSON.stringify({wname: nwhdata.wname, shopNum: nwhdata.shopNum, add2: nwhdata.add2, city:nwhdata.city, state:nwhdata.state, country:nwhdata.country, pincode:nwhdata.pincode, warehouseId:newehid+1})
+      body: JSON.stringify({wname: nwhdata.wname, shopNum: nwhdata.shopNum, add2: nwhdata.add2, city:nwhdata.city, state:nwhdata.state, country:nwhdata.country, pincode:nwhdata.pincode})
     })
     const json=await response.json();
     if(json.success)

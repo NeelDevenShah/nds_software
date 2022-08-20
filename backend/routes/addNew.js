@@ -21,23 +21,27 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     {
         return res.status(400).json({error: "The Company id does not exists"});
     }
-    let category1=await newProductCategory.findOne({companyId: companyId, categoryId: req.body.categoryId});
-    if(category1)
-    {
-        return res.status(400).json({error: "The product id already exists"})
-    }
+    // let category1=await newProductCategory.findOne({companyId: companyId, categoryId: req.body.categoryId});
+    // if(category1)
+    // {
+    //     return res.status(400).json({error: "The product id already exists"})
+    // }
     let category2=await newProductCategory.findOne({companyId: companyId, pcname: req.body.pcname});
     if(category2)
     {
         return res.status(400).json({error: "The product category already exists"})
     }
+    let categoryId=cmpcheck.nextcatId;
+    await newCompany.findOneAndUpdate({companyId: companyId}, {$set:{nextcatId: cmpcheck.nextcatId+1}})
+    
+    req.body.categoryId=categoryId;
     req.body.companyId=companyId;
     const cat=new newProductCategory(req.body);
     await cat.save();
 
     //Making entry in logbook
     var currentdate=new Date();
-    let statment= "UserId:"+employeeId+" added new product category having categoryId:"+req.body.categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment= "UserId:"+employeeId+" added new product category having categoryId:"+categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.send({success: "New Product Category Added Successfully"})
@@ -52,18 +56,22 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     {
         return res.status(400).json({error: "The company with such id does not exists"})
     }
-    let product=await newProduct.findOne({companyId: companyId, categoryId: req.body.categoryId ,productId: req.body.productId})
+    let product=await newProduct.findOne({companyId: companyId, categoryId: req.body.categoryId ,productName: req.body.productName})
     if(product)
     {
-        return res.status(400).json({error: "The Product already exists"})
+        return res.status(400).json({error: "The Product with such name already exists, Please try again with new name"})
     }
+    let productId=cmpcheck.nextproductId;
+    await newCompany.findOneAndUpdate({companyId: companyId}, {$set:{nextproductId: cmpcheck.nextproductId+1}})
+    
     req.body.companyId=companyId;
+    req.body.productId=productId;
     const newprod=new newProduct(req.body);
     await newprod.save();
 
     //Making Entry In The Logbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+req.body.productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
     res.send({success: "New Product added successfully"});

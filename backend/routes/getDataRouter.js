@@ -43,7 +43,7 @@ router.get("/getquotations", fetchuser, async (req,res)=>{
 })
 
 router.get("/getquotationproducts", fetchuser, async (req,res)=>{
-    const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationNum: req.header("quotationNum")});
+    const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationId: req.header("quotationId")});
     res.json(productsofquotation);
 })
 
@@ -63,7 +63,7 @@ router.get("/purchaseorders", fetchuser, async (req,res)=>{
 })
 
 router.get("/productsofpurchaseorder", fetchuser, async (req,res)=>{
-    const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderNum: req.body.purchaseOrderNum});
+    const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderId: req.body.purchaseOrderId});
     res.json(prodofpurchaseorder);
 })
 
@@ -73,7 +73,7 @@ router.get("/salesorders", fetchuser, async (req,res)=>{
 })
 
 router.get("/productsofsalesorder", fetchuser, async (req,res)=>{
-    const prodofsalesorder=await SalesOrderMini.find({companyId: req.details.companyId, SalesOrderNum: req.body.SalesOrderNum});
+    const prodofsalesorder=await SalesOrderMini.find({companyId: req.details.companyId, SalesOrderId: req.body.SalesOrderId});
     res.json(prodofsalesorder);
 })
 

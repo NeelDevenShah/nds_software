@@ -6,7 +6,7 @@ const salesMiniSchema=new Schema({
         type: Number,
         required: true,
     },
-    SalesOrderNum:{
+    SalesOrderId:{
         type: Number,
         required: true,
     },

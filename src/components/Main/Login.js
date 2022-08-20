@@ -1,17 +1,29 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 import { useDispatch} from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import {ViewActions} from '../../store/view-slice'
 function Login() {
-  
+
   const dispatch=useDispatch();
+  let navigate=useNavigate();
+
+  useEffect(()=>{
+    check();
+  })
+
+  const check=()=>{
+    if(localStorage.getItem('token')!=null)
+        {
+            navigate("/loginselection")
+        }
+  }
+
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
   }
     const [credentials, setCredentials]=useState({companyId:"", employeeId:"", password:""})
-    let navigate=useNavigate();
 
     const validateInfoOfLogin=async (event)=>{
       event.preventDefault();
