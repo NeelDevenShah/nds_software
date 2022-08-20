@@ -92,12 +92,15 @@ router.put("/editproduct/:id", fetchuser, async (req, res)=>{
    if(spcheck)
    {
       const {quotationNum}=spcheck;
-      const {productId, quantity, perPicePrice}=req.body;
+      const {quantity, perPicePrice}=req.body;
       
       // const updateProduct={};
       // if(quantity){updateProduct.quantity=quantity};
       // if(perPicePrice){updateProduct.perPicePrice=perPicePrice};
-      
+      if(quantity=="" || perPicePrice=="")
+      {
+         return res.status(404).send({error: "enter right values"})
+      }
       qupdate=await quotationMini.findByIdAndUpdate(req.params.id, {$set: {quantity: quantity, perPicePrice: perPicePrice}})
       
       //Making change in the qutation's total Amount
@@ -107,7 +110,7 @@ router.put("/editproduct/:id", fetchuser, async (req, res)=>{
 
       //Making entry in logbook
       var currentdate=new Date();
-      let statment="UserId:"+employeeId+" edited quotation product having productId:"+productId+" in quotationNum:"+quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+      let statment="UserId:"+employeeId+" edited quotation product having productId:"+spcheck.productId+" in quotationNum:"+quotationNum+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
       await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
       res.send({success: "Quotation Edited successfully"});

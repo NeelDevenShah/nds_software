@@ -1,9 +1,13 @@
 import React, { useEffect } from 'react'
 import {useState} from 'react'
+import Context from '../../../../Context';
+import {useContext} from 'react'
 
 function GetQuotationProducts(props) {
+    const context=useContext(Context);
+    const {giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}=context;
     //Dummy method for getting the products of the given quotationNum
-    let item=[]; 
+    let item=[];
     const [QpData, setQpData] = useState(item)
 
     //For getting the data of the product of quotation
@@ -40,46 +44,92 @@ function GetQuotationProducts(props) {
         }
     }
 
-    const editproduct=()=>{
-        var html = '<div class="modal fade" id="AddQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">'
-        +'<div class="modal-dialog">'
-            +'<div class="modal-content">'
-                +'<div class="modal-header">'
-                    +'<h5 class="modal-title" id="exampleModalLabel">Add New Quotataion</h5>'
-                    +'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>'
-                +'</div>'
-                +'<div class="modal-body">'
-                    +'<form>'
-                        +'<div class="mb-3">'
-                        +'<label class="form-label">Enter An Unique Quotation Id</label>'
-                            +'<input type="number" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="quotationNum" value={newqdata.quotationNum} onChange={onChangeForNewQ} required />'
-                            +'<label class="form-label">Enter The Name Of Company To Whom Quotation Is To Be Given</label>'
-                            +'<input type="text" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="compName" value={newqdata.compName} onChange={onChangeForNewQ} required />'
-                        +'</div>'
-                    +'</form>'
-                +'</div>'
-                +'<div class="modal-footer">'
-                    +'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>'
-                    +'<button type="button" onClick={()=>{addquotation()}} class="btn btn-secondary" data-bs-dismiss="modal">Submit</button>'
-                +'</div>'
-            +'</div>'
-        +'</div>'
-    +'</div>';
-            document.body.innerHTML = html;
-    }
 
-      useState(()=>{
+    useState(()=>{
         getQProductData();
     })
+
+    //For Making the change conform after taking the new data from the editProduct modal
+    const makeChangeconform=async()=>{
+        const response=await fetch(`http://localhost:5000/api/quotation/editproduct/${editId}`, {
+            method: 'PUT',
+            headers:{
+                'Content-Type': 'application/json',
+                'auth-token': localStorage.getItem('token')
+            },
+            body: JSON.stringify({quantity: editquantity, perPicePrice: editppp})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+            console.log("Done");
+            window.location.reload();
+        }
+        else{
+            console.log("Error, Do not occurred")
+        }
+    }
+
+    const onChange1=(event)=>{
+        setEditquantity(event.target.value)
+    }
+    const onChange2=(event)=>{
+        seteditppp(event.target.value)
+    }
+
+    //For getting the data of the product that is to be edited
+    const getDataOfProductById=async(id)=>{
+        giveId(id);
+        const response=await fetch(`http://localhost:5000/api/quotation/getproductdetailsbyid/${id}`, {
+          headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+        })
+        const json=await response.json();
+        seteditQuotNum(json.quotationNum)
+        setEditquantity(json.quantity);
+        seteditppp(json.perPicePrice);
+        document.forms.editmodalform.quantity.value=json.quantity;
+        document.forms.editmodalform.ppp.value=json.perPicePrice;
+      }
+
     return (
     <tbody>
+            {/* Edit product Modal */}
+            <div class="modal fade" id="EditQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Quotation Product</h5>
+                    </div>
+                    <div class="modal-body">
+                        Edit The Thing You Want To Change, Otherwise Not Make Change In It, The Change Can Only Be Made In The Quantity And Per-Piece Price 
+                        <hr/>
+                        <form name='editmodalform'>
+                            {/* The system would be maked that the information would be shown and some of them would be permited to change */}
+                            <label class="form-label">Quantity Of Product</label>
+                            <input name="quantity" value={editquantity} type="number" onChange={onChange1} class="form-control text-center" id="quantity" required />
+
+                            <label class="form-label">Per-Piece Price Of Product</label>
+                            <input name="ppp" value={editppp} type="number" onChange={onChange2} class="form-control text-center" id="ppp" required />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" onClick={()=>{makeChangeconform()}} class="btn btn-secondary" data-bs-dismiss="modal">Change</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/*  */}
            {QpData.map((pdata)=>{
                    return <tr key={pdata._id}>
                     <td>{pdata.categoryName}</td>
                     <td>{pdata.productName}</td>
                     <td>{pdata.quantity}</td>
                     <td>{pdata.perPicePrice}</td>
-                    <td> <button onClick={()=>{editproduct()}} type="button" class="btn btn-info btn-sm" pdata-bs-toggle="modal" pdata-bs-target="#EditQuotationModal">Edit</button></td>
+                    <td> <button onClick={()=>{getDataOfProductById(pdata._id)}} type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditQuotationModal">Edit</button></td>
                     <td> <button onClick={()=>{deleteQuotationProduct(pdata._id)}} type="button" class="btn btn-danger btn-sm">Delete</button></td>
                   </tr>
                 })}

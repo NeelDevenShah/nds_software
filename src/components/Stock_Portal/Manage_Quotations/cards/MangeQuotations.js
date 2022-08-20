@@ -2,10 +2,15 @@ import React, { useState, useEffect} from 'react'
 
 import plus from '../../../../images/stockPortal_images/plus.png'
 import add_item_image from '../../../../images/stockPortal_images/add_item_image.png'
-import EditQuotationModal from './EditQuotationModal'
 import GetQuotationProducts from './GetQuotationProducts'
+import Context from '../../../../Context'
+import {useContext} from 'react'
 
 function ManageQuotations() {
+
+  const context=useContext(Context);
+  const {delprodId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}=context;
+
   //At the loading of the page this would run first
   useEffect(()=>{
     getQData();
@@ -94,6 +99,7 @@ function ManageQuotations() {
 
   let ItemCat=[];
   const [newCategory, setCategory] = useState(ItemCat)
+  //To get the data of category
   const getCategoryData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
       method: 'GET',
@@ -126,7 +132,7 @@ const onChange = (event) => {
     Setnqprodyct({ ...nqprodyct, [event.tatget.name]: [event.tatget.value] })
 }
   //
-  let QdelqId=0, i=1, pdelId=0;
+  let QdelqId=0, i=1;
   return (
 
     <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
@@ -253,7 +259,6 @@ const onChange = (event) => {
             </div>
         </div>
       {/*  */}
-      <EditQuotationModal/>
 
       <h2 className='pt-3'><strong>Your Given Quotations</strong></h2>
       <div className='row d-flex justify-content-center'>

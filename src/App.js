@@ -30,14 +30,16 @@ import StockPortal_stockdetails from './components/Stock_Portal/Stock_Details/St
 import StockPortal_managequotations from './components/Stock_Portal/Manage_Quotations/StockPortal_managequotations'
 import StockPortal_addnewcategory from './components/Stock_Portal/Add_NewCategory/StockPortal_addnewcategory'
 import StockPortal_managewarehouses from './components/Stock_Portal/Manage_Warehouses/StockPortal_managewarehouses'
-
 import Context from './Context';
+
+// import Context from './Context';
 
 import{
   BrowserRouter as Router,
   Route,
   Routes,
 }from "react-router-dom"
+import { useState } from 'react';
 function App() {
   const view_mainNavbar=useSelector((state)=>state.view.view_mainNavbar)
   const view_stockNavbar=useSelector((state)=>state.view.view_stockNavbar)
@@ -47,11 +49,25 @@ function App() {
   const view_loggedInNavbar=useSelector((state)=>state.view.view_loggedInNavbar)
   
   // var audio=new Audio('click_sound.mp3');
+  
+  //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of quotations
+      //Comon utility for setting the Editid
+      let [editId, setEditId]=useState(0);
+      const giveId=(id)=>{
+        setEditId(id);
+      }
 
+      //For saving the change in the data of quotation
+      const [quotNum, seteditQuotNum]=useState(0);
+      const [editquantity, setEditquantity]=useState(0);
+      const [editppp, seteditppp]=useState(0)
+
+  //Ending of quotation utiliy
+  
   return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-          {/* <Context.Provider value={{getData}}> */}
+          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}}>
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}
@@ -84,7 +100,7 @@ function App() {
             </Routes>
             <Main_footer/>
           </Router>
-          {/* </Context.Provider> */}
+          </Context.Provider>
     </div>
   );
 }

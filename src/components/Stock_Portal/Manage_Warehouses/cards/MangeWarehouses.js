@@ -1,11 +1,17 @@
 import React, { useState, useEffect} from 'react'
 import plus from '../../../../images/stockPortal_images/plus.png'
-
+import Context from '../../../../Context'
+import {useContext} from 'react'
 function MangeWarehouses() {
+  // const context=useContext(Context);
+  // const {editId}=context;
+  
   //At the loading of the page this would run first
   useEffect(()=>{
     getwareData()
   }, [])
+
+  
 
   const wareh=[];
   const [whdata, setWhdata]=useState(wareh)
