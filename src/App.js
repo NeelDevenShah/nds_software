@@ -61,7 +61,6 @@ function App() {
       const [quotNum, seteditQuotNum]=useState(0);
       const [editquantity, setEditquantity]=useState(0);
       const [editppp, seteditppp]=useState(0)
-
   //Ending of quotation utiliy
   
   return (

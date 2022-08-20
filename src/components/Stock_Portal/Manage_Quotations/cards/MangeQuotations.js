@@ -18,7 +18,7 @@ function ManageQuotations() {
 
   const qarr=[];
   const [Qdata, setcmpQdata]=useState(qarr);
-  //For getting the data of the quotation
+  //For Getting Data Of Quotation
   const getQData=async()=>{
     const response=await fetch(`http://localhost:5000/api/getdata/getquotations`, {
         method: 'GET',
@@ -32,7 +32,7 @@ function ManageQuotations() {
   }  
 
   const [newqdata, setNewqdata]=useState({quotationNum:"", dealer:""})
-  //For adding the new quotation
+  //For Adding New Quotation
   const addquotation=async()=>{
     const response=await fetch(`http://localhost:5000/api/quotation/addquotation`, {
         method: 'POST',
@@ -56,7 +56,7 @@ function ManageQuotations() {
     setNewqdata({...newqdata, [event.target.name]: event.target.value})
   }
 
-  //For deleting the quotation
+  //For Deleting Quotation
   const makedeletedquotation=async(id)=>{
     const response=await fetch(`http://localhost:5000/api/quotation/deletequotation/${id}`, {
       method: 'DELETE',
@@ -76,9 +76,9 @@ function ManageQuotations() {
     }
   }
 
+  //To Get Data Of Category For AddNewProduct Modal
   let ItemCat=[];
   const [categoryModal, setCategoryModal] = useState(ItemCat)
-  //To get the data of category for the Add new product Modal
   const getCategoryData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
       method: 'GET',
@@ -90,13 +90,14 @@ function ManageQuotations() {
     const json=await response.json();
     setCategoryModal(json)
   }
-  
+
+//For Giving Data For Selection In AddNewProduct Data
 const Item = []
 const [productsOfCatModal, setProductsOfCatModalModal] = useState(Item)
 const [apicategoryId, setapicategoryId]=useState(-1);
-//apiProductId will be set directly by the onChange function of the select 
+//apiProductId will Be Set Directly By onChange function of the select 
 const [apiproductId, setapiproductId]=useState(-1);
-//For the new product's modal's product according to the category and setting the final categoryId
+//For NewproductModal's Product According To Category And Setting Final categoryId
 const productbycategoryIdforModal=async(categoryId)=>{
   if(categoryId!=-1)
   {
@@ -114,10 +115,9 @@ const productbycategoryIdforModal=async(categoryId)=>{
     }
   }
 
-  const [nqprodData, setNqprodData]=useState({nqpquantity:0, nqpPPP:0})
-  //For adding the new product to the quotation
+  //Function For Adding New product To The Quotation
+  const [nqprodData, setNqprodData]=useState({nqpquantity:"", nqpPPP:""})
   const addnewproducttoquot=async(id)=>{
-        console.log(id)
         let categoryName="", productName="";
         categoryModal.map((data)=>{
           if(data.categoryId==apicategoryId)
@@ -143,41 +143,136 @@ const productbycategoryIdforModal=async(categoryId)=>{
       if(json.success)
       {
         console.log("Product added successfully")
+        window.location.reload();
       }
       else{
-        console.log(json)
         console.log("Product does not being added an error commed")
       }
   }
 
-   //For the new product's quantity and ppp
+   //For New Product's Quantity And ppp
    const onChange3=(event)=>{
     setNqprodData({...nqprodData, [event.target.name]: event.target.value})
    }
 
-  // const expt=()=>{
-  //   console.log(nqprodData.nqpquantity);
-  //   console.log(nqprodData.nqpPPP);
-  // }
+  const handleAddnewModal=async(id)=>{
+    getCategoryData();
+    setnewProdQid(id);
+  }
 
-  let QdelqId=0, i=1, newprodQid=0;
+  //For Adding The Whole Order To The Sales Order
+  const [datatosales, setdatatosales]=useState({brokername:"", paymentNum:"", paymentcat:"", dipatchDay:"", dipatchMonth:"", dipatchYear:"", comment:""})
+  const onChange4=(event)=>{
+    setdatatosales({...datatosales, [event.target.name]: event.target.value})
+  }
+  const sendItToSales=async()=>{
+    console.log(datatosales.brokername)
+    console.log(datatosales.paymentNum)
+    console.log(datatosales.paymentcat)
+    console.log(datatosales.dipatchDay)
+    console.log(datatosales.dipatchMonth)
+    console.log(datatosales.dipatchYear)
+    console.log(datatosales.comment)
+  }
+
+  const [newprodQid, setnewProdQid]=useState(0);
+  let QdelqId=0, i=1;
   return (
 
     <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
-      {/* AddSalesModal */}
+      {/* AddToSalesModal */}
       <div class="modal fade" id="AddToSalesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Adding Notification</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Adding To Sales Order</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Once It Been Added To The Sales Order, The Action Cannot Be Reverted From Here
+            Once It Been Added To The Sales Order, The Action Cannot Be Reverted
+            <hr/>
+            <form>
+                <div class="mb-3">
+                <label class="form-label">Enter An Unique Sales Order Id, That does not exists in system</label>
+                    <input type="text" name="salesNum" value={datatosales.salesNum} onChange={onChange4} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
+                    <label class="form-label">Enter Broker Name Who Booked Order</label>
+                    <input type="text" name="brokername" value={datatosales.brokername} onChange={onChange4} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
+                    <label class="form-label">Enter Payment Conditions</label>
+                    <div className='row mx-auto'>
+                    <input type="number" name="paymentNum" value={datatosales.paymentNum} onChange={onChange4} style={{width: '100px', height: '32px', marginLeft: '130px'}} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
+                    <select name='paymentcat' onChange={onChange4} id='paymentcat' style={{width: '100px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                      <option selected value={0}>Minutes</option>
+                      <option selected value={1}>Hours</option>
+                      <option selected value={2}>Days</option>
+                      <option selected value={3}>Weeks</option>
+                      <option selected value={4}>Months</option>
+                      <option selected value={5}>Years</option>
+                    </select>
+                    </div>
+                    <label class="form-label">Enter Average Dispatch Date Of Sales Order</label>
+                    <div className='row mx-auto'>
+                    <select id='dipatchDate' name='dipatchDay' onChange={onChange4} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                    <option selected value={1}>1</option>
+                      <option selected value={2}>2</option>
+                      <option selected value={3}>3</option>
+                      <option selected value={4}>4</option>
+                      <option selected value={5}>5</option>
+                      <option selected value={6}>6</option>
+                      <option selected value={7}>7</option>
+                      <option selected value={8}>8</option>
+                      <option selected value={9}>9</option>
+                      <option selected value={10}>10</option>
+                      <option selected value={11}>11</option>
+                      <option selected value={12}>12</option>
+                      <option selected value={13}>13</option>
+                      <option selected value={14}>14</option>
+                      <option selected value={15}>15</option>
+                      <option selected value={16}>16</option>
+                      <option selected value={17}>17</option>
+                      <option selected value={18}>18</option>
+                      <option selected value={19}>19</option>
+                      <option selected value={20}>20</option>
+                      <option selected value={21}>21</option>
+                      <option selected value={22}>22</option>
+                      <option selected value={23}>23</option>
+                      <option selected value={24}>24</option>
+                      <option selected value={25}>25</option>
+                      <option selected value={26}>26</option>
+                      <option selected value={27}>27</option>
+                      <option selected value={28}>28</option>
+                      <option selected value={29}>29</option>
+                      <option selected value={30}>30</option>
+                      <option selected value={31}>31</option>
+                    </select>
+                    <select id='dipatchMonth' name='dipatchMonth' onChange={onChange4} style={{width: '63px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                    <option selected value={0}>0</option>
+                      <option selected value={1}>1</option>
+                      <option selected value={2}>2</option>
+                      <option selected value={3}>3</option>
+                      <option selected value={4}>4</option>
+                      <option selected value={5}>5</option>
+                      <option selected value={6}>6</option>
+                      <option selected value={7}>7</option>
+                      <option selected value={8}>8</option>
+                      <option selected value={9}>9</option>
+                      <option selected value={10}>10</option>
+                      <option selected value={11}>11</option>
+                      <option selected value={12}>12</option>
+                    </select>
+                    <select id='dipatchYear' name='dipatchYear' onChange={onChange4} style={{width: '75px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                      <option selected value={2022}>2022</option>
+                      <option selected value={2023}>2023</option>
+                      <option selected value={2024}>2024</option>
+                    </select>
+                    </div>
+                    <label class="form-label">Enter Comment(If Any)</label>
+                    <textarea name="comment" value={datatosales.compName} onChange={onChange4} class="form-control text-center" id="comment" aria-describedby="emailHelp" required />
+                </div>
+            </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
+            <button type="button" onClick={()=>{sendItToSales()}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
           </div>
         </div>
       </div>
@@ -201,64 +296,6 @@ const productbycategoryIdforModal=async(categoryId)=>{
         </div>
       </div>
     </div>
-      {/*  */}
-      {/* Add New Item/Product Modal */}
-      <div class="modal fade" id="AddToQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    {useState(()=>{
-                          getCategoryData();
-                    }, [])}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Add New Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            <div class="mb-3">
-                                <label class="form-label">Select The Product Category</label>
-                                <div class="dropdown">
-                                    <select id='selectCategory' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{productbycategoryIdforModal(event.target.value)}}>
-                                        <option selected value={-1}>Select</option>
-                                        {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                        {categoryModal.map((cat) => {
-                                            return <option value={cat.categoryId}>{cat.pcname}</option>
-                                        })}
-                                    </select>
-                                </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Select The Product</label>
-                                    {/* For taking the value from the database of the saved category use following method, where notes comes from the database, and instead it you can take anyt name */}
-
-                                    <div class="dropdown">
-                                        <select id='products' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{setapiproductId(event.target.value)}}>
-                                            <option selected value={-1}>Select</option>
-                                            {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                            {productsOfCatModal.map((itm) => {
-                                                return <option value={itm.productId}>{itm.productName}</option>
-                                            })}
-                                        </select>
-                                    </div>
-                                    </div>
-
-                                    <label class="form-label">Enter Quantity Of Product</label>
-                                    <input type="number" name= "nqpquantity" value={nqprodData.nqpquantity} onChange={onChange3} class="form-control text-center" id="Itemquty" required />
-                                    {/* <input type="text" class="form-control text-center" id="comp" aria-describedby="emailHelp" name="compName" value={newqdata.compName} onChange={onChangeForNewQ} required /> */}
-
-                                    <label class="form-label">Enter Per-Piece Price</label>
-                                    <input type="number" name="nqpPPP" value={nqprodData.nqpPPP} onChange={onChange3} class="form-control text-center" id="Itemprice" required />
-                            
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" onClick={()=>(addnewproducttoquot(newprodQid))} class="btn btn-secondary" data-bs-dismiss="modal">Add</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
       {/*  */}
       {/* AddQuotation Modal */}
       <div class="modal fade" id="AddQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -313,7 +350,56 @@ const productbycategoryIdforModal=async(categoryId)=>{
               </div>
               <p>Total Quotation Amount: <strong>{QcmpDetail.totalAmount}</strong></p>
               <hr/>
-              <button type="button" onClick={newprodQid=QcmpDetail._id} class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
+               {/* Add New Item/Product Modal */}
+      <div class="modal fade" id="AddToQuotationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add New Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Select The Product Category</label>
+                                <div class="dropdown">
+                                    <select id='selectCategory' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{productbycategoryIdforModal(event.target.value)}}>
+                                        <option selected value={-1}>Select</option>
+                                        {categoryModal.map((cat) => {
+                                            return <option value={cat.categoryId}>{cat.pcname}</option>
+                                        })}
+                                    </select>
+                                </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Select The Product</label>
+                                    <div class="dropdown">
+                                        <select id='products' class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" onChange={async(event)=>{setapiproductId(event.target.value)}}>
+                                            <option selected value={-1}>Select</option>
+                                            {productsOfCatModal.map((itm) => {
+                                                return <option value={itm.productId}>{itm.productName}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                    </div>
+
+                                    <label class="form-label">Enter Quantity Of Product</label>
+                                    <input type="number" name= "nqpquantity" value={nqprodData.nqpquantity} onChange={onChange3} class="form-control text-center" id="Itemquty" required />
+                                    <label class="form-label">Enter Per-Piece Price</label>
+                                    <input type="number" name="nqpPPP" value={nqprodData.nqpPPP} onChange={onChange3} class="form-control text-center" id="Itemprice" required />
+                            
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" onClick={()=>(addnewproducttoquot(newprodQid))} class="btn btn-secondary" data-bs-dismiss="modal">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      {/*  */}
+              <button type="button" onClick={()=>{handleAddnewModal(QcmpDetail._id)}} class="btn" data-bs-toggle="modal" data-bs-target="#AddToQuotationModal"><img src={add_item_image} width='120'></img></button>
               <hr />
               <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#AddToSalesModal">Add To Sales Order</button>
               <button type="button" onClick={QdelqId=QcmpDetail._id} class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal">Delete</button>
@@ -327,7 +413,6 @@ const productbycategoryIdforModal=async(categoryId)=>{
           <div class="card">
             <div class="card-body">
               <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddQuotationModal"><img src={plus} width='55'></img><strong> Add New Quotation</strong></button>
-
             </div>
           </div>
         </div>

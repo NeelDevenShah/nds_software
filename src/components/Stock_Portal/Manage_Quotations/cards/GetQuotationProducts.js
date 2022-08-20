@@ -6,11 +6,11 @@ import {useContext} from 'react'
 function GetQuotationProducts(props) {
     const context=useContext(Context);
     const {giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotNum, seteditQuotNum}=context;
-    //Dummy method for getting the products of the given quotationNum
+    //Dummy Method For Getting Products Of Given quotationNum
     let item=[];
     const [QpData, setQpData] = useState(item)
 
-    //For getting the data of the product of quotation
+    //For Getting Data Of Product Of Quotation
     const getQProductData=async()=>{
         const response=await fetch(`http://localhost:5000/api/getdata/getquotationproducts`, {
             method: 'GET',
@@ -24,7 +24,7 @@ function GetQuotationProducts(props) {
           setQpData(json);
       }
 
-    //For deleting the quotation's Product
+    //For Deleting Quotation's Product
     const deleteQuotationProduct=async(id)=>{
         const response=await fetch(`http://localhost:5000/api/quotation/deleteproduct/${id}`, {
             method: 'DELETE',
@@ -49,7 +49,7 @@ function GetQuotationProducts(props) {
         getQProductData();
     })
 
-    //For Making the change conform after taking the new data from the editProduct modal
+    //For Making Change Conform After Taking New Data From editProductModal
     const makeChangeconform=async()=>{
         const response=await fetch(`http://localhost:5000/api/quotation/editproduct/${editId}`, {
             method: 'PUT',
@@ -77,7 +77,7 @@ function GetQuotationProducts(props) {
         seteditppp(event.target.value)
     }
 
-    //For getting the data of the product that is to be edited
+    //For Getting Data Of Product That Is To Be Edited
     const getDataOfProductById=async(id)=>{
         giveId(id);
         const response=await fetch(`http://localhost:5000/api/quotation/getproductdetailsbyid/${id}`, {
