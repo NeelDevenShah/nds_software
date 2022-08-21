@@ -34,10 +34,10 @@ const salesMiniSchema=new Schema({
         type: Number,
         required: true,
     },
+    status:String,
     dispatchingFrom:[Number],
     dispatchDate:{
-        type: Date,
-        required: true,
+        type: String,
     },
 })
 

@@ -7,7 +7,8 @@ const salesOrder=require("../models/SalesOrder");
 const salesOrderMini=require("../models/SalesOrderMini");
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
 const fetchcompany=require("../middleware/fetchcompany");
-const fetchuser=require("../middleware/fetchuser")
+const fetchuser=require("../middleware/fetchuser");
+const SalesOrderMini = require("../models/SalesOrderMini");
 
 //CASE 1: Add new sales order Endpoint
 router.post("/addneworder", fetchuser, async (req, res)=>{
@@ -56,6 +57,8 @@ router.post("/addsalesorderproduct/:id", fetchuser, async (req, res)=>{
             //Now the main code for adding the new sales order's product
             req.body.companyId=companyId;
             req.body.SalesOrderId=spcheck.SalesOrderId;
+            req.body.status="To Be Planned";
+            req.body.dispatchDate="00/00/0000"
             const salesProduct=new salesOrderMini(req.body);
             await salesProduct.save();
             
@@ -146,7 +149,7 @@ router.put("/editsalesorder/:id", fetchuser, async (req, res)=>{
     
     //Making entry in loogbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+" edited sales order information having SalesOrderId:"+req.body.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" edited sales order information having SalesOrderId:"+sorder.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
     res.send({success: "Edition Of the Sales Order Successfull"})
@@ -155,16 +158,10 @@ router.put("/editsalesorder/:id", fetchuser, async (req, res)=>{
 //CASE 6: Edit the sales order's Product Information Endpoint
 router.put("/editsalesproduct/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const {productId, productName, quantity, perPicePrice, dispatchingFrom, dispatchDate, categoryId, categoryName}=req.body;
+    const {quantity, perPicePrice}=req.body;
     const updatedProduct={};
-    if(categoryId){updatedProduct.categoryId=categoryId};
-    if(categoryName){updatedProduct.categoryName=categoryName};
-    if(productId){updatedProduct.productId=productId};
-    if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
     if(perPicePrice){updatedProduct.perPicePrice=perPicePrice};
-    if(dispatchingFrom){updatedProduct.dispatchingFrom=dispatchingFrom};
-    if(dispatchDate){updatedProduct.dispatchDate=dispatchDate};
     let sproduct=await salesOrderMini.findById(req.params.id);
     if(!sproduct)
     {
@@ -183,7 +180,7 @@ router.put("/editsalesproduct/:id", fetchuser, async (req, res)=>{
 
     //Making entry in logbook
     var currentdate=new Date();
-    let statment="UserId:"+employeeId+" edited details of product having productId:"+req.body.productId+" of sales order having SalesOrderId:"+sproduct.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+    let statment="UserId:"+employeeId+" edited details of product having productId:"+sproduct.productId+" of sales order having SalesOrderId:"+sproduct.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
     res.send({success: "Sales Product Information Edited Successfull"})
@@ -245,9 +242,15 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     return res.send({success: "sales order has been deleted"})
 })
 
-//CASE 9:Get Details Of Given id of Sales Document
+//CASE 9: Get Details Of Given id of Sales Document
 router.get("/getorderdetails/:id", fetchuser, async (req, res)=>{
     let data=await salesOrder.findById(req.params.id)
+    res.send(data);
+})
+
+//CASE 10: Get Product Details Of Givem Id Of Sales Order
+router.get("/getproductdetails/:id", fetchuser, async (req, res)=>{
+    let data=await SalesOrderMini.findById(req.params.id)
     res.send(data);
 })
 

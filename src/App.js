@@ -63,13 +63,19 @@ function App() {
     const [editppp, seteditppp]=useState(0)
   //Ending of quotation utiliy
   
-    //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of sales order  
-  
+    //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS OF SALES ORDER 
+    const [sprodDelId, setsProdDelId]=useState(0);
+    const [smanageId, setsmanageId]=useState(0);
+    const [seditId, setsEditId]=useState(0);
+
+    //For Editing Sale's Product Info
+    const [espquantity, setespquantity]=useState(0);
+    const [esPppp, setesPppp]=useState(0);
     //Ending of sales order utiliy
     return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}}>
+          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId, sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp}}>
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}

@@ -1,11 +1,13 @@
 import React, {useEffect} from "react";
 import { useState } from "react";
-import Context from "../../../../Context";
 import { useContext } from "react";
+import Context from "../../../../Context";
 function GetProductOfSales(props) {
 
+    const context=useContext(Context);
+    const {sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp}=context;
+
     //Dummy method for Getting Products Of Sales Order
-    // const DataList=[];
     const d=[];
     const [salesData, setSalesProduct] = useState(d);
     const getSalesProductData=async()=>{
@@ -24,6 +26,22 @@ function GetProductOfSales(props) {
       useState(()=>{
         getSalesProductData();
       })
+
+    //Function For Getting Data Of Product Of Sales Order By Id For ProductEditModal
+    const geteproductData=async(id)=>{
+    setsEditId(id);
+    const response=await fetch(`http://localhost:5000/api/salesorder/getproductdetails/${id}`, {
+      method: 'GET',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    setespquantity(json.quantity);
+    setesPppp(json.perPicePrice);
+  }
+
     return (
      <tbody>
     {salesData.map((data) => {
@@ -32,11 +50,10 @@ function GetProductOfSales(props) {
       <td>{data.productName}</td>
       <td>{data.quantity}</td>
       <td>{data.perPicePrice}</td>
-      {/* <td>{data.status}</td> */}
-      {/* <td>{11}</td> */}
-      <td> <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditSalesModal">Edit</button></td>
-      <td> <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#ManageStatusModal">Manage</button></td>
-      <td> <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteSalesModal">Delete</button></td>
+      <td>{data.status}</td>
+      <td> <button type="button" onClick={()=>{geteproductData(data._id)}} class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditSalesModal">Edit</button></td>
+      <td> <button type="button" onClick={()=>{setsmanageId(data._id)}} class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#ManageStatusModal">Manage</button></td>
+      <td> <button type="button" onClick={()=>{setsProdDelId(data._id)}} class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteSalesModalproduct">Delete</button></td>
     </tr>
   })}
 </tbody>

@@ -93,7 +93,7 @@ function ManageQuotations() {
 
 //For Giving Data For Selection In AddNewProduct Data
 const Item = []
-const [productsOfCatModal, setProductsOfCatModalModal] = useState(Item)
+const [productsOfCatModal, setProductsOfCatModal] = useState(Item)
 const [apicategoryId, setapicategoryId]=useState(-1);
 //apiProductId will Be Set Directly By onChange function of the select 
 const [apiproductId, setapiproductId]=useState(-1);
@@ -111,7 +111,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
         },
       })
       const json=await response.json();
-      setProductsOfCatModalModal(json);
+      setProductsOfCatModal(json);
     }
   }
 

@@ -1,18 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext} from 'react'
 
 import plus from '../../../../images/stockPortal_images/plus.png'
 import add_item_image from '../../../../images/stockPortal_images/add_item_image.png'
-import { useEffect } from 'react'
 import GetProductOfSales from './GetProductOfSales'
-
+import Context from '../../../../Context'
 //In this page, when the order is been added the status and dispatching form should be in the to be planned, And that can be changed from the order status managment portal
 function MangeSalesOrder() {
   
+  const context=useContext(Context);
+  const {sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp}=context;
   useEffect(()=>{
     getSalesData();
   }, [])
 
-  //Function For Getting The Data Of Sales Company And Other Necessary Information
+  //Function(Secondary) For Getting The Data Of Sales Company And Other Necessary Information
   const salesComp=[];
   const [Sname, ScmpsetName] = useState(salesComp)
   const getSalesData=async()=>{
@@ -27,7 +28,7 @@ function MangeSalesOrder() {
     ScmpsetName(json)
   }
 
-  //Function for getting the difference of the current date and the main dispatch date
+  //Function(Secondary) for getting the difference of the current date and the main dispatch date
   const DateDifference = (Odate) => {
     //Use the mm/dd/yyy format
     var now = new Date();
@@ -44,7 +45,7 @@ function MangeSalesOrder() {
     return diffDays
   }
 
-  //Function For Adding New Sales Order
+  //Function(Primary) For Adding New Sales Order
   const[neworderData, setnewOrderData]=useState({salesDealer:"", brokerName:"", paymentTerm:"", comment:"", dispatchDay:"", dispatchMonth:"", dispatchYear:""})
   const onChangenod=(event)=>{
     setnewOrderData({...neworderData, [event.target.name]: event.target.value})
@@ -71,7 +72,7 @@ function MangeSalesOrder() {
     }
   }
 
-  //Function For Deleting Sales Order
+  //Function(Primary) For Deleting Sales Order
   const [delorderId, setdelorderId]=useState("")
   const deletedSOrder=async(id)=>{
     const response= await fetch(`http://localhost:5000/api/salesorder/deleteorder/${id}`, {
@@ -93,7 +94,7 @@ function MangeSalesOrder() {
     }
   }
 
-  //Getting Data Of Product That Is To Be Edited
+  //Function(Secondary) For Getting Data Of Sales Order That Is To Be Edited
   const [editId, setEditId]=useState("");
   const[ebrokerName, esetBrokerName]=useState("");
   const[epaymentTerm, esetpaymentTerm]=useState("");
@@ -122,8 +123,6 @@ function MangeSalesOrder() {
     esetdispatchMonth(mm);
     esetdispatchDay(dd);
     esetdispatchYear(yyyy);
-
-    // document.forms.EditSalesModal.ebrokerName.value=ebrokerName
   }
   const eonChange1=(event)=>{
     esetBrokerName(event.target.value)
@@ -144,7 +143,7 @@ function MangeSalesOrder() {
     esetdispatchYear(event.target.value)
   }
 
-  //Function For Editing Sales Order's Details
+  //Function(Primary) For Editing Sales Order's Details
   const editSOrder=async(id)=>{
     const response=await fetch(`http://localhost:5000/api/salesorder/editsalesorder/${id}`, {
       method: 'PUT',
@@ -166,6 +165,165 @@ function MangeSalesOrder() {
     }
   }
 
+  //Function(Primary) For Dispatching Whole Order
+  const [dispatchId, setDispatchId]=useState("")
+  const dispatchOrder=async(id)=>{
+    const response=await fetch(`http://localhost:5000/api/salesorder/dispatchallorder/${id}`, {
+      method: 'DELETE',
+      headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    if(json.success)
+    {
+      console.log("Order dispatched Successfully...");
+      getSalesData();
+    }
+    else{
+      console.log("Order Cannot Be Dispatched, error");
+      console.log(json);
+    }
+  }
+
+  //Function(Primary) For Adding New Product To Sales Order
+  const [apicategoryId, setapicategoryId]=useState(-1);
+  //apiProductId will Be Set Directly By onChange function of the select 
+  const [apiproductId, setapiproductId]=useState(-1);
+  const [newpdata, setnewPdata]=useState({nquantity:"", nppp:""})
+  const onChangenp=(event)=>{
+    setnewPdata({...newpdata, [event.target.name]: event.target.value});
+  }
+  const addProductToOrder=async(id)=>{
+    let categoryName="", productName="";
+    categoryModal.map((data)=>{
+      if(data.categoryId==apicategoryId)
+      {
+        categoryName=data.pcname;
+      }
+    })
+    productsOfCatModal.map((data)=>{
+      if(data.productId==apiproductId)
+      {
+        productName=data.productName;
+      }
+    })
+    const response=await fetch(`http://localhost:5000/api/salesorder/addsalesorderproduct/${id}`, {
+      method: 'POST',
+      headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+      },
+      body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp})
+    })
+    const json=await response.json();
+    if(json.success)
+    {
+      console.log("Product Added to the Sales Order successfully");
+      document.location.reload();
+    }
+    else{
+      console.log("Product Does Not Added, Error");
+      console.log(json);
+    }
+  }
+
+
+  //Function(Secondary) For Getting Data Of Category For AddNewProductModal
+   let ItemCat=[];
+   //For selection Choice in AddNewProductModal
+   const [categoryModal, setCategoryModal] = useState(ItemCat)
+   const [addproductId, setAddproductId]=useState("")
+   const getCategoryData=async(id)=>{
+    setAddproductId(id); 
+    const response=await fetch('http://localhost:5000/api/getdata/getcategories', {
+       method: 'GET',
+       headers:{
+         'Content-Type': 'application/json',
+         'auth-token': localStorage.getItem('token')
+       },
+     })
+     const json=await response.json();
+     setCategoryModal(json)
+   }
+
+  //Function(Secondary) For NewproductModal's Product According To Category And Setting Final categoryId
+  const prodItem=[];
+  const [productsOfCatModal, setProductsOfCatModal] = useState(prodItem)
+  const productbycategoryIdforModal=async(categoryId)=>{
+  if(categoryId!=-1)
+  {
+    setapicategoryId(categoryId);  
+    const response=await fetch(`http://localhost:5000/api/getdata/getproductofcategory`, {
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token'),
+        'categoryId': categoryId
+        },
+      })
+      const json=await response.json();
+      setProductsOfCatModal(json);
+    }
+  }
+
+  //Function(Primary) For Deleting Sales Order's Product
+  const deletedSOrderproduct=async(id)=>{
+    const response= await fetch(`http://localhost:5000/api/salesorder/deleteproduct/${id}`, {
+      method: 'DELETE',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    if(json.success)
+    {
+      console.log("Product Deleted Successfully");
+      getSalesData();
+      document.location.reload();
+    }
+    else{
+      console.log("Product Deleted Failed");
+      console.log(json);
+    }
+  }
+
+  //Function(Primary) For Editing Product Of Sale's Order
+  const esponChange1=(event)=>{
+    setespquantity(event.target.value)
+  }
+  const esponChange2=(event)=>{
+    setesPppp(event.target.value)
+  }
+  const editsproduct=async(id)=>{
+    const response=await fetch(`http://localhost:5000/api/salesorder/editsalesproduct/${id}`, {
+      method: 'PUT',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+      body: JSON.stringify({quantity: espquantity, perPicePrice:esPppp})
+    })
+    const json=await response.json();
+    if(json.success)
+    {
+      console.log("Product Edited Successfully");
+      document.location.reload();
+    }
+    else{
+      console.log("Product Edition Failed, Error");
+      console.log(json);
+    }
+  }
+
+  //Function(Primary) For Managing Status Of Product Of Sales Order
+  const managespStatus=async(id)=>{
+    
+  }
+
+
 
   // starting of kachra
   //For common modal kachra
@@ -173,42 +331,8 @@ function MangeSalesOrder() {
   const onChange = (event) => {
     setNote({ ...note, [event.target.name]: [event.target.value] })
 }
-
-
-  //For additem modal
-  const ItemCategory = [
-    {
-        id: 1,
-        'category': 'Pen',
-    },
-    {
-        id: 2,
-        'category': 'Pencil',
-    },
-    {
-        id: 3,
-        'category': 'Eraser',
-    }
-]
-const Item = [
-    {
-        id: 1,
-        'item': 'Blue Pen',
-    },
-    {
-        id: 2,
-        'item': 'Black Pen',
-    },
-    {
-        id: 3,
-        'item': 'Red PEn',
-    }
-]
-const [newCategory, setCategory] = useState(ItemCategory)
-const [newItem, setItem] = useState(Item)
-  //closing of enditemmodal kachra
-
   //For managestatusModal
+
   // const [note, setNote] = useState();
   // const onChange = (event) => {
   //     setNote({ ...note, [event.target.name]: [event.target.value] })
@@ -275,6 +399,24 @@ let i=1;
       </div>
     </div>
       {/*  */}
+      {/* <DeleteSalesModal's Product/> */}
+      <div class="modal fade" id="DeleteSalesModalproduct" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Delete Notification</h5>
+          </div>
+          <div class="modal-body">
+            Once It Is Been Deleted, It Cannot Be Recovered
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" onClick={()=>{deletedSOrderproduct(sprodDelId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
+          </div>
+        </div>
+      </div>
+    </div>
+      {/*  */}
       {/* <Edit Sale's Product Modal /> */}
       <div class="modal fade" id="EditSalesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -283,27 +425,19 @@ let i=1;
                         <h5 class="modal-title" id="exampleModalLabel">Edit Sales Order Product</h5>
                     </div>
                     <div class="modal-body">
-                        Edit The Thing You Want To Change, Otherwise Not Make Change In It, The Change Can Only Be Made In The Quantity And Per-Piece Price 
+                        Edit The Thing You Want To Change, Otherwise Not Make Change In It
                         <hr/>
                         <form>
-                            {/* The system would be maked that the information would be shown and some of them would be permited to change */}
-                        <label class="form-label">Product Name</label>
-                            <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
-
-                            <label class="form-label">Product Category</label>
-                            <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
-
                             <label class="form-label">Quantity Of Product</label>
-                            <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
+                            <input type="number" class="form-control text-center" id="espquantity" name="espquantity" value={espquantity} onChange={esponChange1} required />
 
                             <label class="form-label">Per-Piece Price</label>
-                            <input type="number" class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required />
-
+                            <input type="number" class="form-control text-center" id="esPppp" name="esPppp" value={esPppp} onChange={esponChange2} required />
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-secondary">Change</button>
+                        <button type="button" onClick={()=>{editsproduct(seditId)}} class="btn btn-secondary" data-bs-dismiss="modal">Change</button>
                     </div>
                 </div>
             </div>
@@ -482,7 +616,7 @@ let i=1;
     </div>
       {/*  */}
       {/* <AddItemModal /> */}
-      <div class="modal fade" id="AddProductToSales" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal fade" id="AddProductToSalesOrder" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -494,11 +628,11 @@ let i=1;
                                 <label class="form-label">Select The Product Category</label>
                                 
                                 <div class="dropdown">
-                                    <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
-                                        <option selected>Select</option>
+                                    <select class="form-select form-select-sm mb-3" onClick={async(event)=>{productbycategoryIdforModal(event.target.value)}} aria-label=".form-select-lg example">
+                                        <option value={-1}>Select</option>
                                         {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                        {newCategory.map((cat) => {
-                                            return <option value={cat.category}>{cat.category}</option>
+                                        {categoryModal.map((cat) => {
+                                            return <option value={cat.categoryId}>{cat.pcname}</option>
                                         })}
                                     </select>
                                 </div>
@@ -509,27 +643,26 @@ let i=1;
                                     {/* For taking the value from the database of the saved category use following method, where notes comes from the database, and instead it you can take anyt name */}
 
                                     <div class="dropdown">
-                                        <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example">
-                                            <option selected>Select</option>
+                                        <select class="form-select form-select-sm mb-3" onClick={async(event)=>{setapiproductId(event.target.value)}} aria-label=".form-select-lg example">
+                                            <option value={-1}>Select</option>
                                             {/* Here we had saved the value in const, Instead we have to use the from json */}
-                                            {newItem.map((itm) => {
-                                                return <option value={itm.category}>{itm.item}</option>
+                                            {productsOfCatModal.map((itm) => {
+                                                return <option value={itm.productId}>{itm.productName}</option>
                                             })}
                                         </select>
                                     </div>
                                     </div>
 
                                     <label class="form-label">Enter Quantity Of Product</label>
-                                    <input type="number" class="form-control text-center" id="Itemquty" name="ItemQuantity" onChange={onChange} required />
+                                    <input type="number" class="form-control text-center" id="Itemquty" name="nquantity" onChange={onChangenp} required />
                                     
                                     <label class="form-label">Enter Per-Piece Price</label>
-                                    <input type="number" class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required />
-                            
+                                    <input type="number" class="form-control text-center" id="Itemprice" name="nppp" onChange={onChangenp} required />
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-secondary">Add</button>
+                        <button type="button" onClick={()=>{addProductToOrder(addproductId)}} class="btn btn-secondary" data-bs-dismiss="modal">Add</button>
                     </div>
                 </div>
             </div>
@@ -543,11 +676,11 @@ let i=1;
             <h5 class="modal-title" id="exampleModalLabel">Conform Notification</h5>
           </div>
           <div class="modal-body">
-            Once It Is Been Dispatched, It Cannot Be Recovered, And The Stock Related All The Things Would Be Done Automatically
+            Once It Is Been Dispatched, It Cannot Be Reverted, And The Stock Related All The Things Would Be Maked Automatically Dispatched
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-secondary">Conform</button>
+            <button type="button" onClick={()=>{dispatchOrder(dispatchId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
           </div>
         </div>
       </div>
@@ -632,9 +765,9 @@ let i=1;
                 </div>
                 <p>Total Order Amount: <strong>{QCompnay.totalAmount}</strong></p>
                 <hr />
-                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#AddProductToSales"><img src={add_item_image} width='120'></img></button>
+                <button type="button" onClick={()=>{getCategoryData(QCompnay._id)}} class="btn" data-bs-toggle="modal" data-bs-target="#AddProductToSalesOrder"><img src={add_item_image} width='120'></img></button>
                 <hr />
-                <button type="button" class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#DispatchSalesModal">All Order Dispatched</button>
+                <button type="button" onClick={()=>{setDispatchId(QCompnay._id)}} class="btn btn-success mx-2" data-bs-toggle="modal" data-bs-target="#DispatchSalesModal">All Order Dispatched</button>
                 <button type="button" onClick={()=>{getDataForEdit(QCompnay._id)}} class="btn btn-info mx-2" data-bs-toggle="modal" data-bs-target="#EditSalesOrder">Edit</button>
                 <button type="button" onClick={()=>{setdelorderId(QCompnay._id)}} class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteSalesModal">Delete</button>
                 {/* <!-- Button trigger modal --> */}
