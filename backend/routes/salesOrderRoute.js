@@ -127,13 +127,11 @@ router.delete("/deleteproduct/:id", fetchuser, async (req, res)=>{
 //CASE 5: Edit the sales order's Information Endpoint
 router.put("/editsalesorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const {salesDealer, brokerName, paymentTerm, comment, totalAmount, mainDispatchDate}=req.body;
+    const {brokerName, paymentTerm, comment, mainDispatchDate}=req.body;
     const updatedSales={};
-    if(salesDealer){updatedSales.salesDealer=salesDealer};
     if(brokerName){updatedSales.brokerName=brokerName};
     if(paymentTerm){updatedSales.paymentTerm=paymentTerm};
     if(comment){updatedSales.comment=comment};
-    if(totalAmount){updatedSales.totalAmount=totalAmount};
     if(mainDispatchDate){updatedSales.mainDispatchDate=mainDispatchDate};
     let sorder=await salesOrder.findById(req.params.id);
     if(!sorder)
@@ -245,6 +243,12 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
     
     return res.send({success: "sales order has been deleted"})
+})
+
+//CASE 9:Get Details Of Given id of Sales Document
+router.get("/getorderdetails/:id", fetchuser, async (req, res)=>{
+    let data=await salesOrder.findById(req.params.id)
+    res.send(data);
 })
 
 module.exports=router

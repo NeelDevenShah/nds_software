@@ -161,23 +161,19 @@ const productbycategoryIdforModal=async(categoryId)=>{
   }
 
   //For Adding The Whole Order To The Sales Order
-  const [datatosales, setdatatosales]=useState({brokername:"", paymentNum:"", dipatchDay:"", dipatchMonth:"", dipatchYear:"", comment:""})
+  const [datatosales, setdatatosales]=useState({brokername:"", paymentNum:"", dispatchDay:"", dispatchMonth:"", dispatchYear:"", comment:""})
   const onChange4=(event)=>{
     setdatatosales({...datatosales, [event.target.name]: event.target.value})
   }
   const [tosalesId, setTosalesId]=useState(0);
   const sendItToSales=async()=>{
-    console.log(tosalesId)
-    // console.log(datatosales.dipatchDay)
-    // console.log(datatosales.dipatchMonth)
-    // console.log(datatosales.dipatchYear)
     const response=await fetch(`http://localhost:5000/api/quotation/addtosales/${tosalesId}`, {
       method: 'POST',
       headers:{
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
       },
-      body: JSON.stringify({brokerName:datatosales.brokername, paymentTerm:datatosales.paymentNum, comment:datatosales.comment, mainDispatchDate:datatosales.dipatchDay+"/"+datatosales.dipatchMonth+"/"+datatosales.dipatchYear})
+      body: JSON.stringify({brokerName:datatosales.brokername, paymentTerm:datatosales.paymentNum, comment:datatosales.comment, mainDispatchDate:datatosales.dispatchDay+"/"+datatosales.dispatchMonth+"/"+datatosales.dispatchYear})
     })
     const json=await response.json();
     if(json.success)
@@ -214,7 +210,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
                     <input type="number" name="paymentNum" value={datatosales.paymentNum} onChange={onChange4} style={{width: '75px', height: '32px'}} class="form-control text-center mx-auto" id="comp" aria-describedby="emailHelp" required />
                     <label class="form-label">Enter Average Dispatch Date Of Sales Order</label>
                     <div className='row mx-auto'>
-                    <select id='dipatchDate' name='dipatchDay' onChange={onChange4} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                    <select id='dispatchDate' name='dispatchDay' onChange={onChange4} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
                     <option selected value={1}>1</option>
                       <option selected value={2}>2</option>
                       <option selected value={3}>3</option>
@@ -247,7 +243,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
                       <option selected value={30}>30</option>
                       <option selected value={31}>31</option>
                     </select>
-                    <select id='dipatchMonth' name='dipatchMonth' onChange={onChange4} style={{width: '63px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                    <select id='dispatchMonth' name='dispatchMonth' onChange={onChange4} style={{width: '63px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
                     <option selected value={0}>0</option>
                       <option selected value={1}>1</option>
                       <option selected value={2}>2</option>
@@ -262,14 +258,14 @@ const productbycategoryIdforModal=async(categoryId)=>{
                       <option selected value={11}>11</option>
                       <option selected value={12}>12</option>
                     </select>
-                    <select id='dipatchYear' name='dipatchYear' onChange={onChange4} style={{width: '75px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
+                    <select id='dispatchYear' name='dispatchYear' onChange={onChange4} style={{width: '75px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
                       <option selected value={2022}>2022</option>
                       <option selected value={2023}>2023</option>
                       <option selected value={2024}>2024</option>
                     </select>
                     </div>
                     <label class="form-label">Enter Comment(If Any)</label>
-                    <textarea name="comment" value={datatosales.compName} onChange={onChange4} class="form-control text-center" id="comment" aria-describedby="emailHelp" required />
+                    <textarea name="comment" value={datatosales.comment} onChange={onChange4} class="form-control text-center" id="comment" aria-describedby="emailHelp" required />
                 </div>
             </form>
           </div>

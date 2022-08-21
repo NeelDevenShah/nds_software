@@ -50,21 +50,23 @@ function App() {
   
   // var audio=new Audio('click_sound.mp3');
   
-  //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of quotations
-      
-//Comon utility for setting the Editid
-      let [editId, setEditId]=useState(0);
-      const giveId=(id)=>{
-        setEditId(id);
-      }
+  //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of quotations  
+    //Comon utility for setting the Editid
+    let [editId, setEditId]=useState(0);
+    const giveId=(id)=>{
+      setEditId(id);
+    }
 
-      //For saving the change in the data of quotation
-      const [quotId, seteditQuotId]=useState(0);
-      const [editquantity, setEditquantity]=useState(0);
-      const [editppp, seteditppp]=useState(0)
+    //For saving the change in the data of quotation
+    const [quotId, seteditQuotId]=useState(0);
+    const [editquantity, setEditquantity]=useState(0);
+    const [editppp, seteditppp]=useState(0)
   //Ending of quotation utiliy
   
-  return (
+    //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS of sales order  
+  
+    //Ending of sales order utiliy
+    return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
           <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}}>
