@@ -30,9 +30,10 @@ const purchaseOrderSchema=new Schema({
         required: true,
     },
     mainArrivingDate:{
-        type: Date,
+        // In mm/dd/yyyy format
+        type: String,
         required: true,
-    },
+    }
 })
 
 module.exports=mongoose.model("purchaseOrder", purchaseOrderSchema)

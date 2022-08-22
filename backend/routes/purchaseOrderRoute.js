@@ -120,12 +120,9 @@ router.put("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
     const {purchaseDealer, brokerName, paymentTerm, comment, mainArrivingDate}=req.body;
     const updatedPurchase={};
-    if(companyId){updatedPurchase.companyId=companyId};
-    if(purchaseDealer){updatedPurchase.purchaseDealer=purchaseDealer};
     if(brokerName){updatedPurchase.brokerName=brokerName};
     if(paymentTerm){updatedPurchase.paymentTerm=paymentTerm};
     if(comment){updatedPurchase.comment=comment};
-    if(purchaseDealer){updatedPurchase.purchaseDealer=purchaseDealer};
     if(mainArrivingDate){updatedPurchase.mainArrivingDate=mainArrivingDate}
     let porder=await purchaseOrder.findById(req.params.id);
     if(!porder)
@@ -149,17 +146,10 @@ router.put("/editpurchaseorder/:id", fetchuser, async (req, res)=>{
 //CASE 6: Edit the purchase order's Product Information Endpoint
 router.put("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
-    const {categoryId, categoryName, productId, productName, quantity, perPicePrice, arrivingat, arrivingDate}=req.body;
+    const {quantity, perPicePrice}=req.body;
     const updatedProduct={};
-    if(companyId){updatedProduct.companyId=companyId};
-    if(categoryId){updatedProduct.categoryId=categoryId};
-    if(categoryName){updatedProduct.categoryName=categoryName};
-    if(productId){updatedProduct.productId=productId};
-    if(productName){updatedProduct.productName=productName};
     if(quantity){updatedProduct.quantity=quantity};
     if(perPicePrice){updatedProduct.perPicePrice=perPicePrice};
-    if(arrivingat){updatedProduct.arrivingat=arrivingat};
-    if(arrivingDate){updatedProduct.arrivingDate=arrivingDate};
 
     let sproduct=await purchaseOrderMini.findById(req.params.id);
     if(!sproduct)
@@ -174,7 +164,7 @@ router.put("/editpurchaseproduct/:id", fetchuser, async (req, res)=>{
     
     //Code for changing the totalAmount in the purchaseOrder
     purchaseDetail= await purchaseOrder.findOne({companyId: companyId, purchaseOrderId: sproduct.purchaseOrderId});
-    let temp=purchaseDetail.totalAmount+(quantity*perPicePrice)-(sproduct.quantity*sproduct.perPicePrice);
+    let temp=purchaseDetail.totalAmount-(sproduct.quantity*sproduct.perPicePrice)+(quantity*perPicePrice);
     await purchaseOrder.findOneAndUpdate({companyId: companyId, purchaseOrderId: sproduct.purchaseOrderId}, {$set:{totalAmount:temp}})
 
     //Making entry in logbook
@@ -232,6 +222,18 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     
     //Add this in the history of the arrived Orders instead of deleting them
     return res.json({success: "purchase order has been arrived"})
+})
+
+//CASE 9: For Getting Order Details By Given Id
+router.get("/getorderdetailbyid/:id", fetchuser, async(req, res)=>{
+    let data=await purchaseOrder.findById(req.params.id);
+    res.send(data);
+})
+
+//CASE 10: For Getting Order's Product Details By Given Id
+router.get("/getproductdetailbyid/:id", fetchuser, async(req, res)=>{
+    let data=await purchaseOrderMini.findById(req.params.id);
+    res.send(data);
 })
 
 module.exports=router

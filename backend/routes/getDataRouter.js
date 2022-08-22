@@ -63,7 +63,7 @@ router.get("/purchaseorders", fetchuser, async (req,res)=>{
 })
 
 router.get("/productsofpurchaseorder", fetchuser, async (req,res)=>{
-    const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderId: req.body.purchaseOrderId});
+    const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderId: req.header('purchaseOrderId')});
     res.json(prodofpurchaseorder);
 })
 

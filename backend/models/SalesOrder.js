@@ -30,6 +30,7 @@ const salesOrderSchema=new Schema({
         required: true,
     },
     mainDispatchDate:{
+        // In mm/dd/yyyy format
         type: String,
         required: true,
     },

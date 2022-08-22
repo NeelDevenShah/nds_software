@@ -28,10 +28,6 @@ const newWarehouseSchema=new Schema({
     },
     pincode:{
         type: Number,
-    },
-    date:{
-        type: Date,
-        default: Date.now,
     }
 });
 

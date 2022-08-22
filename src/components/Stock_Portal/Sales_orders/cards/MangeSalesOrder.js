@@ -117,7 +117,7 @@ function MangeSalesOrder() {
     esetpaymentTerm(json.paymentTerm);
     esetcomment(json.comment)
     var tempdate=json.mainDispatchDate;
-    var mm=tempdate.charAt(1);
+    var mm=tempdate.charAt(0)+tempdate.charAt(1);
     var dd=tempdate.charAt(3)+tempdate.charAt(4);
     var yyyy=tempdate.charAt(6)+tempdate.charAt(7)+tempdate.charAt(8)+tempdate.charAt(9);
     esetdispatchMonth(mm);
@@ -215,7 +215,7 @@ function MangeSalesOrder() {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
       },
-      body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp})
+      body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp, dispatchingFrom:"0", dispatchDate:"00/00/0000"})
     })
     const json=await response.json();
     if(json.success)
@@ -320,23 +320,24 @@ function MangeSalesOrder() {
 
   //Function(Primary) For Managing Status Of Product Of Sales Order
   const managespStatus=async(id)=>{
-    
+    const response=await fetch(`http://localhost:5000/api/salesorder/managestatus/${id}`, {
+      method: 'PUT',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+      body: JSON.stringify({quantity: espquantity, perPicePrice:esPppp})
+    })
   }
 
 
 
   // starting of kachra
-  //For common modal kachra
-  const [note, setNote] = useState()
-  const onChange = (event) => {
-    setNote({ ...note, [event.target.name]: [event.target.value] })
-}
   //For managestatusModal
-
-  // const [note, setNote] = useState();
-  // const onChange = (event) => {
-  //     setNote({ ...note, [event.target.name]: [event.target.value] })
-  // }
+  const [note, setNote] = useState();
+  const onChange = (event) => {
+      setNote({ ...note, [event.target.name]: [event.target.value] })
+  }
   const statusData = [
       {
           'id': '1',
@@ -463,57 +464,57 @@ let i=1;
                     <label class="form-label">Enter Average Dispatch Date Of Order(dd/mm/yyyy)</label>
                     <div className='row mx-auto'>
                     <select id='dispatchDate' name='dispatchDay' onChange={onChangenod} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                    <option selected value={1}>1</option>
-                      <option selected value={2}>2</option>
-                      <option selected value={3}>3</option>
-                      <option selected value={4}>4</option>
-                      <option selected value={5}>5</option>
-                      <option selected value={6}>6</option>
-                      <option selected value={7}>7</option>
-                      <option selected value={8}>8</option>
-                      <option selected value={9}>9</option>
-                      <option selected value={10}>10</option>
-                      <option selected value={11}>11</option>
-                      <option selected value={12}>12</option>
-                      <option selected value={13}>13</option>
-                      <option selected value={14}>14</option>
-                      <option selected value={15}>15</option>
-                      <option selected value={16}>16</option>
-                      <option selected value={17}>17</option>
-                      <option selected value={18}>18</option>
-                      <option selected value={19}>19</option>
-                      <option selected value={20}>20</option>
-                      <option selected value={21}>21</option>
-                      <option selected value={22}>22</option>
-                      <option selected value={23}>23</option>
-                      <option selected value={24}>24</option>
-                      <option selected value={25}>25</option>
-                      <option selected value={26}>26</option>
-                      <option selected value={27}>27</option>
-                      <option selected value={28}>28</option>
-                      <option selected value={29}>29</option>
-                      <option selected value={30}>30</option>
-                      <option selected value={31}>31</option>
+                      <option selected value='01'>01</option>
+                      <option selected value='02'>02</option>
+                      <option selected value='03'>03</option>
+                      <option selected value='04'>04</option>
+                      <option selected value='05'>05</option>
+                      <option selected value='06'>06</option>
+                      <option selected value='07'>07</option>
+                      <option selected value='08'>08</option>
+                      <option selected value='09'>09</option>
+                      <option selected value='10'>10</option>
+                      <option selected value='11'>11</option>
+                      <option selected value='12'>12</option>
+                      <option selected value='13'>13</option>
+                      <option selected value='14'>14</option>
+                      <option selected value='15'>15</option>
+                      <option selected value='16'>16</option>
+                      <option selected value='17'>17</option>
+                      <option selected value='18'>18</option>
+                      <option selected value='19'>19</option>
+                      <option selected value='20'>20</option>
+                      <option selected value='21'>21</option>
+                      <option selected value='22'>22</option>
+                      <option selected value='23'>23</option>
+                      <option selected value='24'>24</option>
+                      <option selected value='25'>25</option>
+                      <option selected value='26'>26</option>
+                      <option selected value='27'>27</option>
+                      <option selected value='28'>28</option>
+                      <option selected value='29'>29</option>
+                      <option selected value='30'>30</option>
+                      <option selected value='31'>31</option>
                     </select>
                     <select id='dispatchMonth' name='dispatchMonth' onChange={onChangenod} style={{width: '63px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
                     <option selected value={0}>0</option>
-                      <option selected value={1}>1</option>
-                      <option selected value={2}>2</option>
-                      <option selected value={3}>3</option>
-                      <option selected value={4}>4</option>
-                      <option selected value={5}>5</option>
-                      <option selected value={6}>6</option>
-                      <option selected value={7}>7</option>
-                      <option selected value={8}>8</option>
-                      <option selected value={9}>9</option>
-                      <option selected value={10}>10</option>
-                      <option selected value={11}>11</option>
-                      <option selected value={12}>12</option>
+                      <option selected value='01'>01</option>
+                      <option selected value='02'>02</option>
+                      <option selected value='03'>03</option>
+                      <option selected value='04'>04</option>
+                      <option selected value='05'>05</option>
+                      <option selected value='06'>06</option>
+                      <option selected value='07'>07</option>
+                      <option selected value='08'>08</option>
+                      <option selected value='09'>09</option>
+                      <option selected value='10'>10</option>
+                      <option selected value='11'>11</option>
+                      <option selected value='12'>12</option>
                     </select>
                     <select id='dispatchYear' name='dispatchYear' onChange={onChangenod} style={{width: '75px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                      <option selected value={2022}>2022</option>
-                      <option selected value={2023}>2023</option>
-                      <option selected value={2024}>2024</option>
+                      <option selected value='2022'>2022</option>
+                      <option selected value='2023'>2023</option>
+                      <option selected value='2024'>2024</option>
                     </select>
                     </div>
                     <label class="form-label">Enter Comment(If Any)</label>
@@ -549,57 +550,56 @@ let i=1;
                     <label class="form-label">Average Dispatch Date Of Order(dd/mm/yyyy)</label>
                     <div className='row mx-auto'>
                     <select id='dispatchDate' name='edispatchDay' value={edispatchDay} onChange={eonChange4} style={{width: '63px', marginLeft: '125px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                      <option selected value={1}>01</option>
-                      <option selected value={2}>02</option>
-                      <option selected value={3}>03</option>
-                      <option selected value={4}>04</option>
-                      <option selected value={5}>05</option>
-                      <option selected value={6}>06</option>
-                      <option selected value={7}>07</option>
-                      <option selected value={8}>08</option>
-                      <option selected value={9}>09</option>
-                      <option selected value={10}>10</option>
-                      <option selected value={11}>11</option>
-                      <option selected value={12}>12</option>
-                      <option selected value={13}>13</option>
-                      <option selected value={14}>14</option>
-                      <option selected value={15}>15</option>
-                      <option selected value={16}>16</option>
-                      <option selected value={17}>17</option>
-                      <option selected value={18}>18</option>
-                      <option selected value={19}>19</option>
-                      <option selected value={20}>20</option>
-                      <option selected value={21}>21</option>
-                      <option selected value={22}>22</option>
-                      <option selected value={23}>23</option>
-                      <option selected value={24}>24</option>
-                      <option selected value={25}>25</option>
-                      <option selected value={26}>26</option>
-                      <option selected value={27}>27</option>
-                      <option selected value={28}>28</option>
-                      <option selected value={29}>29</option>
-                      <option selected value={30}>30</option>
-                      <option selected value={31}>31</option>
+                      <option selected value='01'>01</option>
+                      <option selected value='02'>02</option>
+                      <option selected value='03'>03</option>
+                      <option selected value='04'>04</option>
+                      <option selected value='05'>05</option>
+                      <option selected value='06'>06</option>
+                      <option selected value='07'>07</option>
+                      <option selected value='08'>08</option>
+                      <option selected value='09'>09</option>
+                      <option selected value='10'>10</option>
+                      <option selected value='11'>11</option>
+                      <option selected value='12'>12</option>
+                      <option selected value='13'>13</option>
+                      <option selected value='14'>14</option>
+                      <option selected value='15'>15</option>
+                      <option selected value='16'>16</option>
+                      <option selected value='17'>17</option>
+                      <option selected value='18'>18</option>
+                      <option selected value='19'>19</option>
+                      <option selected value='20'>20</option>
+                      <option selected value='21'>21</option>
+                      <option selected value='22'>22</option>
+                      <option selected value='23'>23</option>
+                      <option selected value='24'>24</option>
+                      <option selected value='25'>25</option>
+                      <option selected value='26'>26</option>
+                      <option selected value='27'>27</option>
+                      <option selected value='28'>28</option>
+                      <option selected value='29'>29</option>
+                      <option selected value='30'>30</option>
+                      <option selected value='31'>31</option>
                     </select>
                     <select id='dispatchMonth' name='edispatchMonth' value={edispatchMonth} onChange={eonChange5} style={{width: '63px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                    <option selected value={0}>0</option>
-                      <option selected value={1}>1</option>
-                      <option selected value={2}>2</option>
-                      <option selected value={3}>3</option>
-                      <option selected value={4}>4</option>
-                      <option selected value={5}>5</option>
-                      <option selected value={6}>6</option>
-                      <option selected value={7}>7</option>
-                      <option selected value={8}>8</option>
-                      <option selected value={9}>9</option>
-                      <option selected value={10}>10</option>
-                      <option selected value={11}>11</option>
-                      <option selected value={12}>12</option>
+                      <option selected value='01'>01</option>
+                      <option selected value='02'>02</option>
+                      <option selected value='03'>03</option>
+                      <option selected value='04'>04</option>
+                      <option selected value='05'>05</option>
+                      <option selected value='06'>06</option>
+                      <option selected value='07'>07</option>
+                      <option selected value='08'>08</option>
+                      <option selected value='09'>09</option>
+                      <option selected value='10'>10</option>
+                      <option selected value='11'>11</option>
+                      <option selected value='12'>12</option>
                     </select>
                     <select id='dispatchYear' name='edispatchYear' value={edispatchYear} onChange={eonChange6} style={{width: '75px', marginLeft: '5px'}} class="form-select form-select-sm" aria-label=".form-select-lg example">
-                      <option selected value={2022}>2022</option>
-                      <option selected value={2023}>2023</option>
-                      <option selected value={2024}>2024</option>
+                      <option selected value='2022'>2022</option>
+                      <option selected value='2023'>2023</option>
+                      <option selected value='2024'>2024</option>
                     </select>
                     </div>
                     <label class="form-label">Comment</label>
@@ -719,7 +719,7 @@ let i=1;
                             {getwhdata.map((choice) => {
                                 return <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value={`option${choice.id}`} />
-                                    <label class="form-check-label" for="inlineCheckbox3">{choice.warehouse} | Quantity Of Item Present :{choice.quantity} | Dis. Qty. <input type="number" style={{height: '15px', width: '95px'}} class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required /> </label>
+                                    <label class="form-check-label" for="inlineCheckbox3">{choice.warehouse} | Quantity Of Item Present :{choice.quantity} | Dis. Qty. <input type="number" style={{height: '25px', width: '95px'}} class="form-control text-center" id="Itemprice" name="ItemPrice" onChange={onChange} required /> </label>
                                 </div>
 
 
@@ -753,8 +753,8 @@ let i=1;
                         <th scope="col">Product Name</th>
                         <th scope="col">Quantity No.'s</th>
                         <th scope="col">Per-Piece(<span>&#8377;</span>)</th>
-                        {/* <th scope="col" className='py-3'>Status</th> */}
                         <th scope="col">Dispatching Status</th>
+                        <th scope='col'>Dispatching From</th>
                         <th scope="col">Edit</th>
                         <th scope="col">Manage Status</th>
                         <th scope="col">Delete</th>

@@ -37,6 +37,7 @@ const salesMiniSchema=new Schema({
     status:String,
     dispatchingFrom:[Number],
     dispatchDate:{
+        // In mm/dd/yyyy format
         type: String,
     },
 })

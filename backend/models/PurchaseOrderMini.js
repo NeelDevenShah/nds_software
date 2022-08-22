@@ -40,7 +40,8 @@ const purchaseMiniSchema=new Schema({
     },
     arrivingat:[Number],
     arrivingDate:{
-        type: Date,
+        // In mm/dd/yyyy format
+        type: String,
         required: true,
     },
 })

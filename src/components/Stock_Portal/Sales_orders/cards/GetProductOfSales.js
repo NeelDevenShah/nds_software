@@ -1,6 +1,4 @@
-import React, {useEffect} from "react";
-import { useState } from "react";
-import { useContext } from "react";
+import React, {useEffect, useState, useContext} from "react";
 import Context from "../../../../Context";
 function GetProductOfSales(props) {
 
@@ -51,6 +49,7 @@ function GetProductOfSales(props) {
       <td>{data.quantity}</td>
       <td>{data.perPicePrice}</td>
       <td>{data.status}</td>
+      <td>{data.dispatchingFrom+" "}</td>
       <td> <button type="button" onClick={()=>{geteproductData(data._id)}} class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#EditSalesModal">Edit</button></td>
       <td> <button type="button" onClick={()=>{setsmanageId(data._id)}} class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#ManageStatusModal">Manage</button></td>
       <td> <button type="button" onClick={()=>{setsProdDelId(data._id)}} class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#DeleteSalesModalproduct">Delete</button></td>
