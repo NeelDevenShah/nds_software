@@ -80,7 +80,7 @@ function MangeWarehouses() {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            Once The Warehouse Is Deleted Than All The Stock Will BE Move To The Default Warehouse And The Stock Should Be Rearanged To Another Warehouse, And This Warehouse Will Not BE Available Any More
+            Once The Warehouse Is Deleted Than All The Stock Will Be Move To The Default Warehouse And The Stock Should Be Rearanged To Another Warehouse, And This Warehouse Will Not BE Available Any More
           </div>
           <div class="modal-footer">
             <button type="button" onClick={delId=0} class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

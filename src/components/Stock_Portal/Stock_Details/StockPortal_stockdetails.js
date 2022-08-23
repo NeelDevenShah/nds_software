@@ -17,9 +17,9 @@ function StockPortal_stockdetails() {
         <div className='bg-warning pb-5'>
             {pageStarting()}
             <h1 className='py-5'><strong>STOCK MANAGMENT PORTAL AVAILABLE STOCK DETAILS</strong></h1>
-            <Stock_details />
+            <Stock_details />   {/*Work Tobe done*/}
             <TotalWarehousesStock/>
-            <WarehousesDetails/>
+            <WarehousesDetails/> {/*Work Tobe done*/}
             <SingleWhStock/>
         </div>
     )

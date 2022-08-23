@@ -56,10 +56,10 @@ router.post("/registerCompany",  [
     {defaultWareHouse.companyId=req.body.companyId};
     {defaultWareHouse.wname='Default'};
     {defaultWareHouse.shopNum='Default'};
-    {defaultWareHouse.add2='Default'};
-    {defaultWareHouse.city='Default'};
-    {defaultWareHouse.state='Default'};
-    {defaultWareHouse.country='Default'};
+    {defaultWareHouse.add2=''};
+    {defaultWareHouse.city=''};
+    {defaultWareHouse.state=''};
+    {defaultWareHouse.country=''};
     {defaultWareHouse.pincode=0};
     {defaultWareHouse.warehouseId=0};
     const nwh=new newWarehouse(defaultWareHouse);

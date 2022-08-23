@@ -5,7 +5,7 @@ const newProduct=require("../models/newproduct_registry");
 const addProduct=require("../models/AddProduct")
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
 const fetchcompany=require("../middleware/fetchcompany");
-const fetchuser=require("../middleware/fetchuser")
+const fetchuser=require("../middleware/fetchuser");
 
 //CASE 1: Move The Stock
 router.put("/movestock/:id", fetchuser, async (req,res)=>{
@@ -138,7 +138,7 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         return res.status(404).send({error: "The Product at particular location does not exists"})
     }
     const {categoryId, productId, quantity, prodWarehouseId}=whProduct;
-    const {qty}=req.body;
+    let qty=req.header('qty')
     if(qty>quantity)
     {
         res.status(404).send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})

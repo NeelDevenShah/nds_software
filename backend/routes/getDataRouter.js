@@ -52,8 +52,8 @@ router.get("/getallstockproductsofcompany", fetchuser, async (req,res)=>{
     res.json(fullstockofcmp);
 })
 
-router.get("/getproductsofwarehouse", fetchuser, async (req,res)=>{
-    const productsofwh=await AddProduct.find({companyId: req.details.companyId, prodWarehouseId: req.body.prodWarehouseId});
+router.get("/getproductsofwarehouse/:wareId", fetchuser, async (req,res)=>{
+    const productsofwh=await AddProduct.find({companyId: req.details.companyId, prodWarehouseId: req.params.wareId});
     res.json(productsofwh);
 })
 
@@ -82,4 +82,8 @@ router.get("/getproductofcategory", fetchuser, async (req, res)=>{
     res.json(products);
 })
 
+router.get("/productatparticularwarebyid/:id", fetchuser, async (req, res)=>{
+    const details=await AddProduct.findById(req.params.id);
+    res.json(details);
+})
 module.exports=router

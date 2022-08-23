@@ -81,10 +81,30 @@ function App() {
     const [epquantity, setepquantity]=useState(0);
     const [ePppp, setePppp]=useState(0);
     //Ending of purchase utility
+
+    //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS OF STOCK DETAILS
+    const [sdmoveId, setSdmoveId]=useState(0);
+    const [sddeleteId, setSddeleteId]=useState(0);
+
+    //Function For Getting Detail Of Product By id
+    const [prodByid, setProdByid]=useState([]);
+    const getproductDetails=async(id)=>{
+    const response=await fetch(`http://localhost:5000/api/getdata/productatparticularwarebyid/${id}`,{
+        method: 'GET',
+        headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token') 
+        }
+    })
+    const json=await response.json();
+    setProdByid(json);
+  }
+    //Ending Of Stock Details
+
     return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId, sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp, prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp}}>
+          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId, sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp, prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp, sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}}>
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}

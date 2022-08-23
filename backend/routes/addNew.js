@@ -21,11 +21,6 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     {
         return res.status(400).json({error: "The Company id does not exists"});
     }
-    // let category1=await newProductCategory.findOne({companyId: companyId, categoryId: req.body.categoryId});
-    // if(category1)
-    // {
-    //     return res.status(400).json({error: "The product id already exists"})
-    // }
     let category2=await newProductCategory.findOne({companyId: companyId, pcname: req.body.pcname});
     if(category2)
     {
@@ -66,6 +61,10 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     
     req.body.companyId=companyId;
     req.body.productId=productId;
+    req.body.quantity=0;
+    req.body.demand="New Product";
+    req.body.predictedDemand="-1";
+    req.body.inWarehouses=0;
     const newprod=new newProduct(req.body);
     await newprod.save();
 
@@ -159,8 +158,9 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     res.send({success: "Product deleted successfully"})
 })
 
-//CASE 5:Subtract Some product from a warehouse of company
-router.put("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
+    //(NOT IMPLEMETNED DUE TO FRONTEND COMPLEXITY OF GETTING SECONDARY DATA FOR SELECTION)
+    //CASE 5:Subtract Some product from a warehouse of company
+    router.put("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
     //Here the id is of the newProduct(Which is without warehouse id)
     const {companyId, employeeId}=req.details;
     let details1=await newProduct.findById(req.params.id);
@@ -205,6 +205,7 @@ router.put("/deletesomeproduct/:id", fetchuser, async (req, res)=>{
     }
 })
 
+//(HALF IMPLEMETNED(ONLY CASE 2 IS IMPLEMENTED) DUE TO FRONTEND COMPLEXITY OF GETTING SECONDARY DATA FOR SELECTION)
 //CASE 6:Delete Product which is been added in the addproduct
 router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
     //In this case all the products are been deleted and no trace of then are found further
