@@ -22,12 +22,12 @@ function OwnerPortal_navbar() {
                             {/* Use active to show the live page */}
                             <Link className="nav-link mx-2" aria-current="page" to='/'>Home</Link>
                             <Link className="nav-link mx-2" to="/ownerportal">Dashboard</Link>
-                            <Link className="nav-link mx-2" to="/productandcategories">Check Products And Categories</Link>
-                            <Link className="nav-link mx-2" to="/sales">Check Sales Order</Link>
-                            <Link className="nav-link mx-2" to="/purchase">Check Purchase Order</Link>
-                            <Link className="nav-link mx-2" to="/quotations">Check Quotations</Link>
-                            <Link className="nav-link mx-2" to="/doneorders">Dispatched/Arrived Order</Link>
-                            <Link className="nav-link mx-2" to="/payments">Manage Payments</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/productandcategories">Check Products And Categories</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/sales">Check Sales Order</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/purchase">Check Purchase Order</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/quotations">Check Quotations</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/doneorders">Dispatched/Arrived Order</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/payments">Manage Payments</Link>
                             <button type="button" onClick={handleLogout} class="btn btn-outline-dark">Logout</button>
                         </div>
                     </div>

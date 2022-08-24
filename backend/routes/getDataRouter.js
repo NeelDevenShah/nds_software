@@ -37,12 +37,26 @@ router.get("/getcategorywisestock/:id", fetchuser, async (req,res)=>{
     res.json(productswithcategory);
 })
 
+//For User Portal
 router.get("/getquotations", fetchuser, async (req,res)=>{
     const quotations=await Quotation.find({companyId: req.details.companyId});
     res.json(quotations);
 })
 
+//For Owner Portal
+router.get("/getquotationsforcmp", fetchcompany, async (req,res)=>{
+    const quotations=await Quotation.find({companyId: req.details.companyId});
+    res.json(quotations);
+})
+
+//For User Portal
 router.get("/getquotationproducts", fetchuser, async (req,res)=>{
+    const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationId: req.header("quotationId")});
+    res.json(productsofquotation);
+})
+
+//For Owner Portal
+router.get("/getquotationproductsforcmp", fetchcompany, async (req,res)=>{
     const productsofquotation=await QuotationMini.find({companyId: req.details.companyId, quotationId: req.header("quotationId")});
     res.json(productsofquotation);
 })
@@ -57,22 +71,49 @@ router.get("/getproductsofwarehouse/:wareId", fetchuser, async (req,res)=>{
     res.json(productsofwh);
 })
 
+//For User Portal
 router.get("/purchaseorders", fetchuser, async (req,res)=>{
     const purchaseordersofcmp=await PurchaseOrder.find({companyId: req.details.companyId});
     res.json(purchaseordersofcmp);
 })
 
+//For Owner Portal
+router.get("/purchaseordersforcmp", fetchcompany, async (req,res)=>{
+    const purchaseordersofcmp=await PurchaseOrder.find({companyId: req.details.companyId});
+    res.json(purchaseordersofcmp);
+})
+
+//For User Portal
 router.get("/productsofpurchaseorder", fetchuser, async (req,res)=>{
     const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderId: req.header('purchaseOrderId')});
     res.json(prodofpurchaseorder);
 })
 
+//For Owner Portal
+router.get("/productsofpurchaseorderforcmp", fetchcompany, async (req,res)=>{
+    const prodofpurchaseorder=await PurchaseOrderMini.find({companyId: req.details.companyId, purchaseOrderId: req.header('purchaseOrderId')});
+    res.json(prodofpurchaseorder);
+})
+
+//For User Portal
 router.get("/salesorders", fetchuser, async (req,res)=>{
     const salesorderofcmp=await SalesOrder.find({companyId: req.details.companyId});
     res.json(salesorderofcmp);
 })
+//For Owner Portal
+router.get("/salesordersforcmp", fetchcompany, async (req,res)=>{
+    const salesorderofcmp=await SalesOrder.find({companyId: req.details.companyId});
+    res.json(salesorderofcmp);
+})
 
+//For User Portal
 router.get("/productsofsalesorder", fetchuser, async (req,res)=>{
+    const prodofsalesorder=await SalesOrderMini.find({companyId: req.details.companyId, SalesOrderId: req.header('SalesOrderId')});
+    res.json(prodofsalesorder);
+})
+
+//For Owner Portal
+router.get("/productsofsalesorderforcmp", fetchcompany, async (req,res)=>{
     const prodofsalesorder=await SalesOrderMini.find({companyId: req.details.companyId, SalesOrderId: req.header('SalesOrderId')});
     res.json(prodofsalesorder);
 })

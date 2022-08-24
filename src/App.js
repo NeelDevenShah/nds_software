@@ -30,7 +30,9 @@ import StockPortal_addnewcategory from './components/Stock_Portal/Add_NewCategor
 import StockPortal_managewarehouses from './components/Stock_Portal/Manage_Warehouses/StockPortal_managewarehouses'
 import Context from './Context';
 
-// import Context from './Context';
+import OwnerPortal_checkSales from './components/Owner_Portal/Check Sales Order/OwnerPortal_checkSales'
+import OwnerPortal_checkPurchase from './components/Owner_Portal/Check Purchase Order/OwnerPortal_checkPurchase'
+import OwnerPortal_checkquotation from './components/Owner_Portal/Check Quotation/OwnerPortal_checkquotation'
 
 import{
   BrowserRouter as Router,
@@ -130,6 +132,10 @@ function App() {
             <Route path='/stockportal/managequotations' element={<StockPortal_managequotations/>}/>
             <Route path='/stockportal/addnewcategory' element={<StockPortal_addnewcategory/>}/>
             <Route path='/stockportal/managewarehouses' element={<StockPortal_managewarehouses/>}/>
+
+            <Route path='/ownerportal/sales' element={<OwnerPortal_checkSales/>}/>
+            <Route path='/ownerportal/purchase' element={<OwnerPortal_checkPurchase/>}/>            
+            <Route path='/ownerportal/quotations' element={<OwnerPortal_checkquotation/>}/>
             </Routes>
             <Main_footer/>
           </Router>

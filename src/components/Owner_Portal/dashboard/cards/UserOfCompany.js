@@ -99,11 +99,11 @@ function Sales_Activity() {
                         <form>
                           <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Enter New User Name:</label>
-                            <input type="text" name='name' value={newUserData.name} onChange={onChange} class="form-control text-center" id="newusername" aria-describedby="emailHelp" placeholder='Enter Unique User Name Than Exists One' />
+                            <input type="text" name='name' value={newUserData.name} onChange={onChange} class="form-control text-center" id="newusername1" aria-describedby="emailHelp" placeholder='Enter Unique User Name Than Exists One' />
                             <label for="exampleInputEmail1" class="form-label">Enter Password For New User:</label>
-                            <input type="password" name='password' value={newUserData.password} onChange={onChange} class="form-control text-center" id="newuserpassword" aria-describedby="emailHelp" placeholder='Enter Strong Password' />
+                            <input type="password" name='password' value={newUserData.password} onChange={onChange} class="form-control text-center" id="newuserpassword1" aria-describedby="emailHelp" placeholder='Enter Strong Password' />
                             <label for="exampleInputEmail1" class="form-label">Enter re-Password For User:</label>
-                            <input type="password" name='repassword' value={newUserData.repassword} onChange={onChange}class="form-control text-center" id="newuserrepassword" aria-describedby="emailHelp" placeholder='Enter Same As Above Entered Password' />
+                            <input type="password" name='repassword' value={newUserData.repassword} onChange={onChange}class="form-control text-center" id="newuserRepassword" aria-describedby="emailHelp" placeholder='Enter Same As Above Entered Password' />
                           </div>
                         </form>
                       </div>

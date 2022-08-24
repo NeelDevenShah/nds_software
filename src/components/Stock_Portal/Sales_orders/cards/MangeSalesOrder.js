@@ -229,7 +229,6 @@ function MangeSalesOrder() {
     }
   }
 
-
   //Function(Secondary) For Getting Data Of Category For AddNewProductModal
    let ItemCat=[];
    //For selection Choice in AddNewProductModal
