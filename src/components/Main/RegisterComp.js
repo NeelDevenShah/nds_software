@@ -32,7 +32,7 @@ function RegisterComp() {
       if(json.success)
       {
         //Navigate to new company creation successful page or to the company's portal
-        navigate("/login")
+        navigate("/companylogin")
       }
       else{
         //The error from api is comming than show it using model

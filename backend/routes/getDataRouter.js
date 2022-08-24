@@ -86,4 +86,14 @@ router.get("/productatparticularwarebyid/:id", fetchuser, async (req, res)=>{
     const details=await AddProduct.findById(req.params.id);
     res.json(details);
 })
+
+router.get("/getcompanydetails", fetchcompany, async(req, res)=>{
+    const details=await Company_registry.findOne({companyId: req.details.companyId});
+    res.json(details);
+})
+
+router.get("/getcompanyuser", fetchcompany, async(req, res)=>{
+    const data=await CompanyUser.find({companyId: req.details.companyId});
+    res.json(data);
+})
 module.exports=router

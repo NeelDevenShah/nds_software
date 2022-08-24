@@ -97,7 +97,7 @@ function Sales_Activity() {
                         <form>
                           <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Enter New Category Name:</label>
-                            <input name='pcname' value={newcatdata.pcname} onChange={onChange} type="email" class="form-control text-center" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder='Enter Unique Category Than That Exists' />
+                            <input name='pcname' value={newcatdata.pcname} onChange={onChange} type="text" class="form-control text-center" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder='Enter Unique Category Than That Exists' />
                           </div>
                         </form>
                       </div>

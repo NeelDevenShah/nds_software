@@ -37,7 +37,7 @@ function Main_page() {
             </div>
             {/* Starting of the Link buttons */}
             <div className='container'>
-                <Link to="/login" type="button" className="btn btn-success px-5 mt-2"><strong>Quick Login</strong></Link><br />
+                <Link to="/loginselection" type="button" className="btn btn-success px-5 mt-2"><strong>Quick Login</strong></Link><br />
                 <Link to="/contactus" type="button" className="btn btn-success px-5 mt-3"><strong>Contact Our Customer Executive</strong></Link><br />
                 <Link to="/register" type="button" className="btn btn-success px-5 mt-4"><strong>Register company Now And Make Bussiness Hussle Free And Speedy</strong></Link><br />
             </div>

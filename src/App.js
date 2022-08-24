@@ -3,22 +3,20 @@ import React from 'react';
 import Main_page from './components/Main/Main_page';
 import Main_navbar from './components/Main/Main_navbar';
 import StockPortal_navbar from './components/Stock_Portal/StockPortal_navbar';
-import AccountPortal_navbar from './components/Account_Portal/AccountPortal_navbar';
 import OwnerPortal_navbar from './components/Owner_Portal/OwnerPortal_navbar';
-import DealerPortal_navbar from './components/Dealer_Portal/DealerPortal_navbar';
 import LoggedinNavbar from './components/Main/LoggedinNavbar';
 import Main_footer from './components/Genral/Main_footer';
 import About_us from './components/Main/About_us';
 import Contact_us from './components/Main/Contact_us';
 import Pricing from './components/Main/Pricing';
-import Login from './components/Main/Login';
+import UserLogin from './components/Main/UserLogin';
+import CmpLogin from './components/Main/CmpLogin'
 import LoginSelection from './components/Main/LoginSelection';
 import RegisterComp from './components/Main/RegisterComp';
+import ChangeCmpPass from './components/Main/ChangeCmpPass'
 import ChangePass from './components/Main/ChangePass'
 import StockPortal_dashboard from './components/Stock_Portal/dashboard/StockPortal_dashboard';
-import AccountingPortal_dashboard from './components/Account_Portal/AccountingPortal_dashboard';
 import OwnerPortal_dashboard from './components/Owner_Portal/OwnerPortal_dashboard';
-import DealerPortal_dashboard from './components/Dealer_Portal/DealerPortal_dashboard';
 import { useDispatch } from 'react-redux';
 import {useSelector } from "react-redux";
 import { ViewActions } from './store/view-slice';
@@ -108,9 +106,7 @@ function App() {
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}
-            {view_accountNavbar && <AccountPortal_navbar/>}
             {view_ownerNavbar && <OwnerPortal_navbar/>}
-            {view_dealerNavbar && <DealerPortal_navbar/>}
             {view_loggedInNavbar && <LoggedinNavbar/>}
 
             <Routes>
@@ -118,14 +114,14 @@ function App() {
             <Route path='/pricing' element={<Pricing/>}/>
             <Route path='/Aboutus' element={<About_us/>}/>
             <Route path='/contactus' element={<Contact_us/>}/>
-            <Route path='/login' element={<Login/>}/>
+            <Route path='/login' element={<UserLogin/>}/>
+            <Route path='/companylogin' element={<CmpLogin/>}/>
             <Route path='/register' element={<RegisterComp/>}/>
-            <Route path='/changepassword' element={<ChangePass/>}/>
+            <Route path='/userchangepass' element={<ChangePass/>}/>
+            <Route path='/cmpchangepass' element={<ChangeCmpPass/>}/>
             <Route path='/loginselection' element={<LoginSelection/>}/>
             <Route path='/stockportal' element={<StockPortal_dashboard/>}/>
-            <Route path='/accountingportal' element={<AccountingPortal_dashboard/>}/>
             <Route path='/ownerportal' element={<OwnerPortal_dashboard/>}/>
-            <Route path='/dealerportal' element={<DealerPortal_dashboard/>}/>
 
             <Route path='/stockportal/products' element={<StockPortal_items/>}/>
             <Route path='/stockportal/sales' element={<StockPortal_sales/>}/>

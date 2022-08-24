@@ -16,7 +16,7 @@ function ChangePass() {
   return (
    <div className='bg-warning'>
       {pageStarting()}
-      User Change Password Page
+      Company Change Password Page
     </div>
   )
 }

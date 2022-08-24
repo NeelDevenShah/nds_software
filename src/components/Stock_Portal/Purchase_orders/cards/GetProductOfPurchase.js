@@ -45,7 +45,7 @@ const GetProductOfPurchase = (props) => {
     return (
           <tbody>
           {Pproducts.map((oprodDetails) => {
-          return <tr key={oprodDetails._id}>
+          return <tr  key={oprodDetails._id}>
           <td>{oprodDetails.categoryName}</td>
           <td>{oprodDetails.productName}</td>
           <td>{oprodDetails.quantity}</td>

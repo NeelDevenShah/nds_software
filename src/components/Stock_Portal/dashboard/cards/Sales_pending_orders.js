@@ -1,86 +1,49 @@
 import React from 'react'
 import { useState } from 'react'
-
+import ProductsOfSalesOrder from './ProductsOfSalesOrder'
+import ProductsOfPurchaseOrder from './ProductsOfPurchaseOrder'
 import shopping_cart from '../../../../images/stockPortal_images/shopping_cart.png'
+import { useEffect } from 'react'
 
 function Sales_pending_orders() {
-  const MData = [
-    {
-      'order_no': '#223',
-    },
-    {
-      'order_no': '#225',
-    },
-    {
-      'order_no': '#222',
-    },
-    {
-      'order_no': '#226',
-    }
-  ]
-  const [mainData, setMainData] = useState(MData)
-  const purchaseData = [
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-  ]
-  const [pData, setPData] = useState(purchaseData)
+ 
+  //Function For Getting Data Of Sales Order
+  const [sOrderData, setsOrderData]=useState([]);
+  const getSalesData=async()=>{
+    const response=await fetch('http://localhost:5000/api/getdata/salesorders', {
+      method: 'GET',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    setsOrderData(json);
+  }
+  
+  useEffect(()=>{
+    getSalesData();
+  })
+
   return (
     <div className='container bg-white py-2  my-4' style={{ borderRadius: '5px' }}>
       <h2 className='pt-3'><strong>Sales Pending Orders</strong></h2>
       <div className='row'>
 
-      {mainData.map((mdata)=>{
-        return <div className={`col-md-4 my-4`}>
+      {sOrderData.map((mdata)=>{
+        return <div key={mdata._id} className={`col-md-4 my-4`}>
          <div class="card">
            <div class="card-body">
-             <h5 class="card-title"><strong><img src={shopping_cart} style={{ width: '6.5%' }} />Order No.: {mdata.order_no}</strong></h5>
+             <h5 class="card-title"><strong><img src={shopping_cart} style={{ width: '6.5%' }}/>Order Id.: {mdata.SalesOrderId}</strong></h5>
              <table class="table">
                <thead>
                  <tr>
                    <th scope="col">Product Name</th>
                    <th scope="col">Quantity No.'s</th>
-                   <th scope="col">Delivery in(days)</th>
-                   <th scope="col">Status</th>
+                   <th scope="col">Dispatching Status</th>
                  </tr>
                </thead>
-               <tbody>
-
-                {pData.map((data)=>{
-                  return <tr>
-                   <td>{data.product_name}</td>
-                   <td>{data.Quantity}</td>
-                   <td>{data.Delivery_in}</td>
-                   <td>{data.status}</td>
-                 </tr>
-                })}
-   
-               </tbody>
+               <ProductsOfSalesOrder SalesOrderId={mdata.SalesOrderId}/>
              </table>
            </div>
          </div>

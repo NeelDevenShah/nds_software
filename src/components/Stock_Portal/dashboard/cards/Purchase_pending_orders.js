@@ -1,83 +1,45 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import ProductsOfPurchaseOrder from './ProductsOfPurchaseOrder'
 import Purchased_image from '../../../../images/stockPortal_images/Purchased_image.png'
 
 function Purchase_pending_orders() {
-  const MData=[
-    {
-      'order_company': 'From K.K. Suplies Store',
-    },
-    {
-      'order_company': 'From J.K. Suplies Store',
-    },
-    {
-      'order_company': 'From K.P. Suplies Store',
-    },
-    {
-      'order_company': 'From J.J. Suplies Store',
-    }
-  ]
-  const [mainData, setMainData]=useState(MData)
-  const purchaseData=[
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-    {
-      'product_name': 'Black Ball Pen',
-      'Quantity': '2000',
-      'Delivery_in': 2,
-      'status': 'Ordered/In Production',
-      'last_update': '05/07/2022'
-    },
-  ]
-  const [pData, setPData]=useState(purchaseData)
+  //Function For Getting Data Of Purchase Order
+  const [pData, setPData]=useState([])
+  const getPOrderData=async()=>{
+    const response=await fetch('http://localhost:5000/api/getdata/purchaseorders', {
+      method: 'GET',
+      headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token')
+      },
+    })
+    const json=await response.json();
+    setPData(json);
+  }
+  
+  useEffect(()=>{
+    getPOrderData();
+  })
+  
   return (
     <div className='container bg-white py-2  my-4' style={{ borderRadius: '5px' }}>
-    <h2 className='pt-3'><strong>Purchase/Production Pending Orders</strong></h2>
+    <h2 className='pt-3'><strong>Purchase Pending Orders</strong></h2>
       <div className='row'>
 
-      {mainData.map((mdata)=>{
-         return <div className={`col-md-4 my-4`}>
+      {pData.map((mdata)=>{
+         return <div key={mdata._id} className={`col-md-4 my-4`}>
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title"><strong><img src={Purchased_image} style={{ width: '8%' }} />{mdata.order_company}</strong></h5>
+              <h5 class="card-title"><strong><img src={Purchased_image} style={{ width: '8%' }} /> {mdata.purchaseDealer}</strong></h5>
               <table class="table">
                 <thead>
                   <tr>
                     <th scope="col">Product Name</th>
                     <th scope="col">Quantity No.'s</th>
-                    <th scope="col">Delivery in(days)</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">Arrival Status</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {pData.map((data)=>{
-                    return <tr>
-                     <td>{data.product_name}</td>
-                     <td>{data.Quantity}</td>
-                     <td>{data.Delivery_in}</td>
-                     <td>{data.status}</td>
-                   </tr>
-                  })}
-                </tbody>
+                  <ProductsOfPurchaseOrder purchaseOrderId={mdata.purchaseOrderId}/>
               </table>
             </div>
           </div>

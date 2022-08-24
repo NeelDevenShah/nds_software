@@ -87,32 +87,25 @@ router.post("/registerCompany",  [
 })
 
 //CASE 2: Company new User endpoint(Owner's Portal)
-router.post("/registeruser", async (req, res)=>{
+router.post("/registeruser", fetchcompany, async (req, res)=>{
     const {companyId}=req.details;
         //Check wheather the user with this id already exists already
         let cmpcheck=await newCompany.findOne({companyId: companyId});
-        let user=await companyUser.findOne({companyId: companyId, employeeId: req.body.employeeId});
-        try{
-            if(!cmpcheck)
-            {
-                return res.status(400).json({error: "Sorry the company does not exists"});
-            }
-            if(user)
-            {
-                return res.status(400).json({error: "Sorry the user with this id already exists"});
-            }
-        }
-        catch(error)
+        if(!cmpcheck)
         {
-            res.status(500).send({error: "Internal Server Error"});
+            return res.status(400).json({error: "Sorry the company does not exists"});
         }
+        let employeeId=cmpcheck.nextEmployeeId;
+        await newCompany.findOneAndUpdate({companyId: companyId}, {$set: {nextEmployeeId: cmpcheck.nextEmployeeId+1}})
+
         req.body.companyId=companyId;
+        req.body.employeeId=employeeId;
         const cmp=new companyUser(req.body);
         await cmp.save();
 
         //Making entry in logbook
         var currentdate=new Date();
-        let statment="UserId:-1 created new user having UserId:"+req.body.employeeId+", having name: "+req.body.name+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+        let statment="UserId:-1 created new user having EmployeeId:"+employeeId+", having name: "+req.body.name+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         res.send({success: "Company User Created Successfully"});
 })
@@ -155,10 +148,10 @@ router.delete("/deleteuser/:id", fetchcompany, async(req, res)=>{
     {
         return res.status(404).send({error: "User Not Found"});
     }
-    // if(deleteUser.companyId != current company id of the user)
-    // {
-    //     return res.status(404).send({error: "Not Allowed"});
-    // }
+    if(deleteUser.companyId != companyId)
+    {
+        return res.status(404).send({error: "Not Allowed"});
+    }
     deleteUser=await companyUser.findByIdAndDelete(req.params.id);
     
     //Making entry in logbook
@@ -201,12 +194,8 @@ router.delete("/deletewarehouse/:id", fetchuser, async (req,res)=>{
 
 //CASE 6:Delet An Company
 router.delete("/deletecompany", fetchcompany, async (req, res)=>{
-    const {companyId, password, repassword}=req.body;
-    if(password !=repassword)
-    {
-        return res.status(404).send({error: "The Password Of the Company Does Not Matches"})
-    }
-    cmpDetail=await newCompany.findOneAndDelete({companyId: companyId, password: password});
+    const {companyId}=req.details;
+    cmpDetail=await newCompany.findOneAndDelete({companyId: companyId, password: req.header('password')});
     if(cmpDetail)
     {
         await AddProduct.deleteMany({companyId: companyId});
@@ -225,7 +214,7 @@ router.delete("/deletecompany", fetchcompany, async (req, res)=>{
     }
     else
     {
-        return res.status(404).send({error: "The Company deletion Failed, Due to some reason"})
+        return res.status(404).send({error: "The Company deletion Failed, Enter Right Credentials"})
     }
 })
 module.exports=router

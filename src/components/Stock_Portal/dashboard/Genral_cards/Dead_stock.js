@@ -40,7 +40,6 @@ function Dead_stock() {
 
           </div>
         </div>
-
   )
 }
 

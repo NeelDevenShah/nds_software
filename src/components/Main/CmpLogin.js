@@ -4,7 +4,7 @@ import { useDispatch} from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import {ViewActions} from '../../store/view-slice'
-function Login() {
+function CmpLogin() {
 
   const dispatch=useDispatch();
   let navigate=useNavigate();
@@ -13,33 +13,34 @@ function Login() {
     check();
   })
 
-  const check=()=>{
-    if(localStorage.getItem('token')!=null)
+const check=()=>{
+    if(localStorage.getItem('cmptoken')!=null)
         {
-            navigate("/loginselection")
+            navigate("/ownerportal")
         }
   }
 
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
   }
-    const [credentials, setCredentials]=useState({companyId:"", employeeId:"", password:""})
+    const [credentials, setCredentials]=useState({companyId:"", password:""})
 
+    //For Making Company Logged In
     const validateInfoOfLogin=async (event)=>{
       event.preventDefault();
     
-      const response=await fetch('http://localhost:5000/api/auth/login', {
+      const response=await fetch('http://localhost:5000/api/auth/cmplogin', {
         method: 'POST',
         headers:{
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({companyId: credentials.companyId, employeeId: credentials.employeeId, password: credentials.password})
+        body: JSON.stringify({companyId: credentials.companyId, password: credentials.password})
       })
       const json=await response.json();
       if(json.success)
       {
-        localStorage.setItem('token', json.authtoken);
-        navigate("/loginselection");
+        localStorage.setItem('cmptoken', json.authtoken);
+        navigate("/ownerportal");
       }
       else{
         //The error is comming than remove fields value acc. to error
@@ -58,20 +59,16 @@ function Login() {
       <div className='container' style={{ paddingLeft: '25%', paddingRight: '25%', paddingTop: '2.5%' }}>
         <div className="card">
           <div className="card-body">
-            <h1 className="card-title py-4"><strong>Login Page</strong></h1>
+            <h1 className="card-title py-4"><strong>Company Login Page</strong></h1>
             {/* <h1><strong>Login</strong></h1> */}
             <div>
               <form onSubmit={validateInfoOfLogin}>
                 <div className="mb-3">
-                  <label className="form-label"><strong>Enter Company Id Number :</strong></label>
+                  <label className="form-label"><strong>Enter Company Id Number</strong></label>
                   <input type="number" name='companyId' value={credentials.companyId} onChange={onChange} style={{textAlign: 'center'}} className="form-control" id="companyId" />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label"><strong>Enter Your Id Number :</strong></label>
-                  <input type="number" name='employeeId' value={credentials.employeeId} onChange={onChange} style={{textAlign: 'center'}} className="form-control" id="employeeId" />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label"><strong>Enter Your Password</strong></label>
+                  <label className="form-label"><strong>Enter Company Password</strong></label>
                   <input type="password" name='password' value={credentials.password} onChange={onChange} style={{textAlign: 'center'}} className="form-control" id="password" />
                 </div>
                 {/* <Link type="submit" to='/loginselection' className="btn btn-secondary px-5">Submit</Link> */}
@@ -105,11 +102,10 @@ function Login() {
         </div>
 
       </div>
-      <h2 className='pt-3'><strong><span>&#62;</span> If Not Have Registered Company Yet, Do Now</strong></h2>
-      <Link type="button" to="/register" className="btn btn-success px-5 my-2 mx-3"><strong>Register company Now And Make Bussiness Hussle Free And Speedy</strong></Link>
-      <Link type="button" to="/contactus" className="btn btn-success px-5 my-2"><strong>Contact Us</strong></Link>
-    </div>
+      <h2 className='pt-3'><strong><span>&#62;</span>For Changing Password Of Company Account </strong></h2>
+      <Link type="button" to="/cmpchangepass" className="btn btn-success px-5 my-2 mx-3"><strong>Change Password</strong></Link>
+      </div>
   )
 }
 
-export default Login
+export default CmpLogin
