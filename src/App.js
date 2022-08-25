@@ -16,7 +16,7 @@ import RegisterComp from './components/Main/RegisterComp';
 import ChangeCmpPass from './components/Main/ChangeCmpPass'
 import ChangePass from './components/Main/ChangePass'
 import StockPortal_dashboard from './components/Stock_Portal/dashboard/StockPortal_dashboard';
-import OwnerPortal_dashboard from './components/Owner_Portal/OwnerPortal_dashboard';
+import OwnerPortal_dashboard from './components/Owner_Portal/dashboard/OwnerPortal_dashboard';
 import { useDispatch } from 'react-redux';
 import {useSelector } from "react-redux";
 import { ViewActions } from './store/view-slice';
@@ -33,6 +33,7 @@ import Context from './Context';
 import OwnerPortal_checkSales from './components/Owner_Portal/Check Sales Order/OwnerPortal_checkSales'
 import OwnerPortal_checkPurchase from './components/Owner_Portal/Check Purchase Order/OwnerPortal_checkPurchase'
 import OwnerPortal_checkquotation from './components/Owner_Portal/Check Quotation/OwnerPortal_checkquotation'
+import OwnerPortal_productAndCategories from './components/Owner_Portal/Product And Categories/OwnerPortal_productAndCategories'
 
 import{
   BrowserRouter as Router,
@@ -136,6 +137,7 @@ function App() {
             <Route path='/ownerportal/sales' element={<OwnerPortal_checkSales/>}/>
             <Route path='/ownerportal/purchase' element={<OwnerPortal_checkPurchase/>}/>            
             <Route path='/ownerportal/quotations' element={<OwnerPortal_checkquotation/>}/>
+            <Route path='/ownerportal/productandcategories' element={<OwnerPortal_productAndCategories/>}/>
             </Routes>
             <Main_footer/>
           </Router>

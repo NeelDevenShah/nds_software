@@ -22,12 +22,31 @@ router.get("/getwarehouses", fetchuser, async (req,res)=>{
     res.json(warehouses);
 })
 
+//For User Portal
 router.get("/getcategories", fetchuser, async (req,res)=>{
     const productCategories=await NewProductCategory.find({companyId: req.details.companyId});
     res.json(productCategories);
 })
 
+//For Owner Portal
+router.get("/getcategoriesforcmp", fetchcompany, async (req,res)=>{
+    const productCategories=await NewProductCategory.find({companyId: req.details.companyId});
+    res.json(productCategories);
+})
+
+//For User Portal
 router.get("/getcategorywisestock/:id", fetchuser, async (req,res)=>{
+    const productCategories=await NewProductCategory.findById(req.params.id)
+    if(!productCategories)
+    {
+        return res.status(404).send({error: "Does not exists"})
+    }
+    const productswithcategory=await newproduct_registry.find({companyId: req.details.companyId, categoryId: productCategories.categoryId});
+    res.json(productswithcategory);
+})
+
+//For Owner Portal
+router.get("/getcategorywisestockforcmp/:id", fetchcompany, async (req,res)=>{
     const productCategories=await NewProductCategory.findById(req.params.id)
     if(!productCategories)
     {

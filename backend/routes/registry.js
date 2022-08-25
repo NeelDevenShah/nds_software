@@ -54,7 +54,7 @@ router.post("/registerCompany",  [
     //Making default warehouse of the company which cannot be deleted
     defaultWareHouse={};
     {defaultWareHouse.companyId=req.body.companyId};
-    {defaultWareHouse.wname='Default'};
+    {defaultWareHouse.wname='Default Warehouse'};
     {defaultWareHouse.shopNum='Default'};
     {defaultWareHouse.add2=''};
     {defaultWareHouse.city=''};

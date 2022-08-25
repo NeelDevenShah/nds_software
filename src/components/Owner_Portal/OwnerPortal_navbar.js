@@ -22,7 +22,8 @@ function OwnerPortal_navbar() {
                             {/* Use active to show the live page */}
                             <Link className="nav-link mx-2" aria-current="page" to='/'>Home</Link>
                             <Link className="nav-link mx-2" to="/ownerportal">Dashboard</Link>
-                            <Link className="nav-link mx-2" to="/ownerportal/productandcategories">Check Products And Categories</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/logbook">Logbook</Link>
+                            <Link className="nav-link mx-2" to="/ownerportal/productandcategories">Check Stock Details</Link>
                             <Link className="nav-link mx-2" to="/ownerportal/sales">Check Sales Order</Link>
                             <Link className="nav-link mx-2" to="/ownerportal/purchase">Check Purchase Order</Link>
                             <Link className="nav-link mx-2" to="/ownerportal/quotations">Check Quotations</Link>
