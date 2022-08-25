@@ -2,9 +2,9 @@ import React from 'react'
 import { useState } from 'react';
 function SalesProduct(props) {
 
-    //Function For Getting Products Of Sales ORder
-    const d=[];
-    const [salesData, setSalesProduct] = useState(d);
+    //Function For Getting Products Of Sales Order
+    const [salesData, setSalesProduct] = useState([]);
+    const [noData, setnoData]=useState("no");
     const getSalesProductData=async()=>{
         const response=await fetch(`http://localhost:5000/api/getdata/productsofsalesorderforcmp`, {
           method: 'GET',
@@ -16,6 +16,10 @@ function SalesProduct(props) {
         })
         const json=await response.json();
         setSalesProduct(json)
+        if(json.length==0)
+      {
+        setnoData("yes");
+      }
       }
 
       useState(()=>{
@@ -24,7 +28,7 @@ function SalesProduct(props) {
 
   return (
     <tbody>
-    {salesData.map((data) => {
+    {noData=="yes"?<><p><strong>No Products Exists In Order</strong></p></>:salesData.map((data) => {
     return <tr key={data._id}>
       <td>{data.categoryName}</td>
       <td>{data.productName}</td>

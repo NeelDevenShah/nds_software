@@ -27,7 +27,7 @@ function ProductsOfPurchaseOrder(props) {
 
   return (
     <tbody>
-    {noData=="yes"?<><hr/><p><strong>No Products Exists, Add To View</strong></p></>:productData.map((data)=>{
+    {noData=="yes"?<><p><strong>No Products Exists, Add To View</strong></p></>:productData.map((data)=>{
       return <tr key={data._id}>
        <td>{data.productName}</td>
        <td>{data.quantity}</td>

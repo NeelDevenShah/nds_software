@@ -8,9 +8,7 @@ function TotalWarehousesStock(props) {
 
   const context=useContext(Context);
   const {sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}=context;
-
-  const warehouseDetails=[];
-  const [address, setAddress] = useState(warehouseDetails)
+  const [address, setAddress] = useState([])
   //Function For Getting Warehouses
   const getwarehouse=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getwarehousesforcmp', {
@@ -33,7 +31,7 @@ function TotalWarehousesStock(props) {
       {address.map((dataadd)=>{
         return <div className='container bg-white py-4  my-4' style={{ borderRadius: '5px' }}> 
         <h2 className='pt-3'><strong>Stock In {dataadd.wname}</strong></h2>
-        <p>{dataadd.shopNum}, {dataadd.add2}, {dataadd.city}, {dataadd.state}</p>
+        {dataadd.shopNum!="Default"?<p>{dataadd.shopNum}, {dataadd.add2}, {dataadd.city}, {dataadd.state}</p>:<p>Default</p>}
         <div className='row'>
             <div className='table-responsive'>
                 <table className='table table-hover'>

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 
 function TotalWarehousesStock() {
     let i=1;
-    const data=[];
-    const [whsdata, setWhsdata]=useState(data)
 
     //Function For Getting Details Of All Producrs Present In Warehouses
+    const [whsdata, setWhsdata]=useState([])
+    const [noData, setnoData]=useState("no");
     const getproductInWareDetails=async()=>{
         const response=await fetch('http://localhost:5000/api/getdata/getallstockproductsofcompany', {
             method: 'GET',
@@ -16,6 +16,10 @@ function TotalWarehousesStock() {
         })
         const json=await response.json();
         setWhsdata(json);
+        if(json.length==0)
+      {
+        setnoData("yes");
+      }
     }
 
     useEffect(()=>{
@@ -26,7 +30,6 @@ function TotalWarehousesStock() {
         <div className='container bg-white py-4  my-4' style={{ borderRadius: '5px' }}>
             <h2 className='py-3'><strong>Stock In Warehouses</strong></h2>
             <div className='row'>
-
                 <div className='table-responsive'>
                     <table className='table table-hover'>
                         <thead>
@@ -41,7 +44,7 @@ function TotalWarehousesStock() {
                             </tr>
                         </thead>
                         <tbody>
-                            {whsdata.map((data)=>{
+                            {noData=="yes"?<><p><strong>No Products Exists, Add To View</strong></p></>:whsdata.map((data)=>{
                                 return <tr>
                                  <th scope="row">{i++}</th>
                                  <td>{data.productName}</td>

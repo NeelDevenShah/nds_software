@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 
 function TotalWarehousesStock() {
     let i=1;
-    const data=[];
-    const [whsdata, setWhsdata]=useState(data)
 
     //Function For Getting Details Of All Producrs Present In Warehouses
+    const [noData, setnoData]=useState("no");
+    const [whsdata, setWhsdata]=useState([])
     const getproductInWareDetails=async()=>{
         const response=await fetch('http://localhost:5000/api/getdata/getallstockproductsofcompanyforcmp', {
             method: 'GET',
@@ -16,6 +16,10 @@ function TotalWarehousesStock() {
         })
         const json=await response.json();
         setWhsdata(json);
+        if(json.length==0)
+      {
+        setnoData("yes");
+      }
     }
 
     useEffect(()=>{
@@ -41,7 +45,7 @@ function TotalWarehousesStock() {
                             </tr>
                         </thead>
                         <tbody>
-                            {whsdata.map((data)=>{
+                            {noData=="yes"?<><p><strong>No Products Exists In All Warehouses</strong></p></>:whsdata.map((data)=>{
                                 return <tr>
                                  <th scope="row">{i++}</th>
                                  <td>{data.productName}</td>

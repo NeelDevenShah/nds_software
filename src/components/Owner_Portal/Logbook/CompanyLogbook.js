@@ -10,7 +10,7 @@ function CompanyLogbook() {
 
     //Function For Fetching Data Of Logbook
     const [logbookData, setLogBookData]=useState([])
-    let size=0;
+    const [noData, setnoData]=useState("no");
     const getLogbookData=async()=>{
         const response=await fetch('http://localhost:5000/api/getdata/getlogbookdata', {
             method: 'GET',
@@ -20,8 +20,10 @@ function CompanyLogbook() {
             }
         })
         const data=await response.json();
-        // size=json.comment.length;
-        
+        if(data.length==0)
+        {
+            setnoData("yes");
+        }
         // Convert (js array) to (json object)
         let JsonObject = await JSON.parse(JSON.stringify(data.comment));
 
@@ -66,8 +68,7 @@ function CompanyLogbook() {
                       </tr>
                     </thead>
                     <tbody>
-                    {console.log(logbookData)}
-                    {logbookData.map((de)=>{
+                    {noData=="yes"?<><hr/><p><strong>No Products Exists, Add To View</strong></p></>:logbookData.map((de)=>{
                         return <tr>
                         <td><strong>{i++}.</strong></td>
                         <td><strong>{de}</strong></td>

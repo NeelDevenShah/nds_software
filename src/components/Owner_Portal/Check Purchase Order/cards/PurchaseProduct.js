@@ -3,8 +3,8 @@ import { useState } from 'react';
 function PurchaseProduct(props) {
 
     //Function For Getting Products Of Sales ORder
-    const d=[];
-    const [purchaseData, setPurchaseProduct]=useState(d);
+    const [purchaseData, setPurchaseProduct]=useState([]);
+    const [noData, setnoData]=useState("no");
     const getPurchaseProductData=async()=>{
         const response=await fetch(`http://localhost:5000/api/getdata/productsofpurchaseorderforcmp`, {
           method: 'GET',
@@ -16,6 +16,10 @@ function PurchaseProduct(props) {
         })
         const json=await response.json();
         setPurchaseProduct(json)
+        if(json.length==0)
+        {
+          setnoData("yes");
+        }
       }
 
       useState(()=>{
@@ -24,7 +28,7 @@ function PurchaseProduct(props) {
 
   return (
     <tbody>
-    {purchaseData.map((data) => {
+    {noData=="yes"?<><p><strong>No Products Exists In Order</strong></p></>:purchaseData.map((data) => {
     return <tr key={data._id}>
       <td>{data.categoryName}</td>
       <td>{data.productName}</td>

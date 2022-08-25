@@ -5,6 +5,7 @@ function ArrivedOrders() {
     
     //Function For Getting Data Of Dispatched Orders
     const [arrivedData, setArrivedData]=useState([]);
+    const [noData, setnoData]=useState("no");
     const getArrivedData=async()=>{
         const response=await fetch('http://localhost:5000/api/doneorders/getarriveddata', {
             method: 'GET',
@@ -15,6 +16,10 @@ function ArrivedOrders() {
         })
         const json=await response.json();
         setArrivedData(json);
+        if(json.length==0)
+        {
+          setnoData("yes");
+        }
     }
 
     useEffect(()=>{
@@ -26,7 +31,7 @@ function ArrivedOrders() {
     <div className='container bg-white py-3 mt-4' style={{ borderRadius: '5px' }}>
       <h2 className='pt-3'><strong>Arrived Purchase Orders</strong></h2>
       <div className='row d-flex justify-content-center'>
-        {arrivedData.map((data) => {
+        {noData=="yes"?<><hr/><p><strong>No Order Exists</strong></p></>:arrivedData.map((data) => {
           return <div key={data._id} className={`col-md-10 my-4`}>
             <div class="card">
               <div class="card-body">

@@ -9,9 +9,8 @@ function TotalWarehousesStock(props) {
   const context=useContext(Context);
   const {sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}=context;
 
-  const warehouseDetails=[];
-  const [address, setAddress] = useState(warehouseDetails)
   //Function For Getting Warehouses
+  const [address, setAddress] = useState([]);
   const getwarehouse=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getwarehouses', {
       method: 'GET',
@@ -27,11 +26,9 @@ function TotalWarehousesStock(props) {
   //Function For Moving Products From One Warehouse To Another
   const [mQty, setmQty]=useState(0);
   const [mwareId, setmWareId]=useState(-1);
-  
   const mqtyonChange=(event)=>{
     setmQty(event.target.value);
   }
-
   const moveProduct=async(id)=>{
     if(mwareId!=-1)
     {

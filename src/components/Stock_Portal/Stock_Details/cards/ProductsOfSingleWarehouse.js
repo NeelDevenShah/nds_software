@@ -6,11 +6,10 @@ function ProductsOfSingleWarehouse(props) {
     let i=1;
     const context=useContext(Context);
     const {sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}=context;
-
-    const stDetails = [];
-    const [sData, setSData]=useState(stDetails)
     
       //Function For getting the stock of the warehouse by warehouse id
+      const [sData, setSData]=useState([])
+      const [noData, setnoData]=useState("no");
       const getstockbywareId=async()=>{
         const response=await fetch(`http://localhost:5000/api/getdata/getproductsofwarehouse/${props.wareId}`, {
             method: 'GET',
@@ -21,6 +20,10 @@ function ProductsOfSingleWarehouse(props) {
         })
         const json=await response.json();
         setSData(json);
+        if(json.length==0)
+        {
+        setnoData("yes");
+        }
       }
 
     useState(()=>{
@@ -28,7 +31,7 @@ function ProductsOfSingleWarehouse(props) {
     })
     return (
     <tbody>
-        {sData.map((stockData)=>{
+        {noData=="yes"?<><p><strong>No Products Exists, Add To View</strong></p></>:sData.map((stockData)=>{
         return <tr>
             <th scope="row">{i++}</th>
             <td>{stockData.productName}</td>

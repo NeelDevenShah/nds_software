@@ -136,7 +136,8 @@ function MangeWarehouses() {
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title"><strong>#{i++} {wh.wname}</strong></h4>
-                    {wh.wname!="default"?<p class="card-text">{wh.shopNum} {wh.add2}, {wh.city}, {wh.state}, {wh.country}</p>:<p>Default</p>}
+                    {console.log(wh.wname)}
+                    {wh.wname!="Default Warehouse"?<p class="card-text">{wh.shopNum} {wh.add2}, {wh.city}, {wh.state}, {wh.country}</p>:<p>Default</p>}
                     <hr />
                     <button type="button" onClick={()=>{delId=wh._id}} class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteWareModal">Delete</button>
                   </div>

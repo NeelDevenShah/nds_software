@@ -23,6 +23,7 @@ function OwnerPortal_checkSales() {
 
   //Function For Getting Data Of Sales Order
   const [sData, setSData]=useState([]);
+  const [noData, setnoData]=useState("no");
   const getSOrderInfo=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/salesordersforcmp', {
       method: 'GET',
@@ -33,6 +34,10 @@ function OwnerPortal_checkSales() {
     })
     const json=await response.json();
     setSData(json);
+    if(json.length==0)
+      {
+        setnoData("yes");
+      }
   }
 
   //Function(Secondary) for getting the difference of the current date and the main dispatch date
@@ -65,7 +70,7 @@ function OwnerPortal_checkSales() {
       <div className='container bg-white py-3' style={{ borderRadius: '5px' }}>
       <h2 className='pt-3'><strong>Your Sales Orders</strong></h2>
       <div className='row d-flex justify-content-center'>
-        {sData.map((QCompnay) => {
+        {noData=="yes"?<><hr/><p><strong>No Order Exists</strong></p></>:sData.map((QCompnay) => {
           return <div key={QCompnay._id} className={`col-md-10 my-4`}>
             <div class="card">
               <div class="card-body">

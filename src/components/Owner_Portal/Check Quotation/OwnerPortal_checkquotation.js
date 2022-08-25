@@ -23,6 +23,7 @@ function OwnerPortal_checkquotation() {
 
   //Function For Getting Data Of Quotations
   const [quotationData, setQuotationData]=useState([]);
+  const [noData, setnoData]=useState("no");
   const getQuotationData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/getquotationsforcmp', {
         method: 'GET',
@@ -33,6 +34,10 @@ function OwnerPortal_checkquotation() {
     })
     const json=await response.json();
     setQuotationData(json);
+    if(json.length==0)
+    {
+      setnoData("yes");
+    }
   }
 
   useEffect(()=>{
@@ -48,7 +53,7 @@ function OwnerPortal_checkquotation() {
         {pageStarting()}
       <h2 className='pt-3'><strong>Your Given Quotations</strong></h2>
     <div className='row d-flex justify-content-center'>
-        {quotationData.map((QcmpDetail)=>{
+        {noData=="yes"?<><hr/><p><strong>No Order Exists</strong></p></>:quotationData.map((QcmpDetail)=>{
           return  <div key={QcmpDetail._id} className={`col-md-6 my-4`}>
           <div class="card">
             <div class="card-body">
