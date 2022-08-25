@@ -32,7 +32,6 @@ function OwnerPortal_checkPurchase() {
       }
     })
     const json=await response.json();
-    console.log(json)
     setPData(json);
   }
 

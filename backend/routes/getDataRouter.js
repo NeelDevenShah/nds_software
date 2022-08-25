@@ -17,7 +17,14 @@ const newproduct_registry=require("../models/newproduct_registry");
 const fetchuser=require("../middleware/fetchuser");
 const fetchcompany=require("../middleware/fetchcompany");
 
+//For User Portal
 router.get("/getwarehouses", fetchuser, async (req,res)=>{
+    const warehouses=await Warehouse_register.find({companyId: req.details.companyId});
+    res.json(warehouses);
+})
+
+//For Owner Portal
+router.get("/getwarehousesforcmp", fetchcompany, async (req,res)=>{
     const warehouses=await Warehouse_register.find({companyId: req.details.companyId});
     res.json(warehouses);
 })
@@ -80,12 +87,26 @@ router.get("/getquotationproductsforcmp", fetchcompany, async (req,res)=>{
     res.json(productsofquotation);
 })
 
+//For User Portal
 router.get("/getallstockproductsofcompany", fetchuser, async (req,res)=>{
     const fullstockofcmp=await newproduct_registry.find({companyId: req.details.companyId});
     res.json(fullstockofcmp);
 })
 
+//For Owner Portal
+router.get("/getallstockproductsofcompanyforcmp", fetchcompany, async (req,res)=>{
+    const fullstockofcmp=await newproduct_registry.find({companyId: req.details.companyId});
+    res.json(fullstockofcmp);
+})
+
+//For User Portal
 router.get("/getproductsofwarehouse/:wareId", fetchuser, async (req,res)=>{
+    const productsofwh=await AddProduct.find({companyId: req.details.companyId, prodWarehouseId: req.params.wareId});
+    res.json(productsofwh);
+})
+
+//For Owner Portal
+router.get("/getproductsofwarehouseforcmp/:wareId", fetchcompany, async (req,res)=>{
     const productsofwh=await AddProduct.find({companyId: req.details.companyId, prodWarehouseId: req.params.wareId});
     res.json(productsofwh);
 })
@@ -156,4 +177,10 @@ router.get("/getcompanyuser", fetchcompany, async(req, res)=>{
     const data=await CompanyUser.find({companyId: req.details.companyId});
     res.json(data);
 })
+
+router.get("/getlogbookdata", fetchcompany, async(req, res)=>{
+    const data=await CmpLogADetailBook.findOne({companyId: req.details.companyId});
+    res.json(data);
+})
+
 module.exports=router

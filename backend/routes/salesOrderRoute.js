@@ -9,6 +9,8 @@ const CmpLogADetailBook=require("../models/CmpLogADetailBook")
 const fetchcompany=require("../middleware/fetchcompany");
 const fetchuser=require("../middleware/fetchuser");
 const SalesOrderMini = require("../models/SalesOrderMini");
+const DispatechedSalesOrder=require("../models/DispatechedSalesOrder");
+const DispatchedSalesOrderMini=require("../models/DispatchedSalesOrderMini")
 
 //CASE 1: Add new sales order Endpoint
 router.post("/addneworder", fetchuser, async (req, res)=>{
@@ -231,8 +233,42 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     }
     
     sorder=await salesOrder.findByIdAndDelete(req.params.id)
-    socheck=await salesOrderMini.deleteMany({companyId: companyId, SalesOrderId: sorder.SalesOrderId})
-    //After dispatching, Make entry in the sales histroy
+    
+    // For Forwarding The Order To DispatchedOrder
+    var currentDate1=new Date();
+    dataForDispatch={};
+    {dataForDispatch.companyId=sorder.companyId}
+    {dataForDispatch.SalesOrderId=sorder.SalesOrderId}
+    {dataForDispatch.salesDealer=sorder.salesDealer}
+    {dataForDispatch.brokerName=sorder.brokerName}
+    {dataForDispatch.paymentTerm=sorder.paymentTerm}
+    {dataForDispatch.comment=sorder.comment}
+    {dataForDispatch.totalAmount=sorder.totalAmount}
+    {dataForDispatch.DispatchedAt=currentDate1.getDate() + "/"+ (currentDate1.getMonth()+1)  + "/" + currentDate1.getFullYear()}
+    const transfer=new DispatechedSalesOrder(dataForDispatch);
+    await transfer.save();
+    
+    do{
+        socheck=await salesOrderMini.findOneAndDelete({companyId: companyId, SalesOrderId: sorder.SalesOrderId})
+        if(socheck)
+        {
+            //For Forwarding The Order's Product To DispatchedOrderMini
+            miniData={};
+            {miniData.companyId=socheck.companyId}
+            {miniData.SalesOrderId=socheck.SalesOrderId}
+            {miniData.categoryId=socheck.categoryId}
+            {miniData.categoryName=socheck.categoryName}
+            {miniData.productId=socheck.productId}
+            {miniData.productName=socheck.productName}
+            {miniData.quantity=socheck.quantity}
+            {miniData.perPicePrice=socheck.perPicePrice}
+            {miniData.dispatchedFrom=socheck.dispatchingFrom}
+            const transferMini=new DispatchedSalesOrderMini(miniData);
+            await transferMini.save();
+        }
+    }
+    while(socheck)
+
 
     //Making entry in logbook
     var currentdate=new Date();

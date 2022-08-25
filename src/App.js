@@ -34,6 +34,8 @@ import OwnerPortal_checkSales from './components/Owner_Portal/Check Sales Order/
 import OwnerPortal_checkPurchase from './components/Owner_Portal/Check Purchase Order/OwnerPortal_checkPurchase'
 import OwnerPortal_checkquotation from './components/Owner_Portal/Check Quotation/OwnerPortal_checkquotation'
 import OwnerPortal_productAndCategories from './components/Owner_Portal/Product And Categories/OwnerPortal_productAndCategories'
+import CompanyLogbook from './components/Owner_Portal/Logbook/CompanyLogbook'
+import DispatchedArrivedOrders from './components/Owner_Portal/Dispatched_ArrivedOrder/DispatchedArrivedOrders'
 
 import{
   BrowserRouter as Router,
@@ -138,6 +140,8 @@ function App() {
             <Route path='/ownerportal/purchase' element={<OwnerPortal_checkPurchase/>}/>            
             <Route path='/ownerportal/quotations' element={<OwnerPortal_checkquotation/>}/>
             <Route path='/ownerportal/productandcategories' element={<OwnerPortal_productAndCategories/>}/>
+            <Route path='/ownerportal/logbook' element={<CompanyLogbook/>}/>
+            <Route path='/ownerportal/doneorders' element={<DispatchedArrivedOrders/>}></Route>
             </Routes>
             <Main_footer/>
           </Router>

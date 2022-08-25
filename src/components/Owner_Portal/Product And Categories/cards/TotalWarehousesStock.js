@@ -7,11 +7,11 @@ function TotalWarehousesStock() {
 
     //Function For Getting Details Of All Producrs Present In Warehouses
     const getproductInWareDetails=async()=>{
-        const response=await fetch('http://localhost:5000/api/getdata/getallstockproductsofcompany', {
+        const response=await fetch('http://localhost:5000/api/getdata/getallstockproductsofcompanyforcmp', {
             method: 'GET',
             headers:{
                 'Content-Type': 'application/json',
-                'auth-token': localStorage.getItem('token')
+                'cmp-token': localStorage.getItem('cmptoken')
             },
         })
         const json=await response.json();

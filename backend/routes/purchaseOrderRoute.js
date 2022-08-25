@@ -8,6 +8,8 @@ const purchaseOrderMini=require("../models/PurchaseOrderMini");
 const CmpLogADetailBook=require("../models/CmpLogADetailBook")
 const fetchuser=require("../middleware/fetchuser");
 const fetchcompany=require("../middleware/fetchcompany");
+const ArrivedPurchaseOrder=require("../models/ArrivedPurchaseOrder");
+const ArrivedPurchaseOrderMini=require("../models/ArrivedPurchaseOrderMini")
 
 //CASE 1: Add new purchase order Endpoint
 router.post("/addneworder", fetchuser, async (req, res)=>{
@@ -213,8 +215,43 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
   
     //Allow the order to delete if user and company owns this order
     sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
-    await purchaseOrderMini.deleteMany({companyId: companyId, purchaseOrderId: sorder.purchaseOrderId})
-    
+
+    // For Forwarding The Order To ArrivedOrder
+    var currentDate1=new Date();
+    dataForArrived={};
+    {dataForArrived.companyId=sorder.companyId}
+    {dataForArrived.purchaseOrderId=sorder.purchaseOrderId}
+    {dataForArrived.purchaseDealer=sorder.purchaseDealer}
+    {dataForArrived.brokerName=sorder.brokerName}
+    {dataForArrived.paymentTerm=sorder.paymentTerm}
+    {dataForArrived.comment=sorder.comment}
+    {dataForArrived.totalAmount=sorder.totalAmount}
+    {dataForArrived.ArrivedDate=currentDate1.getDate() + "/"+ (currentDate1.getMonth()+1)  + "/" + currentDate1.getFullYear()}
+    const transfer=new ArrivedPurchaseOrder(dataForArrived);
+    await transfer.save();
+
+    do{
+        socheck=await purchaseOrderMini.findOneAndDelete({companyId: companyId, purchaseOrderId: sorder.purchaseOrderId})
+        if(socheck)
+        {
+            //For Forwarding The Order's Product To ArrivedOrderMini
+            miniData={};
+            {miniData.companyId=socheck.companyId}
+            {miniData.purchaseOrderId=socheck.purchaseOrderId}
+            {miniData.categoryId=socheck.categoryId}
+            {miniData.categoryName=socheck.categoryName}
+            {miniData.productId=socheck.productId}
+            {miniData.productName=socheck.productName}
+            {miniData.quantity=socheck.quantity}
+            {miniData.perPicePrice=socheck.perPicePrice}
+            {miniData.arrivedAt=socheck.arrivingat}
+            const transferMini=new ArrivedPurchaseOrderMini(miniData);
+            await transferMini.save();
+        }
+    }
+    while(socheck)
+
+
     //Making entry in logbook
     var currentdate=new Date();
     let statment="UserId:"+employeeId+" approved arrival of purchase order having purchaseOrderId:"+sorder.purchaseOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();

@@ -12,11 +12,11 @@ function ProductsOfSingleWarehouse(props) {
     
       //Function For getting the stock of the warehouse by warehouse id
       const getstockbywareId=async()=>{
-        const response=await fetch(`http://localhost:5000/api/getdata/getproductsofwarehouse/${props.wareId}`, {
+        const response=await fetch(`http://localhost:5000/api/getdata/getproductsofwarehouseforcmp/${props.wareId}`, {
             method: 'GET',
             headers:{
                 'Content-Type': 'application/json',
-                'auth-token': localStorage.getItem('token')
+                'cmp-token': localStorage.getItem('cmptoken')
             }
         })
         const json=await response.json();
@@ -36,8 +36,6 @@ function ProductsOfSingleWarehouse(props) {
             <td>{stockData.quantity}</td>
             <td>{stockData.demand}</td>
             <td>{stockData.predictedDemand}</td>
-            <td><button type="button" onClick={()=>{getproductDetails(stockData._id)}} className='btn btn-secondary' data-bs-toggle="modal" data-bs-target="#MoveSModel">Move</button></td>
-            <td><button type="button" onClick={()=>{setSddeleteId(stockData._id)}} className='btn btn-danger' data-bs-toggle="modal" data-bs-target="#DeleteSModel">Delete</button></td>
             </tr>
         })}
     </tbody>
