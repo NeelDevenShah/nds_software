@@ -28,7 +28,6 @@ function OwnerPortal_navbar() {
                             <Link className="nav-link mx-2" to="/ownerportal/purchase">Check Purchase Orders</Link>
                             <Link className="nav-link mx-2" to="/ownerportal/quotations">Check Quotations</Link>
                             <Link className="nav-link mx-2" to="/ownerportal/doneorders">Dispatched/Arrived Orders</Link>
-                            <Link className="nav-link mx-2" to="/ownerportal/payments">Manage Payments</Link>
                             <button type="button" onClick={handleLogout} class="btn btn-outline-dark">Logout</button>
                         </div>
                     </div>

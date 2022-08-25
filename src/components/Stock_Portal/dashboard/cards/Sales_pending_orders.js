@@ -9,6 +9,7 @@ function Sales_pending_orders() {
  
   //Function For Getting Data Of Sales Order
   const [sOrderData, setsOrderData]=useState([]);
+  const [noData, setnoData]=useState("no");
   const getSalesData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/salesorders', {
       method: 'GET',
@@ -19,6 +20,10 @@ function Sales_pending_orders() {
     })
     const json=await response.json();
     setsOrderData(json);
+    if(json.length==0)
+    {
+      setnoData("yes");
+    }
   }
   
   useEffect(()=>{
@@ -30,7 +35,7 @@ function Sales_pending_orders() {
       <h2 className='pt-3'><strong>Sales Pending Orders</strong></h2>
       <div className='row'>
 
-      {sOrderData.map((mdata)=>{
+      {noData=="yes"?<><hr/><h4><strong>No Sales Order Exists, Add New To View</strong></h4></>:sOrderData.map((mdata)=>{
         return <div key={mdata._id} className={`col-md-4 my-4`}>
          <div class="card">
            <div class="card-body">

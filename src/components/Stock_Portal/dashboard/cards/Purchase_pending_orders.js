@@ -5,6 +5,7 @@ import Purchased_image from '../../../../images/stockPortal_images/Purchased_ima
 function Purchase_pending_orders() {
   //Function For Getting Data Of Purchase Order
   const [pData, setPData]=useState([])
+  const [noData, setnoData]=useState("no");
   const getPOrderData=async()=>{
     const response=await fetch('http://localhost:5000/api/getdata/purchaseorders', {
       method: 'GET',
@@ -15,6 +16,10 @@ function Purchase_pending_orders() {
     })
     const json=await response.json();
     setPData(json);
+    if(json.length==0)
+    {
+      setnoData("yes");
+    }
   }
   
   useEffect(()=>{
@@ -26,7 +31,7 @@ function Purchase_pending_orders() {
     <h2 className='pt-3'><strong>Purchase Pending Orders</strong></h2>
       <div className='row'>
 
-      {pData.map((mdata)=>{
+      {noData=="yes"?<><hr/><h4><strong>No Purchase Order Exists, Add New To View</strong></h4></>:pData.map((mdata)=>{
          return <div key={mdata._id} className={`col-md-4 my-4`}>
           <div class="card">
             <div class="card-body">

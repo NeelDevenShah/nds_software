@@ -3,6 +3,7 @@ import React, {useState, useEffect} from 'react'
 function ProductsOfSalesOrder(props) {
   //Function For Getting Product Of Order
   const [productData, setproductData]=useState([])
+  const [noData, setnoData]=useState("no");
   const getProducts=async()=>{
     const response=await fetch(`http://localhost:5000/api/getdata/productsofsalesorder`, {
         method: 'GET',
@@ -14,6 +15,10 @@ function ProductsOfSalesOrder(props) {
     })
     const json=await response.json();
     setproductData(json);
+    if(json.length==0)
+      {
+        setnoData("yes");
+      }
   }
     
   useState(()=>{
@@ -22,7 +27,7 @@ function ProductsOfSalesOrder(props) {
     )
     return (
     <tbody>
-        {productData.map((data)=>{
+        {noData=="yes"?<><hr/><p><strong>No Products Exists, Add To View</strong></p></>:productData.map((data)=>{
           return <tr key={data._id}>
            <td>{data.productName}</td>
            <td>{data.quantity}</td>

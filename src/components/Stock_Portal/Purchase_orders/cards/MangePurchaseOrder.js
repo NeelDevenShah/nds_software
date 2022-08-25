@@ -26,6 +26,7 @@ function MangePurchaseOrder() {
       },
     })
     const json=await response.json();
+    console.log(json)
     setPOrderDetails(json);
   }
 

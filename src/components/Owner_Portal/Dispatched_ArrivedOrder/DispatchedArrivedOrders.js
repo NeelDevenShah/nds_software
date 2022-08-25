@@ -3,6 +3,8 @@ import {useDispatch} from 'react-redux'
 import {ViewActions} from '../../../store/view-slice'
 import {useNavigate} from 'react-router-dom'
 
+import DispatchedOrders from './cards/DispatchedOrders'
+import ArrivedOrders from './cards/ArrivedOrders'
 function DispatchedArrivedOrders() {
 
     const dispatch=useDispatch();
@@ -23,6 +25,8 @@ function DispatchedArrivedOrders() {
       {Check()}
       {pageStarting()}
       <h1 className='py-5'><strong>OWNER PORTAL DISPATCHED/ARRIVED ORDERS</strong></h1>
+      <DispatchedOrders/>
+      <ArrivedOrders/>
     </div>
   )
 }

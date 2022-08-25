@@ -6,10 +6,9 @@ import cancel from '../../../../images/stockPortal_images/cancel.png'
 function TotalItems() {
    
     let i=1;
-    const data=[];
-    const [whsdata, setWhsdata]=useState(data)
-
+    
     //Function(Primary) For Getting Details Of All Producrs Present In Warehouses
+    const [whsdata, setWhsdata]=useState([])
     const getproductInWareDetails=async()=>{
         const response=await fetch('http://localhost:5000/api/getdata/getallstockproductsofcompany', {
             method: 'GET',

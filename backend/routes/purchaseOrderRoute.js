@@ -226,7 +226,18 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     {dataForArrived.paymentTerm=sorder.paymentTerm}
     {dataForArrived.comment=sorder.comment}
     {dataForArrived.totalAmount=sorder.totalAmount}
-    {dataForArrived.ArrivedDate=currentDate1.getDate() + "/"+ (currentDate1.getMonth()+1)  + "/" + currentDate1.getFullYear()}
+    
+    let dispatchDay=currentDate1.getDate()+"";
+    let dispatchMonth=(currentDate1.getMonth()+1)+"";
+    if(dispatchDay.length==1)
+    {
+        dispatchDay='0'+dispatchDay;
+    }
+    if(dispatchMonth.length==1)
+    {
+        dispatchMonth='0'+dispatchMonth;
+    }    
+    {dataForArrived.ArrivedDate=dispatchDay + "/"+ dispatchMonth  + "/" + currentDate1.getFullYear()}
     const transfer=new ArrivedPurchaseOrder(dataForArrived);
     await transfer.save();
 
