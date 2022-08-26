@@ -8,6 +8,10 @@ import GetProductOfPurchase from './GetProductOfPurchase';
 function MangePurchaseOrder() {
   
   const context=useContext(Context);
+
+  //For Error Notification
+  const [showError, setError]=useState("");
+
     const {prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp}=context;
   //At the loading of the page this would run first
   useEffect(()=>{
@@ -26,7 +30,6 @@ function MangePurchaseOrder() {
       },
     })
     const json=await response.json();
-    console.log(json)
     setPOrderDetails(json);
   }
 
@@ -64,12 +67,11 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Order Added Successfully");
       getPOrderInfo();
     }
     else{
-      console.log("Order has been not added, error");
-      console.log(json);
+      setError(json.error);
+        document.getElementById("errorModal").click();
     }
   }
 
@@ -86,12 +88,11 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Order Deleted Successfull");
       getPOrderInfo();
     }
     else{
-      console.log("Error, Order Deletion Failed");
-      console.log(json)
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   }
 
@@ -113,14 +114,14 @@ function MangePurchaseOrder() {
       },
       body: JSON.stringify({brokerName:ebrokerName, paymentTerm:epaymentTerm, comment:ecomment, mainArrivingDate:earrivalMonth+"/"+earrivalDay+"/"+earrivalYear})
     })
-    const json=response.json();
+    const json=await response.json();
     if(json.success)
     {
-      console.log("Order Edited Successfully");
+      getPOrderInfo();
     }
     else{
-      console.log("Order Has been not edited, error");
-      console.log(json)
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   }
 
@@ -178,12 +179,11 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("All order arrived successfully");
       getPOrderInfo();
     }
     else{
-      console.log("Order Not Maked Arrived, Error");
-      console.log(json);
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   }
 
@@ -221,12 +221,11 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Product Added To Order Successfully");
       document.location.reload();
     }
     else{
-      console.log("Product Is Not Addedd Successfully, Error");
-      console.log(json);
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   }
 
@@ -279,12 +278,11 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Product Added To Order Successfull")
       document.location.reload();
     }
     else{
-      console.log("Product Added to order Failed, Error");
-      console.log(json);
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   } 
 
@@ -307,15 +305,15 @@ function MangePurchaseOrder() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Product Edited Successfully");
       document.location.reload();
     }
     else{
-      console.log("Product edition failed, error");
+      setError(json.error);
+      document.getElementById("errorModal").click();
     }
   }
 
-
+  //Starting Of kachra
   const [note, setNote] = useState();
   const onChange = (event) => {
       setNote({ ...note, [event.target.name]: [event.target.value] })
@@ -357,7 +355,6 @@ function MangePurchaseOrder() {
       },
   ]
   const [getwhdata, setwhdata] = useState(wareHouseData);
-  //Closing of managestatusmodal kachra
 //Closing of kachra
 
 

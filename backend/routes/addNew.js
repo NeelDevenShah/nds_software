@@ -19,12 +19,12 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     let cmpcheck=await newCompany.findOne({companyId: companyId});
     if(!cmpcheck)
     {
-        return res.status(400).json({error: "The Company id does not exists"});
+        return res.json({error: "The Company id does not exists"});
     }
     let category2=await newProductCategory.findOne({companyId: companyId, pcname: req.body.pcname});
     if(category2)
     {
-        return res.status(400).json({error: "The product category already exists"})
+        return res.json({error: "The product category already exists"})
     }
     let categoryId=cmpcheck.nextcatId;
     await newCompany.findOneAndUpdate({companyId: companyId}, {$set:{nextcatId: cmpcheck.nextcatId+1}})
@@ -39,7 +39,7 @@ router.post("/addcategory", fetchuser, async (req, res)=>{
     let statment= "UserId:"+employeeId+" added new product category having categoryId:"+categoryId+", catName: "+req.body.pcname+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send({success: "New Product Category Added Successfully"})
+    res.send({success: "success"})
 })
 
 //CASE 2:Add new Product Endpoint
@@ -49,12 +49,12 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     let cmpcheck=await newCompany.findOne({companyId: companyId});
     if(!cmpcheck)
     {
-        return res.status(400).json({error: "The company with such id does not exists"})
+        return res.json({error: "The company with such id does not exists"})
     }
     let product=await newProduct.findOne({companyId: companyId, categoryId: req.body.categoryId ,productName: req.body.productName})
     if(product)
     {
-        return res.status(400).json({error: "The Product with such name already exists, Please try again with new name"})
+        return res.json({error: "The Product with such name already exists, Please try again with new name"})
     }
     let productId=cmpcheck.nextproductId;
     await newCompany.findOneAndUpdate({companyId: companyId}, {$set:{nextproductId: cmpcheck.nextproductId+1}})
@@ -73,7 +73,7 @@ router.post("/addnewproduct", fetchuser, async(req, res)=>{
     let statment="UserId:"+employeeId+" created new product having categoryId:"+req.body.categoryId+", productId: "+productId+", productName:"+req.body.productName+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send({success: "New Product added successfully"});
+    res.send({success: "success"});
 })
 
 //CASE 3: Add more product to existing product at specific address, If exists than update its quantity, _id required as the parameter Endpoint
@@ -111,7 +111,7 @@ router.post("/addproduct/:id", fetchuser, async(req, res)=>{
         let statment="UserId:"+employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send({success: "More Product Added Successfull"});   
+        res.send({success: "success"});   
     }
     //CASE B: If exists at the specific position than update its quantity by adding the new quantity to existsing one
     else
@@ -125,7 +125,7 @@ router.post("/addproduct/:id", fetchuser, async(req, res)=>{
         let statment="UserId:"+req.body.employeeId+" added "+productId+":"+productName+" having qty:"+req.body.qty+" to warehouse having WhId:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
         
-        res.send({success: "More Product Added Successfull"}); 
+        res.send({success: "success"}); 
     }
 })
 
@@ -136,11 +136,11 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     let categoryDetails=await newProductCategory.findById(req.params.id);
     if(!categoryDetails)
     {
-        return res.status(404).send({error: "The Selected Product Category Does Not Exists"});
+        return res.send({error: "The Selected Product Category Does Not Exists"});
     }
     if(categoryDetails.categoryId==0)
     {
-        return res.status(404).send({error: "Cannot delete default Product Category"});
+        return res.send({error: "Cannot delete default Product Category"});
     }
     categoryDetails=await newProductCategory.findByIdAndDelete(req.params.id);
     //Update all things related to this categoryId And name to default one
@@ -155,7 +155,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     let statment="UserId:"+employeeId+" deleted product category having categoryid: "+categoryDetails.categoryId+", wname: "+categoryDetails.pcname+" and all the things attached to this will be transfered to default category at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
     await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-    res.send({success: "Product deleted successfully"})
+    res.send({success: "success"})
 })
 
     //(NOT IMPLEMETNED DUE TO FRONTEND COMPLEXITY OF GETTING SECONDARY DATA FOR SELECTION)
@@ -169,13 +169,13 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     let productdet=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: req.body.prodWarehouseId})
     if(!productdet)
     {
-        return res.status(400).json({error: "The Product does not exists"})
+        return res.json({error: "The Product does not exists"})
     }
     else{
         //Find the product to be updated and find it
         if(req.body.qty>productdet.quantity)
         {
-            return res.status(404).send({error: "The Items to be deleted is more than the item present, So Not Possible"})
+            return res.send({error: "The Items to be deleted is more than the item present, So Not Possible"})
         }
         else if(productdet.quantity==req.body.qty)
         {
@@ -188,7 +188,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" deleted product having Productid: "+prod.productId+", Productname: "+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-            res.send({success: "Product deleted successfull"});
+            res.send({success: "success"});
         }
         else{
             //If the qty<quantity than update the addProduct
@@ -200,7 +200,7 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" deleted product having Productid:"+prod.productId+", Productname:"+prod.productName+", qty:"+req.body.qty+" at whid:"+req.body.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send({success: "Product deleted successfull"});
+            res.send({success: "success"});
         }
     }
 })
@@ -214,42 +214,49 @@ router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
     let mainProductInfo=await newProduct.findById(req.params.id);
     if(!mainProductInfo)
     {
-        return res.status(404).send({error: "The Product Does Not Exists"})
+        return res.send({error: "The Product Does Not Exists"})
     }
     const {categoryId, productId}=mainProductInfo;
     const {prodWarehouseId}=req.body;
     //If prodWarehouseId is -1, Then delete from all warehouse and list
-    //CASE A: Delete The Product At Given Warehouse
-    if(prodWarehouseId!=-1)
+    const temp=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
+    if(temp.quantity>=req.header('qty') || req.header('qty')==-1)
     {
-        let deleteAtWH=await addProduct.findOneAndDelete({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
-        if(deleteAtWH)
+        //CASE A: Delete The Product At Given Warehouse
+        if(prodWarehouseId!=-1)
         {
-            await newProduct.findByIdAndUpdate(req.params.id, {$set:{quantity: mainProductInfo.quantity-deleteAtWH.quantity, inWarehouses:mainProductInfo.inWarehouses-1}})
-            
-            //Making entry in loogbook
-            var currentdate=new Date();
-            let statment="UserId:"+employeeId+"removed all product having Productid: "+deleteAtWH.productId+", Productname: "+deleteAtWH.productName+" at whid:"+deleteAtWH.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-            
-            return res.send({success: "Product deleted from the given warehouse Successfully"})
+            let deleteAtWH=await addProduct.findOneAndDelete({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
+            if(deleteAtWH)
+            {
+                await newProduct.findByIdAndUpdate(req.params.id, {$set:{quantity: mainProductInfo.quantity-deleteAtWH.quantity, inWarehouses:mainProductInfo.inWarehouses-1}})
+
+                //Making entry in loogbook
+                var currentdate=new Date();
+                let statment="UserId:"+employeeId+"removed all product having Productid: "+deleteAtWH.productId+", Productname: "+deleteAtWH.productName+" at whid:"+deleteAtWH.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+                await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
+
+                return res.send({success: "success"})
+            }
+            else
+            {
+                return res.send({error: "The Product Not Found At The Given Warehouse"});
+            }
         }
+        //CASE B: Delete Product At All Warehouse And Remove from the list
         else
         {
-            return res.status(404).send({error: "The Product Not Found At The Given Warehouse"});
+            await newProduct.findByIdAndDelete(req.params.id);
+            await addProduct.deleteMany({companyId: companyId, categoryId: categoryId, productId: productId});
+
+            //Making entry in loogbook
+            var currentdate=new Date();
+            let statment="UserId:"+employeeId+" deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
+            res.send({success: "success"})
         }
     }
-    //CASE B: Delete Product At All Warehouse And Remove from the list
-    else
-    {
-        await newProduct.findByIdAndDelete(req.params.id);
-        await addProduct.deleteMany({companyId: companyId, categoryId: categoryId, productId: productId});
-        
-        //Making entry in loogbook
-        var currentdate=new Date();
-        let statment="UserId:"+employeeId+" deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-        await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-        res.send({success: "Product Deleted Successfully"})
+    else{
+        res.send({error: "Please Enter Right Amount, Amount Should Not Increase Than That Of The Present Amount"})
     }
 })
 module.exports=router

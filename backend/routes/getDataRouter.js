@@ -46,7 +46,7 @@ router.get("/getcategorywisestock/:id", fetchuser, async (req,res)=>{
     const productCategories=await NewProductCategory.findById(req.params.id)
     if(!productCategories)
     {
-        return res.status(404).send({error: "Does not exists"})
+        return res.send({error: "Does not exists"})
     }
     const productswithcategory=await newproduct_registry.find({companyId: req.details.companyId, categoryId: productCategories.categoryId});
     res.json(productswithcategory);
@@ -57,7 +57,7 @@ router.get("/getcategorywisestockforcmp/:id", fetchcompany, async (req,res)=>{
     const productCategories=await NewProductCategory.findById(req.params.id)
     if(!productCategories)
     {
-        return res.status(404).send({error: "Does not exists"})
+        return res.send({error: "Does not exists"})
     }
     const productswithcategory=await newproduct_registry.find({companyId: req.details.companyId, categoryId: productCategories.categoryId});
     res.json(productswithcategory);

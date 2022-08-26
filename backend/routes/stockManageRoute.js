@@ -15,13 +15,13 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
     let deleteItem=await addProduct.findById(req.params.id);
     if(!deleteItem)
     {
-        return res.status(404).send({error: "The Product Does Not Exists"})
+        return res.send({error: "The Product Does Not Exists"})
     }
     const {categoryId, productcategory, productId, productName, quantity, prodWarehouseId}=deleteItem;
     const {newProdWarehouseId, qty}=req.body;
     if(prodWarehouseId==newProdWarehouseId)
     {
-        return res.status(404).send({error: "Cannot Move the Product To the Same Warehouse"});
+        return res.send({error: "Cannot Move the Product To the Same Warehouse"});
     }
     if(quantity==qty)
     {
@@ -43,7 +43,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="User having userId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send({Success: "Product Moved Successfully"});
+            res.send({success: "success"});
         }
         else
         {
@@ -69,12 +69,12 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send({Success: "Product Moved Successfully"});
+            res.send({success: "success"});
         }
     }
     if(quantity<qty)
     {
-        return res.status(404).send({error: "The Quantity Tobe Transfered is more than the existing quantity of the product, Try again with right quantity"});
+        return res.send({error: "The Quantity Tobe Transfered is more than the existing quantity of the product, Try again with right quantity"});
     }
     if(quantity>qty)
     {
@@ -94,7 +94,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
             let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
             await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
             
-            res.send({success: "Product Moved Successfully"})
+            res.send({success: "success"})
         }
         else
         {
@@ -122,7 +122,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
              let statment="UserId:"+employeeId+" has moved product having productId:"+productId+" from warehouse having whid:"+deleteItem.prodWarehouseId+" to whid:"+req.body.newProdWarehouseId+" of quantity:"+qty+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
              await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-             res.send({success: "Product Moved Successfully"})
+             res.send({success: "success"})
         }
     }
 })
@@ -135,13 +135,13 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
     let whProduct=await addProduct.findById(req.params.id);
     if(!whProduct)
     {
-        return res.status(404).send({error: "The Product at particular location does not exists"})
+        return res.send({error: "The Product at particular location does not exists"})
     }
     const {categoryId, productId, quantity, prodWarehouseId}=whProduct;
     let qty=req.header('qty')
     if(qty>quantity)
     {
-        res.status(404).send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})
+        res.send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})
     }
     if(qty==-1 || qty==whProduct.quantity)
     {
@@ -163,7 +163,7 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         let statment="UserId:"+employeeId+" has deleted all qtys of product having productId:"+productId+" from warehouse having whid:"+prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send({success: "The Product Delete Successfull"});
+        res.send({success: "success"});
     }
     else
     {
@@ -180,7 +180,7 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         let statment="UserId:"+employeeId+" has deleted "+qty+" qtys of product having productId:"+productId+" from warehouse having whid:"+prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
         await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
 
-        res.send({success: "Product Delete Successfully"})
+        res.send({success: "success"})
     }
 })
 module.exports=router

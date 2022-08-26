@@ -9,6 +9,9 @@ function TotalWarehousesStock(props) {
   const context=useContext(Context);
   const {sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}=context;
 
+    //For Error Notification
+    const [showError, setError]=useState("");
+
   //Function For Getting Warehouses
   const [address, setAddress] = useState([]);
   const getwarehouse=async()=>{
@@ -43,12 +46,11 @@ function TotalWarehousesStock(props) {
         const json=await response.json();
         if(json.success)
         {
-            console.log("Product Moved Successfully");
             document.location.reload();
         }
         else{
-            console.log("Product Moving Failed");
-            console.log(json);
+            setError(json.error);
+            document.getElementById("errorModal").click();
         }
     }
   }
@@ -57,22 +59,21 @@ function TotalWarehousesStock(props) {
   const [prodQty, setprodQty]=useState(0);
   const deleteProduct=async(id, qty)=>{
     const response=await fetch(`http://localhost:5000/api/managestock/deletefromwh/${id}`, {
-        method: 'DELETE',
-        headers:{
-            'Content-Type': 'application/json',
-            'auth-token': localStorage.getItem('token'),
-            'qty': qty
-        }
+    method: 'DELETE',
+    headers:{
+        'Content-Type': 'application/json',
+        'auth-token': localStorage.getItem('token'),
+        'qty': qty
+    }
     })
     const json=await response.json();
     if(json.success)
     {
-        console.log("Product Deleted Successfull");
         document.location.reload();
     }
     else{
-        console.log("Product Deletion Failed");
-        console.log(json);
+        setError(json.error);
+        document.getElementById("errorModal").click();
     }
   }
 
@@ -184,6 +185,29 @@ function TotalWarehousesStock(props) {
                 </div>
             </div>
     </div>
+      {/*  */}
+      {/* Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+
+{/* <!-- Modal --> */}
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        </div>
+      <div class="modal-body">
+        {showError}
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
       {/*  */}
       {address.map((dataadd)=>{
         return <div className='container bg-white py-4  my-4' style={{ borderRadius: '5px' }}> 

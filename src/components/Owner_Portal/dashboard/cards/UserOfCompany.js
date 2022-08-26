@@ -4,6 +4,9 @@ import { useEffect} from 'react'
 
 function Sales_Activity() {
 
+  //For Error Notification
+  const [showError, setError]=useState("");
+
   //For Fetching Data Of User
   const [userData, setUserData]=useState([])
   const getUserData=async()=>{
@@ -23,7 +26,7 @@ function Sales_Activity() {
   const onChange=(event)=>{
     setNewUserdata({...newUserData, [event.target.name]: event.target.value})
   }
-  const addnewcategory=async()=>{
+  const addnewUser=async()=>{
     if(newUserData.password==newUserData.repassword)
     {
       const response=await fetch('http://localhost:5000/api/registry/registeruser', {
@@ -37,21 +40,22 @@ function Sales_Activity() {
       const json=await response.json();
       if(json.success)
       {
-        console.log("new user added successfull");
         getUserData();
       }
       else{
-        console.log("error"+json)
+        setError("New User Does Not Added, Due To Error Please Try Again With Unique Name Or Contact Us");
+        document.getElementById("errorModal").click();
       }
     }
     else{
-      console.log("Password Does Not Matches, Try Again")
+      setError("Password Does Not Matches, Try Again");
+      document.getElementById("errorModal").click();
     }
   }
 
   //For Deletion Of Of Company's User
   const [delId, setDelId]=useState(-1);
-  const deletecategory=async(id)=>{
+  const deleteUser=async(id)=>{
     const response=await fetch(`http://localhost:5000/api/registry/deleteuser/${id}`, {
       method: 'DELETE',
       headers:{
@@ -59,7 +63,15 @@ function Sales_Activity() {
         'cmp-token': localStorage.getItem('cmptoken')
       },
     })
-    getUserData();
+    const json=await response.json();
+    if(json.success)
+    {
+      getUserData();
+    }
+    else{
+      setError("User Does Not Deleted, Try Again Or Contact Us");
+      document.getElementById("errorModal").click();
+    }
   }
 
   useState(()=>{
@@ -68,7 +80,7 @@ function Sales_Activity() {
 
   return (
     <div className='container bg-white py-3 my-4' style={{ borderRadius: '5px' }}>
-      {/* DeleteCategotyModal */}
+      {/* DeleteUserModal */}
       <div class="modal fade" id="DeleteUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -81,13 +93,13 @@ function Sales_Activity() {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" onClick={()=>{deletecategory(delId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
+            <button type="button" onClick={()=>{deleteUser(delId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
           </div>
         </div>
       </div>
     </div>
       {/*  */}
-      {/* AddCategoryModal  */}
+      {/* NewUserModal  */}
       <div class="modal fade" id="AddUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
@@ -109,11 +121,34 @@ function Sales_Activity() {
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button onClick={()=>{addnewcategory()}} type="button" class="btn btn-secondary" data-bs-dismiss="modal">Add User</button>
+                        <button onClick={()=>{addnewUser()}} type="button" class="btn btn-secondary" data-bs-dismiss="modal">Add User</button>
                       </div>
                     </div>
                   </div>
                 </div>
+      {/*  */}
+      {/* Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+
+{/* <!-- Modal --> */}
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Dashboard Error</h5>
+        </div>
+      <div class="modal-body">
+        {showError}
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
       {/*  */}
       <h2 className='py-3'><strong>Permited Users Of Company's Portal</strong></h2>
       <div className='container'>

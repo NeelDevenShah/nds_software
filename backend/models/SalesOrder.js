@@ -23,7 +23,6 @@ const salesOrderSchema=new Schema({
     },
     comment:{
         type: String,
-        required: true,
     },
     totalAmount:{
         type: Number,

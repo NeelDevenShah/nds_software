@@ -15,7 +15,7 @@ router.post("/login", async (req,res)=>{
     let user=await companyUser.findOne({companyId: companyId, employeeId: employeeId, password: password});
     if(!user)
     {
-        return res.status(404).send({error: "The Given Credentials are not correct, Please try again with the right credentials"});
+        return res.send({error: "The Given Credentials are not correct, Please try again with the right credentials"});
     }
     else{
         //For making and sending the auth token
@@ -30,7 +30,6 @@ router.post("/login", async (req,res)=>{
     }
 })
 
-//Baki
 //For login of the company's Owner
 router.post("/cmplogin", [
     body("companyId", "Enter A Number").isNumeric()
@@ -38,7 +37,7 @@ router.post("/cmplogin", [
     const errors=validationResult(req);
     if(!errors.isEmpty())
     {
-        return res.status(404).send({error: errors.array()});
+        return res.send({error: errors.array()});
     }
     const {companyId, password}=req.body;
 
@@ -47,7 +46,7 @@ router.post("/cmplogin", [
     let user=await newCompany.findOne({companyId: companyId, password: password});
     if(!user)
     {
-        return res.status(404).send({error: "The Given Credentials are not correct, Please try again with the right credentials"});
+        return res.send({error: "The Given Credentials are not correct, Please try again with the right credentials"});
     }
     else{
         //For making and sending the auth token

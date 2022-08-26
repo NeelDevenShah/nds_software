@@ -4,21 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
 import {ViewActions} from '../../store/view-slice'
-let selectElement;
-let output;
 
 function RegisterComp() {
   
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
   }
+
+  //For Error Notification
+  const [showError, setError]=useState("");
+
   const dispatch=useDispatch();
   const [data, setData]=useState({name:"", emailId:"", country:"", shopNum:"", add2:"", city:"", state:"", pincode:"", companyId:"", password:"", repassword:""})
   const navigate=useNavigate();
 
   const submitCmpInfo= async (event)=>{
     event.preventDefault();
-    if(data.password==data.repassword)
+    if(data.password==data.repassword && data.password!="" && data.repassword!="")
     {
       const response=await fetch('http://localhost:5000/api/registry/registercompany', {
         method: 'POST',
@@ -28,19 +30,21 @@ function RegisterComp() {
         body: JSON.stringify({name:data.name, emailId:data.emailId, country:data.country, shopNum:data.shopNum, add2:data.add2, city:data.city, state:data.state, pincode:data.pincode, companyId:data.companyId, password:data.password})
       })
       const json=await response.json();
-      console.log(json)
       if(json.success)
       {
-        //Navigate to new company creation successful page or to the company's portal
-        navigate("/companylogin")
+        localStorage.removeItem('cmptoken');
+        document.getElementById("successModal").click();
       }
       else{
-        //The error from api is comming than show it using model
+        event.preventDefault();
+        setError(json.error);
+        document.getElementById("errorModal").click();
       }
     }
     else{
-      //Make remove the password and repassword's value
-      console.log("Enter Right password, Both password does not matches")
+      setError("Enter Right Password, Both Password Does Not Matches Or One Of Them Is Null");
+      document.getElementById("errorModal").click();
+      setData({password:"", repassword:""})
     }
   }
 
@@ -98,37 +102,60 @@ function RegisterComp() {
                   <label className="form-label"><strong>Re-Enter Password For Your Account</strong></label>
                   <input name='repassword' value={data.repassword} onChange={onChange} type="password" style={{textAlign: 'center'}} className="form-control" id="password2" placeholder='Make Sure Password Is Same As That Of First One'/>
                 </div>
-                  {/* <Link type="submit" to='/loginselection' className="btn btn-secondary px-5">Submit</Link> */}
                   <button type="submit" className="btn btn-secondary px-5">Submit</button>
-
-                  {/* <!-- Button trigger modal --> */}
-                  <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Launch demo modal
-                  </button>
-
-                  {/* <!-- Modal --> */}
-                  <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                      <div className="modal-content">
-                        <div className="modal-header">
-                          <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                          ...
-                        </div>
-                        <div className="modal-footer">
-                          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="button" className="btn btn-primary">Save changes</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </form>
               </div>
             </div>
           </div>
+          {/* Error Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
 
+{/* <!-- Modal --> */}
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Company Registration Page Error</h5>
+       </div>
+      <div class="modal-body">
+        {showError}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+      {/*  */}
+       {/* Successfull Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="successModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#successModalo">
+  Launch static backdrop modal
+</button>
+
+{/* <!-- Modal --> */}
+<div class="modal fade" id="successModalo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Company Registration Successfull</h5>
+        </div>
+      <div class="modal-body"><strong>
+      Congratulations, Company Registration Successfull, Now Select Where To Go 
+        <br/>A. Company Login Page
+        <br/>B. Website Home Page
+        </strong></div>
+      <div class="modal-footer">
+      <button type="button" data-bs-dismiss="modal" onClick={()=>{navigate("/companylogin")}} className="btn btn-success px-5 my-2"><strong>Company Login</strong></button>
+      <button type="button" data-bs-dismiss="modal" onClick={()=>{navigate("/")}} className="btn btn-success px-5 my-2"><strong>Home Us</strong></button>
+      </div>
+    </div>
+  </div>
+</div>
+      {/*  */}
         </div>
         <h3 className='pt-3'><strong><span>&#62;</span>For Any Query Feel Free To Contact Us </strong></h3>
         <Link type="button" to="/contactus" className="btn btn-success px-5 my-2"><strong>Contact Us</strong></Link>

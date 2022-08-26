@@ -11,6 +11,9 @@ function ManageQuotations() {
   const context=useContext(Context);
   const {delprodId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId}=context;
 
+    //For Error Notification
+    const [showError, setError]=useState("");
+
   //At the loading of the page this would run first
   useEffect(()=>{
     getQData();
@@ -45,11 +48,11 @@ function ManageQuotations() {
       const json=await response.json();
       if(json.success)
       {
-        console.log("new quotation added successfull")
         getQData();
       }
       else{
-        console.log("error comming"+json);
+        setError(json.error);
+        document.getElementById("errorModal").click();
       }   
   }
   const onChangeForNewQ=(event)=>{
@@ -68,11 +71,11 @@ function ManageQuotations() {
     const json=await response.json();
     if(json.success)
     {
-      console.log("Quotation Deleted Successfull");
       getQData();
     }
     else{
-      console.log("Quotation does not deleted, error")
+      setError(json.error);
+        document.getElementById("errorModal").click();
     }
   }
 
@@ -142,11 +145,11 @@ const productbycategoryIdforModal=async(categoryId)=>{
       const json=await response.json();
       if(json.success)
       {
-        console.log("Product added successfully")
-        window.location.reload();
+        document.location.reload();
       }
       else{
-        console.log("Product does not being added an error commed")
+        setError(json.error);
+        document.getElementById("errorModal").click();
       }
   }
 
@@ -178,11 +181,11 @@ const productbycategoryIdforModal=async(categoryId)=>{
     const json=await response.json();
     if(json.success)
     {
-      console.log("Send to sales successfull");
+      getQData();
     }
     else{
-      console.log("failed due to an error");
-      console.log(json)
+      setError(json.error);
+        document.getElementById("errorModal").click();
     }
   }
 
@@ -320,6 +323,29 @@ const productbycategoryIdforModal=async(categoryId)=>{
             </div>
         </div>
       {/*  */}
+      {/* Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+
+{/* <!-- Modal --> */}
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        </div>
+      <div class="modal-body">
+        {showError}
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+      {/*  */}
 
       <h2 className='pt-3'><strong>Your Given Quotations</strong></h2>
       <div className='row d-flex justify-content-center'>
@@ -342,7 +368,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
                     <th scope="col">Delete</th>
                   </tr>
                 </thead>
-                <GetQuotationProducts key={QcmpDetail._id+1} quotationId={QcmpDetail.quotationId} getQData={getQData}/>
+                <GetQuotationProducts key={QcmpDetail._id+1} quotationId={QcmpDetail.quotationId}/>
               </table>
               </div>
               <p>Total Quotation Amount: <strong>{QcmpDetail.totalAmount}</strong></p>
