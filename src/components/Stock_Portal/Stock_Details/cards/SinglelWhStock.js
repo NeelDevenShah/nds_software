@@ -33,15 +33,19 @@ function TotalWarehousesStock(props) {
     setmQty(event.target.value);
   }
   const moveProduct=async(id)=>{
-    if(mwareId!=-1)
+    if(mwareId==-1 || parseInt(mQty)==0)
     {
-        const response=await fetch(`http://localhost:5000/api/managestock/movestock/${id}`, {
-            method:'PUT',
-            headers:{
-                'Content-Type': 'application/json',
-                'auth-token': localStorage.getItem('token')
-            },
-            body: JSON.stringify({newProdWarehouseId:mwareId, qty:parseInt(mQty)})
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/managestock/movestock/${id}`, {
+        method:'PUT',
+        headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({newProdWarehouseId:mwareId, qty:parseInt(mQty)})
         })
         const json=await response.json();
         if(json.success)
@@ -55,25 +59,56 @@ function TotalWarehousesStock(props) {
     }
   }
 
-  //Function For Deleting Product
-  const [prodQty, setprodQty]=useState(0);
-  const deleteProduct=async(id, qty)=>{
+  //Function For Deleting All Product
+  const deleteAllOfProduct=async(id)=>{
     const response=await fetch(`http://localhost:5000/api/managestock/deletefromwh/${id}`, {
-    method: 'DELETE',
-    headers:{
-        'Content-Type': 'application/json',
-        'auth-token': localStorage.getItem('token'),
-        'qty': qty
-    }
+      method: 'DELETE',
+      headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token'),
+      },
+      body: JSON.stringify({qty: -1})
     })
     const json=await response.json();
-    if(json.success)
-    {
+      if(json.success)
+      {
         document.location.reload();
+      }
+      else{
+          setError(json.error)
+          document.getElementById("errorModal").click();
+      }
+  }
+
+  //Function For Deleting Some Product
+  const [delprodQty, setdelprodQty]=useState(0);
+  const onChangedel=(event)=>{
+    setdelprodQty(event.target.value)
+  }
+  const deleteSomeProduct=async(id)=>{
+    if(delprodQty!="")
+    {
+      const response=await fetch(`http://localhost:5000/api/managestock/deletefromwh/${id}`, {
+      method: 'DELETE',
+      headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token'),
+      },
+      body: JSON.stringify({qty: delprodQty})
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        document.location.reload();
+      }
+      else{
+          setError(json.error)
+          document.getElementById("errorModal").click();
+      }
     }
     else{
-        setError(json.error);
-        document.getElementById("errorModal").click();
+      setError("Please Enter Right Quantity");
+      document.getElementById("errorModal").click();
     }
   }
 
@@ -132,18 +167,18 @@ function TotalWarehousesStock(props) {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        For Deleting Some Of The Stock Of "selected Item" From "warehouse-number", Enter The Amount You Want To Delete, The Present Amount Of The Item Is: "5000"
+                        For Deleting Some Of The Stock Of <strong>{prodByid.productName}</strong> From warehouseId: <strong>{prodByid.prodWarehouseId}</strong>, Enter The Amount You Want To Delete, The Present Amount Of The Item Is: <strong>{prodByid.quantity}</strong>
                         <hr/>
                         <form>
                         <div class="mb-3">
                             <label class="form-label"><strong>Enter The Quantity You Want To Delete & Make Sure The Quantity Is Lower Than The Stock Present</strong></label>
-                            <input type="number" name="delQty" onChange={(event)=>{setprodQty(event.target.value)}} class="form-control" id="qtyofdeleted"/>
-                        </div>
+                            <input type="number" name="delprodQty" onChange={onChangedel} class="form-control" id="qtyofdeleted" required/>
+                            </div>
+                          </form>
+                        
                         <button type="button" class="btn btn-secondary mx-3" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" onClick={()=>{deleteProduct(sddeleteId, prodQty)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
-                    </form>
+                        <button type="submit" onClick={()=>{deleteSomeProduct(sddeleteId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -161,7 +196,7 @@ function TotalWarehousesStock(props) {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" onClick={()=>{deleteProduct(sddeleteId, -1)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
+                        <button type="button" onClick={()=>{deleteAllOfProduct(sddeleteId)}} class="btn btn-secondary" data-bs-dismiss="modal">Conform</button>
                     </div>
                 </div>
             </div>
@@ -197,7 +232,7 @@ function TotalWarehousesStock(props) {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Stock Details Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

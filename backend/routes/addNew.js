@@ -95,8 +95,8 @@ router.post("/addproduct/:id", fetchuser, async(req, res)=>{
         {newProdcutAtWare.productId=productId};
         {newProdcutAtWare.productName=productName};
         {newProdcutAtWare.quantity=qty};
-        {newProdcutAtWare.demand="regular"};
-        {newProdcutAtWare.predictedDemand=0};
+        {newProdcutAtWare.demand="New Product"};
+        {newProdcutAtWare.predictedDemand=-1};
         {newProdcutAtWare.prodWarehouseId=prodWarehouseId};
         
         req.body.companyId=companyId;
@@ -205,11 +205,8 @@ router.delete("/deletecategory/:id", fetchuser, async (req,res)=>{
     }
 })
 
-//(HALF IMPLEMETNED(ONLY CASE 2 IS IMPLEMENTED) DUE TO FRONTEND COMPLEXITY OF GETTING SECONDARY DATA FOR SELECTION)
-//CASE 6:Delete Product which is been added in the addproduct
+//CASE 6:Delete Product From All Warehouse
 router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
-    //In this case all the products are been deleted and no trace of then are found further
-    //There are two cases 1. Delete The Product At Given Warehouse,2. Delete Product At All Warehouse And Remove from the list
     const {companyId, employeeId}=req.details;
     let mainProductInfo=await newProduct.findById(req.params.id);
     if(!mainProductInfo)
@@ -217,46 +214,13 @@ router.delete("/deleteproduct/:id", fetchuser, async (req,res)=>{
         return res.send({error: "The Product Does Not Exists"})
     }
     const {categoryId, productId}=mainProductInfo;
-    const {prodWarehouseId}=req.body;
-    //If prodWarehouseId is -1, Then delete from all warehouse and list
-    const temp=await addProduct.findOne({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
-    if(temp.quantity>=req.header('qty') || req.header('qty')==-1)
-    {
-        //CASE A: Delete The Product At Given Warehouse
-        if(prodWarehouseId!=-1)
-        {
-            let deleteAtWH=await addProduct.findOneAndDelete({companyId: companyId, categoryId: categoryId, productId: productId, prodWarehouseId: prodWarehouseId})
-            if(deleteAtWH)
-            {
-                await newProduct.findByIdAndUpdate(req.params.id, {$set:{quantity: mainProductInfo.quantity-deleteAtWH.quantity, inWarehouses:mainProductInfo.inWarehouses-1}})
+    await newProduct.findByIdAndDelete(req.params.id);
+    await addProduct.deleteMany({companyId: companyId, categoryId: categoryId, productId: productId});
 
-                //Making entry in loogbook
-                var currentdate=new Date();
-                let statment="UserId:"+employeeId+"removed all product having Productid: "+deleteAtWH.productId+", Productname: "+deleteAtWH.productName+" at whid:"+deleteAtWH.prodWarehouseId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-                await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-
-                return res.send({success: "success"})
-            }
-            else
-            {
-                return res.send({error: "The Product Not Found At The Given Warehouse"});
-            }
-        }
-        //CASE B: Delete Product At All Warehouse And Remove from the list
-        else
-        {
-            await newProduct.findByIdAndDelete(req.params.id);
-            await addProduct.deleteMany({companyId: companyId, categoryId: categoryId, productId: productId});
-
-            //Making entry in loogbook
-            var currentdate=new Date();
-            let statment="UserId:"+employeeId+" deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-            await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-            res.send({success: "success"})
-        }
-    }
-    else{
-        res.send({error: "Please Enter Right Amount, Amount Should Not Increase Than That Of The Present Amount"})
-    }
+    //Making entry in loogbook
+    var currentdate=new Date();
+    let statment="UserId:"+employeeId+" deleted product having Productid:"+mainProductInfo.productId+", Productname:"+mainProductInfo.productName+" from all warehouse at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
+    res.send({success: "success"})
 })
 module.exports=router

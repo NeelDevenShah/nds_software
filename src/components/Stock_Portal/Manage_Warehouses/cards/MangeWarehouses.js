@@ -54,22 +54,29 @@ function MangeWarehouses() {
 
   //Method for adding the warehouse
   const addNewWarehouse=async()=>{
-    const response=await fetch(`http://localhost:5000/api/registry/registerwarehouse`, {
-      method: 'POST',
-      headers:{
-        'Content-Type': 'application/json',
-        'auth-token': localStorage.getItem('token')
-      },
-      body: JSON.stringify({wname: nwhdata.wname, shopNum: nwhdata.shopNum, add2: nwhdata.add2, city:nwhdata.city, state:nwhdata.state, country:nwhdata.country, pincode:nwhdata.pincode})
-    })
-    const json=await response.json();
-    if(json.success)
+    if(nwhdata.wname=="" || nwhdata.shopNum=="" || nwhdata.add2=="" || nwhdata.city=="" || nwhdata.state=="" || nwhdata.country=="" || nwhdata.pincode=="")
     {
-      getwareData();
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
     }
     else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      const response=await fetch(`http://localhost:5000/api/registry/registerwarehouse`, {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({wname: nwhdata.wname, shopNum: nwhdata.shopNum, add2: nwhdata.add2, city:nwhdata.city, state:nwhdata.state, country:nwhdata.country, pincode:nwhdata.pincode})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          getwareData();
+        }
+        else{
+          setError(json.error);
+            document.getElementById("errorModal").click();
+        }
     }
   }
 
@@ -110,7 +117,7 @@ function MangeWarehouses() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Manage Warehouse Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

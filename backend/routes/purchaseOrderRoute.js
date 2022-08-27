@@ -209,13 +209,17 @@ router.put("/managestatus/:id", fetchuser, async (req, res)=>{
 //CASE 8: Arrival of all purchase Order Endpoint, You have to also provide the document id, company id, purchase order Id
 router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
+    let cmpcheck=await newCompany.findOne({companyId: companyId})
+    if(!cmpcheck)
+    {
+        return res.send({error: "The Company Does Not Exists"})
+    }
     let orderidcheck=await purchaseOrder.findById(req.params.id);
     if(!orderidcheck)
     {
         return res.send({error: "The purchase order does not exists OR have been already been dispatched"})
     }
   
-    //Allow the order to delete if user and company owns this order
     sorder=await purchaseOrder.findByIdAndDelete(req.params.id)
 
     // For Forwarding The Order To ArrivedOrder
@@ -239,6 +243,7 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     {
         dispatchMonth='0'+dispatchMonth;
     }    
+
     {dataForArrived.ArrivedDate=dispatchDay + "/"+ dispatchMonth  + "/" + currentDate1.getFullYear()}
     const transfer=new ArrivedPurchaseOrder(dataForArrived);
     await transfer.save();
@@ -261,14 +266,75 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
             const transferMini=new ArrivedPurchaseOrderMini(miniData);
             await transferMini.save();
 
-            //For Adding The Order's Product To Existing Products Or Make New Product And Add it
+            //For Adding The Order's Product To Existing Products Or Make New Product And Add it If Product Does Not Exists
             let productDetails=await newproduct_registry.findOne({companyId: socheck.companyId, categoryId: socheck.categoryId, productId: socheck.productId});
             if(productDetails)
             {
-                //If It Exists Than Check In The 
+                //If It Exists Than Check In The Addproduct collection if exist at the particular warehouse or not
+                //First writing code for the arriving at the 0 warehouse and than will make it extended to the all given array by help of the map
+                let prodAtWareDetail=await AddProduct.findOne({companyId: socheck.companyId, categoryId: socheck.categoryId, productId: socheck.productId, prodWarehouseId: 0})
+                if(prodAtWareDetail)
+                {
+                    //If product exists at particular warehouse than we will update it's quantity
+                    prod=await AddProduct.findByIdAndUpdate(prodAtWareDetail._id, {$set:{quantity:prodAtWareDetail.quantity+socheck.quantity}})
+                    await newproduct_registry.findByIdAndUpdate(productDetails._id, {$set: {quantity:productDetails.quantity+socheck.quantity}})
+                }
+                else{
+                    //If it does not exists at given warehouse than we will make product at particular warehouse
+                    //Adding New Product To Company's Warehouse
+                    const newProdcutAtWareData={};
+                    {newProdcutAtWareData.companyId=companyId};
+                    {newProdcutAtWareData.categoryId=socheck.categoryId};
+                    {newProdcutAtWareData.productcategory=socheck.categoryName};
+                    {newProdcutAtWareData.productId=socheck.productId};
+                    {newProdcutAtWareData.productName=socheck.productName};
+                    {newProdcutAtWareData.quantity=socheck.quantity};
+                    {newProdcutAtWareData.demand="New Product"};
+                    {newProdcutAtWareData.predictedDemand=-1};
+                    {newProdcutAtWareData.prodWarehouseId=0};
+
+                    const newPrAtware=new AddProduct(newProdcutAtWareData);
+                    await newPrAtware.save();
+
+                    //Making change in the quantity and inwarehouses of the newProduct collection's document
+                    await newproduct_registry.findByIdAndUpdate(productDetails._id, {$set: {quantity:productDetails.quantity+socheck.quantity, inWarehouses:productDetails.inWarehouses+1}})
+                }
             }
             else{
-                //If It Is Been Not Exists
+                //If Product Does Not Exists
+
+                //Adding new product to company's list i.e. newproduct_registry
+                let newproductId=cmpcheck.nextproductId;
+                await newCompany.findOneAndUpdate({companyId: companyId}, {$set:{nextproductId: cmpcheck.nextproductId+1}})
+
+                let newProdDetail={};
+                newProdDetail.companyId=companyId;
+                newProdDetail.categoryId=socheck.categoryId;
+                newProdDetail.productcategory=socheck.categoryName;
+                newProdDetail.productId=newproductId;
+                newProdDetail.productName=socheck.productName;
+                newProdDetail.quantity=socheck.quantity;
+                newProdDetail.demand="New Product";
+                newProdDetail.predictedDemand="-1";
+                newProdDetail.inWarehouses=1;
+
+                const newprod=new newproduct_registry(newProdDetail);
+                await newprod.save();
+
+                //Adding New Product To Company's Warehouse
+                const newProdcutAtWareData={};
+                {newProdcutAtWareData.companyId=companyId};
+                {newProdcutAtWareData.categoryId=socheck.categoryId};
+                {newProdcutAtWareData.productcategory=socheck.categoryName};
+                {newProdcutAtWareData.productId=newproductId};
+                {newProdcutAtWareData.productName=socheck.productName};
+                {newProdcutAtWareData.quantity=socheck.quantity};
+                {newProdcutAtWareData.demand="New Product"};
+                {newProdcutAtWareData.predictedDemand=-1};
+                {newProdcutAtWareData.prodWarehouseId=0};
+
+                const newPrAtware=new AddProduct(newProdcutAtWareData);
+                await newPrAtware.save();
             }
         }
     }

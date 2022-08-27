@@ -55,7 +55,13 @@ function MangeSalesOrder() {
     setnewOrderData({...neworderData, [event.target.name]: event.target.value})
   }
   const addnewSorder=async()=>{
-    const response=await fetch('http://localhost:5000/api/salesorder/addneworder', {
+    if(neworderData.salesDealer=="" || neworderData.brokerName=="" || neworderData.paymentTerm=="" || neworderData.dispatchDay=="" || neworderData.dispatchMonth=="" || neworderData.dispatchYear=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    } 
+    else{
+      const response=await fetch('http://localhost:5000/api/salesorder/addneworder', {
       method: 'POST',
       headers:{
         'Content-Type': 'application/json',
@@ -63,15 +69,16 @@ function MangeSalesOrder() {
       },
           // In mm/dd/yyyy format
       body: JSON.stringify({salesDealer:neworderData.salesDealer, brokerName:neworderData.brokerName, paymentTerm:neworderData.paymentTerm, comment:neworderData.comment, totalAmount:0, mainDispatchDate:neworderData.dispatchMonth+"/"+neworderData.dispatchDay+"/"+neworderData.dispatchYear})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      getSalesData();
-    }
-    else{
-        setError(json.error);
-        document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        getSalesData();
+      }
+      else{
+          setError(json.error);
+          document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -147,22 +154,29 @@ function MangeSalesOrder() {
 
   //Function(Primary) For Editing Sales Order's Details
   const editSOrder=async(id)=>{
-    const response=await fetch(`http://localhost:5000/api/salesorder/editsalesorder/${id}`, {
+    if(ebrokerName="" || epaymentTerm==""  || edispatchMonth=="" || edispatchDay=="" || edispatchYear=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/salesorder/editsalesorder/${id}`, {
       method: 'PUT',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token')
       },
       body: JSON.stringify({brokerName:ebrokerName, paymentTerm:epaymentTerm, comment:ecomment, mainDispatchDate:edispatchMonth+"/"+edispatchDay+"/"+edispatchYear})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      getSalesData();
-    }
-    else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        getSalesData();
+      }
+      else{
+        setError(json.error);
+          document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -209,22 +223,29 @@ function MangeSalesOrder() {
         productName=data.productName;
       }
     })
-    const response=await fetch(`http://localhost:5000/api/salesorder/addsalesorderproduct/${id}`, {
-      method: 'POST',
-      headers:{
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
-      },
-      body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp, dispatchingFrom:"0", dispatchDate:"00/00/0000"})
-    })
-    const json=await response.json();
-    if(json.success)
+    if(apicategoryId==-1 || apiproductId==-1 || newpdata.nquantity=="" || newpdata.nppp=="")
     {
-      document.location.reload();
-    }
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    } 
     else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      const response=await fetch(`http://localhost:5000/api/salesorder/addsalesorderproduct/${id}`, { 
+      method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp, dispatchingFrom:"0", dispatchDate:"00/00/0000"})
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        document.location.reload();
+      }
+      else{
+        setError(json.error);
+          document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -294,23 +315,30 @@ function MangeSalesOrder() {
     setesPppp(event.target.value)
   }
   const editsproduct=async(id)=>{
-    const response=await fetch(`http://localhost:5000/api/salesorder/editsalesproduct/${id}`, {
+    if(espquantity=="" || esPppp=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/salesorder/editsalesproduct/${id}`, {
       method: 'PUT',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token')
       },
       body: JSON.stringify({quantity: espquantity, perPicePrice:esPppp})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      document.location.reload();
-    }
-    else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
-    }
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        document.location.reload();
+      }
+      else{
+        setError(json.error);
+          document.getElementById("errorModal").click();
+      }
+      }
   }
 
   //Function(Primary) For Managing Status Of Product Of Sales Order
@@ -461,7 +489,7 @@ let i=1;
                 <div class="mb-3">
                 <label class="form-label">Enter Company Name To Whom Order Is</label>
                     <input type="text" name="salesDealer" value={neworderData.salesDealer} onChange={onChangenod} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
-                    <label class="form-label">Enter Broker Name Who Booked Order</label>
+                    <label class="form-label">Enter Broker Name Who Booked Order(From Purchaser Side)</label>
                     <input type="text" name="brokerName" value={neworderData.brokerName} onChange={onChangenod} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
                     <label class="form-label">Enter Payment Terms(In Days)</label>
                     <input type="number" name="paymentTerm" value={neworderData.paymentTerm} onChange={onChangenod} style={{width: '75px', height: '32px'}} class="form-control text-center mx-auto" id="comp" aria-describedby="emailHelp" required />
@@ -750,7 +778,7 @@ let i=1;
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Manage Sales Error</h5>
         </div>
       <div class="modal-body">
         {showError}

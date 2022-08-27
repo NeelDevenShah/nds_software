@@ -34,26 +34,34 @@ function ManageQuotations() {
       setcmpQdata(json);
   }  
 
-  const [newqdata, setNewqdata]=useState({dealer:""})
+  const [newqdata, setNewqdata]=useState({compName:""})
   //For Adding New Quotation
   const addquotation=async()=>{
-    const response=await fetch(`http://localhost:5000/api/quotation/addquotation`, {
+    console.log(newqdata.compName)
+    if(newqdata.compName=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/quotation/addquotation`, {
         method: 'POST',
         headers:{
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
         },
         body: JSON.stringify({dealer: newqdata.compName, totalAmount:0})
-      })
-      const json=await response.json();
-      if(json.success)
-      {
-        getQData();
-      }
-      else{
-        setError(json.error);
-        document.getElementById("errorModal").click();
-      }   
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          getQData();
+        }
+        else{
+          setError(json.error);
+          document.getElementById("errorModal").click();
+        }
+    }   
   }
   const onChangeForNewQ=(event)=>{
     setNewqdata({...newqdata, [event.target.name]: event.target.value})
@@ -134,23 +142,31 @@ const productbycategoryIdforModal=async(categoryId)=>{
             productName=data.productName;
           }
         })
-    const response=await fetch(`http://localhost:5000/api/quotation/addproduct/${id}`, {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
-        },
-        body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:nqprodData.nqpquantity, perPicePrice:nqprodData.nqpPPP})
-      })
-      const json=await response.json();
-      if(json.success)
-      {
-        document.location.reload();
-      }
-      else{
-        setError(json.error);
-        document.getElementById("errorModal").click();
-      }
+
+        if(apicategoryId=="" || categoryName=="" || apiproductId=="" || productName=="" || nqprodData.nqpquantity=="" || nqprodData.nqpPPP=="")
+        {
+          setError("Please Enter Right Information");
+          document.getElementById("errorModal").click();
+        }
+        else{
+          const response=await fetch(`http://localhost:5000/api/quotation/addproduct/${id}`, {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+          },
+          body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:nqprodData.nqpquantity, perPicePrice:nqprodData.nqpPPP})
+          })
+          const json=await response.json();
+          if(json.success)
+          {
+            document.location.reload();
+          }
+          else{
+            setError(json.error);
+            document.getElementById("errorModal").click();
+          }
+    }
   }
 
    //For New Product's Quantity And ppp
@@ -170,22 +186,29 @@ const productbycategoryIdforModal=async(categoryId)=>{
   }
   const [tosalesId, setTosalesId]=useState(0);
   const sendItToSales=async()=>{
-    const response=await fetch(`http://localhost:5000/api/quotation/addtosales/${tosalesId}`, {
-      method: 'POST',
-      headers:{
-          'Content-Type': 'application/json',
-          'auth-token': localStorage.getItem('token')
-      },
-      body: JSON.stringify({brokerName:datatosales.brokername, paymentTerm:datatosales.paymentNum, comment:datatosales.comment, mainDispatchDate:datatosales.dispatchDay+"/"+datatosales.dispatchMonth+"/"+datatosales.dispatchYear})
-    })
-    const json=await response.json();
-    if(json.success)
+    if(datatosales.brokername=="" || datatosales.paymentNum=="" || datatosales.dispatchDay=="" || datatosales.dispatchMonth=="" || datatosales.dispatchYear=="")
     {
-      getQData();
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
     }
     else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      const response=await fetch(`http://localhost:5000/api/quotation/addtosales/${tosalesId}`, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+            'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({brokerName:datatosales.brokername, paymentTerm:datatosales.paymentNum, comment:datatosales.comment, mainDispatchDate:datatosales.dispatchDay+"/"+datatosales.dispatchMonth+"/"+datatosales.dispatchYear})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          getQData();
+        }
+        else{
+          setError(json.error);
+            document.getElementById("errorModal").click();
+        }
     }
   }
 
@@ -334,7 +357,7 @@ const productbycategoryIdforModal=async(categoryId)=>{
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Quotation Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

@@ -26,6 +26,11 @@ function ProductsOfSingleWarehouse(props) {
         }
       }
 
+      const handleDeleteButton=(id)=>{
+        getproductDetails(id);
+        setSddeleteId(id);
+      }
+
     useState(()=>{
         getstockbywareId();
     })
@@ -40,7 +45,7 @@ function ProductsOfSingleWarehouse(props) {
             <td>{stockData.demand}</td>
             <td>{stockData.predictedDemand}</td>
             <td><button type="button" onClick={()=>{getproductDetails(stockData._id)}} className='btn btn-secondary' data-bs-toggle="modal" data-bs-target="#MoveSModel">Move</button></td>
-            <td><button type="button" onClick={()=>{setSddeleteId(stockData._id)}} className='btn btn-danger' data-bs-toggle="modal" data-bs-target="#DeleteSModel">Delete</button></td>
+            <td><button type="button" onClick={()=>{handleDeleteButton(stockData._id)}} className='btn btn-danger' data-bs-toggle="modal" data-bs-target="#DeleteSModel">Delete</button></td>
             </tr>
         })}
     </tbody>

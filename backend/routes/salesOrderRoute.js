@@ -10,8 +10,9 @@ const fetchcompany=require("../middleware/fetchcompany");
 const fetchuser=require("../middleware/fetchuser");
 const SalesOrderMini = require("../models/SalesOrderMini");
 const DispatechedSalesOrder=require("../models/DispatechedSalesOrder");
-const DispatchedSalesOrderMini=require("../models/DispatchedSalesOrderMini")
-
+const DispatchedSalesOrderMini=require("../models/DispatchedSalesOrderMini");
+const newproduct_registry = require("../models/newproduct_registry");
+const AddProduct = require("../models/AddProduct");
 //CASE 1: Add new sales order Endpoint
 router.post("/addneworder", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
@@ -226,15 +227,81 @@ router.put("/managestatus/:id", fetchuser, async (req, res)=>{
 //CASE 8: Dispatch Sales Order Endpoint, You have to also provide the document id, company id, sales order num
 router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
+    let cmpcheck=await newCompany.findOne({companyId: companyId})
+    if(!cmpcheck)
+    {
+        return res.send({error: "The Company Does Not Exists"})
+    }
     let orderidcheck=await salesOrder.findById(req.params.id);
     if(!orderidcheck)
     {
         return res.send({error: "The sales order does not exists OR have been already been dispatched"})
     }
-    
-    sorder=await salesOrder.findByIdAndDelete(req.params.id)
-    
+
+    //Checking Wheather The Order and it's product Exists in sufficient quantity or not
+    sorder=await salesOrder.findById(req.params.id)    
+    productOfSalesOrder=await salesOrderMini.find({companyId: sorder.companyId, SalesOrderId: sorder.SalesOrderId})
+        
+    productOfSalesOrder.map(async(data)=>{
+            console.log("1")
+            //For Checking It the quantity required for sales order is in stock or not
+            let productDetails=await newproduct_registry.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId})
+            if(productDetails && productDetails.quantity>=data.quantity)
+            {
+                //Check If Product Exists Or Not In Particular Warehouse, For Now It Is Only default One i.e. 0
+                let prodAtWareDetail=await AddProduct.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId, prodWarehouseId: 0})
+                if(prodAtWareDetail)
+                {
+                    if(prodAtWareDetail.quantity<data.quantity)
+                    {
+                        return res.send({error: "The quantity is not in the sufficient quantity, to make disptch from warehouse"})
+                    }
+                }
+                else
+                {
+                    return res.send({error: "Product Does Not Exists In Given Warehouse Or the quantity is less than the order's quantity"})
+                }
+            }
+            else{
+                return res.json({error: "Product Does Not Exists, Please Make Sure Product Exists In The Godown"})
+            }
+        })
+
+        productOfSalesOrder.map(async(data)=>{
+
+        //For Making Update in data of company
+        let prodAtAllWarehouse=await newproduct_registry.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId})
+        let prodAtParticularWare=await AddProduct.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId, prodWarehouseId: 0})
+        
+        if(prodAtParticularWare.quantity>data.quantity)
+        {
+            await AddProduct.findByIdAndUpdate(prodAtParticularWare._id, {$set:{quantity: (prodAtWareDetail.quantity-socheck.quantity)}});
+            await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (productDetails.quantity-socheck.quantity)}})
+        }
+        else if(prodAtWareDetail.quantity==socheck.quantity)
+        {
+            await AddProduct.findByIdAndDelete(prodAtParticularWare._id);
+            await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (productDetails.quantity-socheck.quantity), inWarehouses: productDetails.inWarehouses-1}})
+        }
+
+        //For Forwarding The Order's Product To DispatchedOrderMini
+        socheck=await salesOrderMini.findByIdAndDelete(data._id)
+        miniData={};
+        {miniData.companyId=socheck.companyId}
+        {miniData.SalesOrderId=socheck.SalesOrderId}
+        {miniData.categoryId=socheck.categoryId}
+        {miniData.categoryName=socheck.categoryName}
+        {miniData.productId=socheck.productId}
+        {miniData.productName=socheck.productName}
+        {miniData.quantity=socheck.quantity}
+        {miniData.perPicePrice=socheck.perPicePrice}
+        {miniData.dispatchedFrom=socheck.dispatchingFrom}
+        const transferMini=new DispatchedSalesOrderMini(miniData);
+        await transferMini.save();
+    })
+
     // For Forwarding The Order To DispatchedOrder
+    sorder=await salesOrder.findByIdAndDelete(req.params.id)
     var currentDate1=new Date();
     dataForDispatch={};
     {dataForDispatch.companyId=sorder.companyId}
@@ -244,7 +311,6 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     {dataForDispatch.paymentTerm=sorder.paymentTerm}
     {dataForDispatch.comment=sorder.comment}
     {dataForDispatch.totalAmount=sorder.totalAmount}
-
     let dispatchDay=currentDate1.getDate()+"";
     let dispatchMonth=(currentDate1.getMonth()+1)+"";
     if(dispatchDay.length==1)
@@ -255,32 +321,9 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
     {
         dispatchMonth='0'+dispatchMonth;
     }
-
     {dataForDispatch.DispatchedAt=dispatchDay + "/"+ dispatchMonth  + "/" + currentDate1.getFullYear()}
     const transfer=new DispatechedSalesOrder(dataForDispatch);
     await transfer.save();
-    
-    do{
-        socheck=await salesOrderMini.findOneAndDelete({companyId: companyId, SalesOrderId: sorder.SalesOrderId})
-        if(socheck)
-        {
-            //For Forwarding The Order's Product To DispatchedOrderMini
-            miniData={};
-            {miniData.companyId=socheck.companyId}
-            {miniData.SalesOrderId=socheck.SalesOrderId}
-            {miniData.categoryId=socheck.categoryId}
-            {miniData.categoryName=socheck.categoryName}
-            {miniData.productId=socheck.productId}
-            {miniData.productName=socheck.productName}
-            {miniData.quantity=socheck.quantity}
-            {miniData.perPicePrice=socheck.perPicePrice}
-            {miniData.dispatchedFrom=socheck.dispatchingFrom}
-            const transferMini=new DispatchedSalesOrderMini(miniData);
-            await transferMini.save();
-        }
-    }
-    while(socheck)
-
 
     //Making entry in logbook
     var currentdate=new Date();

@@ -54,8 +54,13 @@ function TotalItems() {
     const [newprodCategoryId, setnewprodCategoryId]=useState(-1);
     const [newprodName, setNewprodName]=useState("");
     const addNewProduct=async()=>{
-        if(newprodCategoryId!=-1)
-        {
+    if(newprodCategoryId==-1 || newprodName=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else
+    {
             let prodCatName="";
             categories.map((catData)=>{
             if(catData.categoryId==newprodCategoryId)
@@ -89,8 +94,12 @@ function TotalItems() {
     const [addprodWareId, setaddprodWareId]=useState(-1);
     const [mqty, setmqty]=useState(0);
     const addMoreProduct=async(id)=>{
-        if(addprodWareId!=-1)
+        if(addprodWareId==-1 || parseInt(mqty)==0)
         {
+          setError("Please Enter Right Information");
+          document.getElementById("errorModal").click();
+        }
+        else{
             const response=await fetch(`http://localhost:5000/api/addnew/addproduct/${id}`, {
             method:'POST',
             headers:{
@@ -121,7 +130,6 @@ function TotalItems() {
                 'Content-Type': 'application/json',
                 'auth-token': localStorage.getItem('token')
             },
-            body: JSON.stringify({prodWarehouseId: -1})
         })
         const json=await response.json();
         if(json.success)
@@ -129,7 +137,6 @@ function TotalItems() {
             getproductInWareDetails();
         }
         else{
-            // console.log("Product Deletion Failed, Error");
             setError(json.eror)
             document.getElementById("errorModal").click();
         }
@@ -243,7 +250,7 @@ function TotalItems() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Add/View Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

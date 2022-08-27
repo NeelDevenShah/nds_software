@@ -30,22 +30,29 @@ function Sales_Activity() {
 
   //For Adding New Category
   const addnewcategory=async()=>{
-    const response=await fetch('http://localhost:5000/api/addnew/addcategory', {
-      method: 'POST',
-      headers:{
-        'Content-Type': 'application/json',
-        'auth-token': localStorage.getItem('token')
-      },
-      body: JSON.stringify({pcname: newcatdata.pcname})
-    })
-    const json=await response.json();
-    if(json.success)
+    if(newcatdata.pcname=="")
     {
-      window.location.reload();
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
     }
     else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      const response=await fetch('http://localhost:5000/api/addnew/addcategory', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('token')
+        },
+        body: JSON.stringify({pcname: newcatdata.pcname})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          window.location.reload();
+        }
+        else{
+          setError(json.error);
+            document.getElementById("errorModal").click();
+        }
     }
   }
 
@@ -131,7 +138,7 @@ function Sales_Activity() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Product Category Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

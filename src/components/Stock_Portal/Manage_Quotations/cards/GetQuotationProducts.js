@@ -54,22 +54,29 @@ function GetQuotationProducts(props) {
 
     //For Making Change Conform After Taking New Data From editProductModal
     const makeChangeconform=async()=>{
-        const response=await fetch(`http://localhost:5000/api/quotation/editproduct/${editId}`, {
+        if(editquantity=="" || editppp=="")
+        {
+          setError("Please Enter Right Information");
+          document.getElementById("errorModal").click();
+        }
+        else{
+            const response=await fetch(`http://localhost:5000/api/quotation/editproduct/${editId}`, {
             method: 'PUT',
             headers:{
                 'Content-Type': 'application/json',
                 'auth-token': localStorage.getItem('token')
             },
             body: JSON.stringify({quantity: editquantity, perPicePrice: editppp})
-        })
-        const json=await response.json();
-        if(json.success)
-        {
-            document.location.reload();
-        }
-        else{
+            })
+            const json=await response.json();
+            if(json.success)
+            {
+                document.location.reload();
+            }
+            else{
             setError(json.error);
-        document.getElementById("errorModal").click();
+            document.getElementById("errorModal").click();
+            }
         }
     }
 
@@ -126,29 +133,6 @@ function GetQuotationProducts(props) {
             </div>
         </div>
         {/*  */}
-        {/* Modal Code */}
-      {/* <!-- Button trigger modal --> */}
-<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-  Launch static backdrop modal
-</button>
-
-{/* <!-- Modal --> */}
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Login Page Error</h5>
-        </div>
-      <div class="modal-body">
-        {showError}
-      </div>
-      <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
-      </div>
-    </div>
-  </div>
-</div>
-      {/*  */}
            {QpData.map((pdata)=>{
                    return <tr key={pdata._id}>
                     <td>{pdata.categoryName}</td>

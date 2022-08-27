@@ -126,6 +126,7 @@ router.put("/movestock/:id", fetchuser, async (req,res)=>{
         }
     }
 })
+//working on deletion, of single entering more, the page reloads
 
 //CASE 2: Delete The Product From The Warehouse
 router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
@@ -138,12 +139,12 @@ router.delete("/deletefromwh/:id", fetchuser, async (req, res)=>{
         return res.send({error: "The Product at particular location does not exists"})
     }
     const {categoryId, productId, quantity, prodWarehouseId}=whProduct;
-    let qty=req.header('qty')
+    let qty=req.body.qty;
     if(qty>quantity)
     {
-        res.send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})
+        return res.send({error: "The Quantity Entered To Delete Is More Than The Existing Quantity Of The Product"})
     }
-    if(qty==-1 || qty==whProduct.quantity)
+    else if(qty==-1 || qty==whProduct.quantity)
     {
         //CASE A: Delete All The Quantity Of The Product Present in this warehouse
         deleteProduct=await addProduct.findByIdAndDelete(req.params.id);

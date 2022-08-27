@@ -27,29 +27,36 @@ function Sales_Activity() {
     setNewUserdata({...newUserData, [event.target.name]: event.target.value})
   }
   const addnewUser=async()=>{
-    if(newUserData.password==newUserData.repassword)
+    if(newUserData.name=="" || newUserData.password=="" || newUserData.repassword=="")
     {
-      const response=await fetch('http://localhost:5000/api/registry/registeruser', {
-      method: 'POST',
-      headers:{
-        'Content-Type': 'application/json',
-        'cmp-token': localStorage.getItem('cmptoken')
-      },
-        body: JSON.stringify({name: newUserData.name, password: newUserData.password})
-      })
-      const json=await response.json();
-      if(json.success)
-      {
-        getUserData();
-      }
-      else{
-        setError("New User Does Not Added, Due To Error Please Try Again With Unique Name Or Contact Us");
-        document.getElementById("errorModal").click();
-      }
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
     }
     else{
-      setError("Password Does Not Matches, Try Again");
-      document.getElementById("errorModal").click();
+      if(newUserData.password==newUserData.repassword)
+      {
+        const response=await fetch('http://localhost:5000/api/registry/registeruser', {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          'cmp-token': localStorage.getItem('cmptoken')
+        },
+          body: JSON.stringify({name: newUserData.name, password: newUserData.password})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          getUserData();
+        }
+        else{
+          setError("New User Does Not Added, Due To Error Please Try Again With Unique Name Or Contact Us");
+          document.getElementById("errorModal").click();
+        }
+      }
+      else{
+        setError("Password Does Not Matches, Try Again");
+        document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -138,7 +145,7 @@ function Sales_Activity() {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Dashboard Error</h5>
+        <h5 class="modal-title" id="staticBackdropLabel">Owner Portal's Page Error</h5>
         </div>
       <div class="modal-body">
         {showError}

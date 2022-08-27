@@ -56,22 +56,29 @@ function MangePurchaseOrder() {
     setnewoData({...newoData, [event.target.name]: event.target.value});
   }
   const AddpOrder=async()=>{
-    const response=await fetch('http://localhost:5000/api/purchaseorder/addneworder', {
+    if(newoData.purchaseDealer=="" || newoData.brokerName=="" || newoData.paymentTerm=="" || newoData.arrivalMonth=="" || newoData.arrivalDay=="" || newoData.arrivaYear=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    } 
+    else{
+      const response=await fetch('http://localhost:5000/api/purchaseorder/addneworder', {
       method: 'POST',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token'),
       },
       body: JSON.stringify({purchaseDealer:newoData.purchaseDealer, brokerName:newoData.brokerName, paymentTerm:newoData.paymentTerm, comment:newoData.comment, totalAmount:0, mainArrivingDate:newoData.arrivalMonth+"/"+newoData.arrivalDay+"/"+newoData.arrivaYear})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      getPOrderInfo();
-    }
-    else{
-      setError(json.error);
-        document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        getPOrderInfo();
+      }
+      else{
+        setError(json.error);
+          document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -106,22 +113,29 @@ function MangePurchaseOrder() {
   const [earrivalDay, setearrivalDay]=useState(0);
   const [earrivalYear, setearrivalYear]=useState(0);
   const editPOrder=async(id)=>{
-    const response=await fetch(`http://localhost:5000/api/purchaseorder/editpurchaseorder/${id}`, {
+    if(ebrokerName=="" || epaymentTerm=="" || earrivalMonth=="" || earrivalDay=="" || earrivalYear=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/purchaseorder/editpurchaseorder/${id}`, {
       method: 'PUT',
       headers:{
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token'),
       },
       body: JSON.stringify({brokerName:ebrokerName, paymentTerm:epaymentTerm, comment:ecomment, mainArrivingDate:earrivalMonth+"/"+earrivalDay+"/"+earrivalYear})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      getPOrderInfo();
-    }
-    else{
-      setError(json.error);
-      document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        getPOrderInfo();
+      }
+      else{
+        setError(json.error);
+        document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -210,22 +224,29 @@ function MangePurchaseOrder() {
         productName=data.productName;
       }
     })
-    const response=await fetch(`http://localhost:5000/api/purchaseorder/addpurchaseproduct/${id}`, {
+    if(apicategoryId=="" || apiproductId=="" || productName=="" || newpdata.nquantity=="" || newpdata.nppp=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/purchaseorder/addpurchaseproduct/${id}`, {
       method: 'POST',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token'),
       },
       body: JSON.stringify({categoryId:apicategoryId, categoryName:categoryName, productId:apiproductId, productName:productName, quantity:newpdata.nquantity, perPicePrice:newpdata.nppp, status:"To Be Planned", arrivingat:"0", arrivingDate:"00/00/0000"})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      document.location.reload();
-    }
-    else{
-      setError(json.error);
-      document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        document.location.reload();
+      }
+      else{
+        setError(json.error);
+        document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -294,22 +315,29 @@ function MangePurchaseOrder() {
     setePppp(event.target.value);
   }
   const editProduct=async(id)=>{
-    const response=await fetch(`http://localhost:5000/api/purchaseorder/editpurchaseproduct/${id}`, {
+    if(epquantity=="" || ePppp=="")
+    {
+      setError("Please Enter Right Information");
+      document.getElementById("errorModal").click();
+    }
+    else{
+      const response=await fetch(`http://localhost:5000/api/purchaseorder/editpurchaseproduct/${id}`, {
       method: 'PUT',
       headers:{
         'Content-Type': 'application/json',
         'auth-token': localStorage.getItem('token'),
       },
       body: JSON.stringify({quantity:epquantity, perPicePrice:ePppp})
-    })
-    const json=await response.json();
-    if(json.success)
-    {
-      document.location.reload();
-    }
-    else{
-      setError(json.error);
-      document.getElementById("errorModal").click();
+      })
+      const json=await response.json();
+      if(json.success)
+      {
+        document.location.reload();
+      }
+      else{
+        setError(json.error);
+        document.getElementById("errorModal").click();
+      }
     }
   }
 
@@ -502,7 +530,7 @@ function MangePurchaseOrder() {
                 <div class="mb-3">
                 <label class="form-label">Enter Company Name By Whom Order Is Comming</label>
                     <input type="text" name="purchaseDealer" value={newoData.purchaseDealer} onChange={onChangenewoData} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
-                    <label class="form-label">Enter Broker Name Who Booked Order</label>
+                    <label class="form-label">Enter Broker Name Who Booked Order(From Seller Side)</label>
                     <input type="text" name="brokerName" value={newoData.brokerName} onChange={onChangenewoData} class="form-control text-center" id="comp" aria-describedby="emailHelp" required />
                     <label class="form-label">Enter Payment Terms(In Days)</label>
                     <input type="number" name="paymentTerm" value={newoData.paymentTerm} onChange={onChangenewoData} style={{width: '75px', height: '32px'}} class="form-control text-center mx-auto" id="comp" aria-describedby="emailHelp" required />
@@ -713,6 +741,29 @@ function MangePurchaseOrder() {
         </div>
       </div>
     </div>
+      {/*  */}
+      {/* Modal Code */}
+      {/* <!-- Button trigger modal --> */}
+<button type="button" id="errorModal" class="btn btn-primary invisible" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button>
+
+{/* <!-- Modal --> */}
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Manage Purchase Error</h5>
+        </div>
+      <div class="modal-body">
+        {showError}
+      </div>
+      <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
       {/*  */}
       <h2 className='pt-3'><strong>Your Purchase Orders</strong></h2>
       <div className='row d-flex justify-content-center'>
