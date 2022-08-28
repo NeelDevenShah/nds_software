@@ -16,6 +16,7 @@ function OwnerPortal_dashboard() {
   
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_owner())
+    window.scrollTo(0, 0);
   }
 
   const Check=()=>{

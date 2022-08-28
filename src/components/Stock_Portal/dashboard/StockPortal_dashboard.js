@@ -19,6 +19,7 @@ function StockPortal_dashboard() {
 
   const pageStarting = () => {
     dispatch(ViewActions.do_view_stock())
+    window.scrollTo(0, 0);
   }
 
   const check=()=>{

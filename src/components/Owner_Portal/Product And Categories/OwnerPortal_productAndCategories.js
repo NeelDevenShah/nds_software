@@ -15,6 +15,7 @@ function OwnerPortal_productAndCategories() {
     //Checking
     const pageStarting=()=>{
         dispatch(ViewActions.do_view_owner())
+        window.scrollTo(0, 0);
     }
     const Check=()=>{
         if(localStorage.getItem('cmptoken')==null)

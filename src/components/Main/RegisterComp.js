@@ -9,6 +9,7 @@ function RegisterComp() {
   
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
+    // window.scrollTo(0, 0);
   }
 
   //For Error Notification
@@ -20,31 +21,39 @@ function RegisterComp() {
 
   const submitCmpInfo= async (event)=>{
     event.preventDefault();
-    if(data.password==data.repassword && data.password!="" && data.repassword!="")
+    if(data.password!="" && data.repassword!="" && data.name!="" && data.emailId!="" && data.country!="" && data.shopNum!="" && data.add2!="" && data.city!="" && data.state!="" && data.pincode!="" && data.companyId!="")
     {
-      const response=await fetch('http://localhost:5000/api/registry/registercompany', {
-        method: 'POST',
-        headers:{
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({name:data.name, emailId:data.emailId, country:data.country, shopNum:data.shopNum, add2:data.add2, city:data.city, state:data.state, pincode:data.pincode, companyId:data.companyId, password:data.password})
-      })
-      const json=await response.json();
-      if(json.success)
+      if(data.password==data.repassword)
       {
-        localStorage.removeItem('cmptoken');
-        document.getElementById("successModal").click();
+        const response=await fetch('http://localhost:5000/api/registry/registercompany', {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({name:data.name, emailId:data.emailId, country:data.country, shopNum:data.shopNum, add2:data.add2, city:data.city, state:data.state, pincode:data.pincode, companyId:data.companyId, password:data.password})
+        })
+        const json=await response.json();
+        if(json.success)
+        {
+          localStorage.removeItem('cmptoken');
+          document.getElementById("successModal").click();
+        }
+        else{
+          event.preventDefault();
+          setError(json.error);
+          document.getElementById("errorModal").click();
+        }
       }
       else{
-        event.preventDefault();
-        setError(json.error);
+        setError("Enter Right Password, Both Password Does Not Matches Or One Of Them Is Null");
         document.getElementById("errorModal").click();
+        setData({password:"", repassword:""})
       }
     }
-    else{
-      setError("Enter Right Password, Both Password Does Not Matches Or One Of Them Is Null");
+    else
+    {
+      setError("Please Fill All The Fields In The Form");
       document.getElementById("errorModal").click();
-      setData({password:"", repassword:""})
     }
   }
 

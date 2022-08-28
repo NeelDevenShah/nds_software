@@ -25,6 +25,7 @@ const check=()=>{
 
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
+    window.scrollTo(0, 0);
   }
     const [credentials, setCredentials]=useState({companyId:"", password:""})
 

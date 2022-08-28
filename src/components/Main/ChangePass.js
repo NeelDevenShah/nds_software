@@ -11,6 +11,7 @@ function ChangePass() {
   
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main_loggedIn())
+    window.scrollTo(0, 0);
   }
 
   return (

@@ -13,6 +13,7 @@ const DispatechedSalesOrder=require("../models/DispatechedSalesOrder");
 const DispatchedSalesOrderMini=require("../models/DispatchedSalesOrderMini");
 const newproduct_registry = require("../models/newproduct_registry");
 const AddProduct = require("../models/AddProduct");
+
 //CASE 1: Add new sales order Endpoint
 router.post("/addneworder", fetchuser, async (req, res)=>{
     const {companyId, employeeId}=req.details;
@@ -226,27 +227,30 @@ router.put("/managestatus/:id", fetchuser, async (req, res)=>{
 
 //CASE 8: Dispatch Sales Order Endpoint, You have to also provide the document id, company id, sales order num
 router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
+
+    let ErrorNum=0;
     const {companyId, employeeId}=req.details;
     let cmpcheck=await newCompany.findOne({companyId: companyId})
     if(!cmpcheck)
     {
+        ErrorNum=1;
         return res.send({error: "The Company Does Not Exists"})
     }
     let orderidcheck=await salesOrder.findById(req.params.id);
     if(!orderidcheck)
     {
+        ErrorNum=1;
         return res.send({error: "The sales order does not exists OR have been already been dispatched"})
     }
-
     //Checking Wheather The Order and it's product Exists in sufficient quantity or not
     sorder=await salesOrder.findById(req.params.id)    
     productOfSalesOrder=await salesOrderMini.find({companyId: sorder.companyId, SalesOrderId: sorder.SalesOrderId})
-        
-    productOfSalesOrder.map(async(data)=>{
-            console.log("1")
+
+    let checkRoundCount=0, header=0;
+    await productOfSalesOrder.map(async(data)=>{
             //For Checking It the quantity required for sales order is in stock or not
             let productDetails=await newproduct_registry.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId})
-            if(productDetails && productDetails.quantity>=data.quantity)
+            if(productDetails && productDetails.quantity!=0)
             {
                 //Check If Product Exists Or Not In Particular Warehouse, For Now It Is Only default One i.e. 0
                 let prodAtWareDetail=await AddProduct.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId, prodWarehouseId: 0})
@@ -254,83 +258,120 @@ router.delete("/dispatchallorder/:id", fetchuser, async (req, res)=>{
                 {
                     if(prodAtWareDetail.quantity<data.quantity)
                     {
-                        return res.send({error: "The quantity is not in the sufficient quantity, to make disptch from warehouse"})
+                        ErrorNum=1;
+                        checkRoundCount++;
+                        if(header==0)
+                        {
+                            header=1;
+                            return res.send({error: "The quantity is not in the sufficient quantity, to make disptch from warehouse"})
+                        }
+                    }
+                    else
+                    {
+                        checkRoundCount++;
+                        //For Making Update in data of company
+                        updateRoundCount=0;
+                        if(checkRoundCount==productOfSalesOrder.length &&ErrorNum==0)
+                        {
+                            productOfSalesOrder.map(async(data)=>{
+                                let prodAtAllWarehouse=await newproduct_registry.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId})
+                                let prodAtParticularWare=await AddProduct.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId, prodWarehouseId: 0})
+                                if(prodAtAllWarehouse)
+                                {
+                                    if(prodAtParticularWare.quantity>data.quantity)
+                                    {
+                                        await AddProduct.findByIdAndUpdate(prodAtParticularWare._id, {$set:{quantity: (prodAtParticularWare.quantity-data.quantity)}});
+                                        await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (prodAtAllWarehouse.quantity-data.quantity)}})
+                                    }
+                                    else if(prodAtParticularWare.quantity==data.quantity)
+                                    {
+                                        await AddProduct.findByIdAndDelete(prodAtParticularWare._id);
+                                        await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (prodAtAllWarehouse.quantity-data.quantity), inWarehouses: prodAtAllWarehouse.inWarehouses-1}})
+                                    }
+                                
+                                    //For Forwarding The Order's Product To DispatchedOrderMini
+                                    socheck=await salesOrderMini.findByIdAndDelete(data._id)
+                                    miniData={};
+                                    {miniData.companyId=socheck.companyId}
+                                    {miniData.SalesOrderId=socheck.SalesOrderId}
+                                    {miniData.categoryId=socheck.categoryId}
+                                    {miniData.categoryName=socheck.categoryName}
+                                    {miniData.productId=socheck.productId}
+                                    {miniData.productName=socheck.productName}
+                                    {miniData.quantity=socheck.quantity}
+                                    {miniData.perPicePrice=socheck.perPicePrice}
+                                    {miniData.dispatchedFrom=socheck.dispatchingFrom}
+                                    const transferMini=new DispatchedSalesOrderMini(miniData);
+                                    await transferMini.save();
+                                    updateRoundCount++;
+                                
+                                    if(updateRoundCount==productOfSalesOrder.length)
+                                    {
+                                        // For Forwarding The Order To DispatchedOrder
+                                        sorder=await salesOrder.findByIdAndDelete(req.params.id)
+                                        var currentDate1=new Date();
+                                        dataForDispatch={};
+                                        {dataForDispatch.companyId=sorder.companyId}
+                                        {dataForDispatch.SalesOrderId=sorder.SalesOrderId}
+                                        {dataForDispatch.salesDealer=sorder.salesDealer}
+                                        {dataForDispatch.brokerName=sorder.brokerName}
+                                        {dataForDispatch.paymentTerm=sorder.paymentTerm}
+                                        {dataForDispatch.comment=sorder.comment}
+                                        {dataForDispatch.totalAmount=sorder.totalAmount}
+                                        let dispatchDay=currentDate1.getDate()+"";
+                                        let dispatchMonth=(currentDate1.getMonth()+1)+"";
+                                        if(dispatchDay.length==1)
+                                        {
+                                            dispatchDay='0'+dispatchDay;
+                                        }
+                                        if(dispatchMonth.length==1)
+                                        {
+                                            dispatchMonth='0'+dispatchMonth;
+                                        }
+                                        {dataForDispatch.DispatchedAt=dispatchDay + "/"+ dispatchMonth  + "/" + currentDate1.getFullYear()}
+                                        const transfer=new DispatechedSalesOrder(dataForDispatch);
+                                        await transfer.save();
+                                    
+                                        //Making entry in logbook
+                                        var currentdate=new Date();
+                                        let statment="UserId:"+employeeId+" dispatched sales order having salesorderId:"+sorder.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
+                                        await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
+                                    
+                                        return res.send({success: "success"})
+                                    }
+                                }
+                                else
+                                {
+                                    ErrorNum=1;
+                                    updateRoundCount++;
+                                    return res.send({error: "The Product Does Not Exists At Particular Warehouse"})
+                                }
+                            })
+                        }
                     }
                 }
                 else
                 {
-                    return res.send({error: "Product Does Not Exists In Given Warehouse Or the quantity is less than the order's quantity"})
+                    ErrorNum=1;
+                    checkRoundCount++;
+                    if(header==0)
+                    {
+                        header=1;
+                        return res.send({error: "Product Does Not Exists In Given Warehouse Or the quantity is less than the order's quantity"})
+                    }
                 }
             }
-            else{
-                return res.json({error: "Product Does Not Exists, Please Make Sure Product Exists In The Godown"})
+            else
+            {
+                ErrorNum=1;
+                checkRoundCount++;
+                if(header==0)
+                {
+                    header=1;
+                    return res.json({error: "Product Does Not Exists, Please Make Sure Product Exists In The Godown"})
+                }
             }
         })
-
-        productOfSalesOrder.map(async(data)=>{
-
-        //For Making Update in data of company
-        let prodAtAllWarehouse=await newproduct_registry.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId})
-        let prodAtParticularWare=await AddProduct.findOne({companyId: data.companyId, categoryId: data.categoryId, productId: data.productId, prodWarehouseId: 0})
-        
-        if(prodAtParticularWare.quantity>data.quantity)
-        {
-            await AddProduct.findByIdAndUpdate(prodAtParticularWare._id, {$set:{quantity: (prodAtWareDetail.quantity-socheck.quantity)}});
-            await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (productDetails.quantity-socheck.quantity)}})
-        }
-        else if(prodAtWareDetail.quantity==socheck.quantity)
-        {
-            await AddProduct.findByIdAndDelete(prodAtParticularWare._id);
-            await newproduct_registry.findByIdAndUpdate(prodAtAllWarehouse._id, {$set:{quantity: (productDetails.quantity-socheck.quantity), inWarehouses: productDetails.inWarehouses-1}})
-        }
-
-        //For Forwarding The Order's Product To DispatchedOrderMini
-        socheck=await salesOrderMini.findByIdAndDelete(data._id)
-        miniData={};
-        {miniData.companyId=socheck.companyId}
-        {miniData.SalesOrderId=socheck.SalesOrderId}
-        {miniData.categoryId=socheck.categoryId}
-        {miniData.categoryName=socheck.categoryName}
-        {miniData.productId=socheck.productId}
-        {miniData.productName=socheck.productName}
-        {miniData.quantity=socheck.quantity}
-        {miniData.perPicePrice=socheck.perPicePrice}
-        {miniData.dispatchedFrom=socheck.dispatchingFrom}
-        const transferMini=new DispatchedSalesOrderMini(miniData);
-        await transferMini.save();
-    })
-
-    // For Forwarding The Order To DispatchedOrder
-    sorder=await salesOrder.findByIdAndDelete(req.params.id)
-    var currentDate1=new Date();
-    dataForDispatch={};
-    {dataForDispatch.companyId=sorder.companyId}
-    {dataForDispatch.SalesOrderId=sorder.SalesOrderId}
-    {dataForDispatch.salesDealer=sorder.salesDealer}
-    {dataForDispatch.brokerName=sorder.brokerName}
-    {dataForDispatch.paymentTerm=sorder.paymentTerm}
-    {dataForDispatch.comment=sorder.comment}
-    {dataForDispatch.totalAmount=sorder.totalAmount}
-    let dispatchDay=currentDate1.getDate()+"";
-    let dispatchMonth=(currentDate1.getMonth()+1)+"";
-    if(dispatchDay.length==1)
-    {
-        dispatchDay='0'+dispatchDay;
-    }
-    if(dispatchMonth.length==1)
-    {
-        dispatchMonth='0'+dispatchMonth;
-    }
-    {dataForDispatch.DispatchedAt=dispatchDay + "/"+ dispatchMonth  + "/" + currentDate1.getFullYear()}
-    const transfer=new DispatechedSalesOrder(dataForDispatch);
-    await transfer.save();
-
-    //Making entry in logbook
-    var currentdate=new Date();
-    let statment="UserId:"+employeeId+" dispatched sales order having salesorderId:"+sorder.SalesOrderId+" at "+currentdate.getDate() + "/"+ (currentdate.getMonth()+1)  + "/" + currentdate.getFullYear() + " @ "  + currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();;
-    await CmpLogADetailBook.findOneAndUpdate({companyId: companyId},{$push:{comment: [statment]}})
-    
-    return res.send({success: "success"})
 })
 
 //CASE 9: Get Details Of Given id of Sales Document

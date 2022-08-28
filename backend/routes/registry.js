@@ -31,14 +31,14 @@ router.post("/registerCompany",async(req, res)=>{
     {
         res.send("Internal Server Error");
     }
-    try{
+    // try{
         const cmp=new newCompany(req.body);
         await cmp.save();
-    }
-    catch(error)
-    {
-        console.log("got")
-    }
+    // }
+    // catch(error)
+    // {
+        // console.log("got")
+    // }
 
     //Making default warehouse of the company which cannot be deleted
     defaultWareHouse={};

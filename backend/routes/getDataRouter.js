@@ -183,4 +183,8 @@ router.get("/getlogbookdata", fetchcompany, async(req, res)=>{
     res.json(data);
 })
 
+router.get("/getqtyatware", fetchuser, async(req, res)=>{
+    const data=await AddProduct.findOne({companyId: req.body.companyId, prodWarehouseId:req.body.warehouseId, productId: req.body.productId});
+    res.json(data);
+})
 module.exports=router

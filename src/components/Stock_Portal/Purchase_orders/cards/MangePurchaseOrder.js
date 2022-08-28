@@ -12,7 +12,7 @@ function MangePurchaseOrder() {
   //For Error Notification
   const [showError, setError]=useState("");
 
-    const {prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp}=context;
+    const {prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp, productIdForManageP, setproductIdForManageP, dataOfpProduct, setDataOfpProduct}=context;
   //At the loading of the page this would run first
   useEffect(()=>{
     getPOrderInfo();
@@ -365,6 +365,7 @@ function MangePurchaseOrder() {
       },
   ]
   const [getStatus, setStatus] = useState(statusData);
+
   const wareHouseData = [
       {
           'id': '1',
@@ -447,7 +448,7 @@ function MangePurchaseOrder() {
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Manage Status Of Order #334</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Manage Status Of Order #334</h5>
                     </div>
                     <div class="modal-body">
                         Edit The Thing You Want To Change, Otherwise Not Make Change In It

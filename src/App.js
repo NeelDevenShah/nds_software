@@ -79,10 +79,15 @@ function App() {
     //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS OF PURCHASE ORDER
     const [prodDelId, setprodDelId]=useState(0);
     const [prodEditId, setprodEditId]=useState(0);
+    const [productIdForManageP, setproductIdForManageP]=useState(0);
 
     //For Editing purchase's order utility
     const [epquantity, setepquantity]=useState(0);
     const [ePppp, setePppp]=useState(0);
+
+    //For Managing Purchase Products
+    const [dataOfpProduct, setDataOfpProduct]=useState([]);
+
     //Ending of purchase utility
 
     //BASIC UTILITY FUNCTIONS THAT ARE USED IN THE INTERFILE OPERATIONS OF STOCK DETAILS
@@ -107,7 +112,7 @@ function App() {
     return (
     <div className="App">
         {/* {document.onclick=function(){audio.play()}} */}
-          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId, sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp, prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp, sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid}}>
+          <Context.Provider value={{giveId, editId, editquantity, setEditquantity, editppp, seteditppp, quotId, seteditQuotId, sprodDelId, setsProdDelId, smanageId, setsmanageId, seditId, setsEditId, espquantity, setespquantity, esPppp, setesPppp, prodDelId, setprodDelId, prodEditId, setprodEditId, epquantity, setepquantity, ePppp, setePppp, sdmoveId, setSdmoveId, sddeleteId, setSddeleteId, getproductDetails, prodByid, productIdForManageP, setproductIdForManageP, dataOfpProduct, setDataOfpProduct}}>
           <Router>
            {view_mainNavbar && <Main_navbar/>}
             {view_stockNavbar && <StockPortal_navbar/>}

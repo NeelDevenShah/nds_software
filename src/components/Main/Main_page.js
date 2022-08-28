@@ -16,6 +16,7 @@ function Main_page() {
         const dispatch=useDispatch();
         const pageStarting=()=>{
             dispatch(ViewActions.do_view_main())
+            window.scrollTo(0, 0);
         }
     return (
         <div className='bg-warning pb-5'>

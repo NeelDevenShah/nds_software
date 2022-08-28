@@ -6,6 +6,7 @@ function About_us() {
   const dispatch=useDispatch();
   const pageStarting=()=>{
     dispatch(ViewActions.do_view_main())
+    window.scrollTo(0, 0);
   }
   return (
     <div className='bg-warning'>
