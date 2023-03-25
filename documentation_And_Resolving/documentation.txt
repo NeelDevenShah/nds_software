@@ -1,0 +1,4 @@
+==>Run npm install in the main folder
+npm install
+
+==> Run index.js in the backend floder
